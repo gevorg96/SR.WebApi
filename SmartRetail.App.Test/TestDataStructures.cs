@@ -3,6 +3,7 @@ using SmartRetail.App.DAL.BLL.StructureFillers;
 using SmartRetail.App.DAL.Repository;
 using System.Linq;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SmartRetail.App.Test
 {
@@ -46,14 +47,37 @@ namespace SmartRetail.App.Test
         [Fact]
         public void TestTreeFiller()
         {
-            var filler = new CathegoryTreeFiller("Dropbox", conn);
+            var filler = new CathegoryTreeFiller("1. Кайфы от Петерфельдо", conn);
             var imgRepo = new ImagesRepository(conn);
             var images = imgRepo.GetAllImages().Select(p => new { path = p.img_path + "/" + p.prod_id + "." + p.img_name + "." + p.img_type });
             foreach (var img in images)
             {
                 filler.AddPath(img.path);
             }
-            var tree = filler.tree;
+            var tree = filler.Tree;
+
+            var level = filler.GetLevel("/1. Кайфы от Петерфельдо/Бонусные карты");
+        }
+
+        [Fact]
+        public void CutDbPath()
+        {
+            var imgRepo = new ImagesRepository(conn);
+            var images = imgRepo.GetAllImages();
+            foreach(var i in images)
+            {
+                imgRepo.UpdateImage(i.prod_id, "img_path", "N'/products" + i.img_path +"'");
+            }
+        }
+
+        [Fact]
+        public async Task TestTreeFillerAdapterAsync()
+        {
+            var filler = new CathegoryTreeFiller(conn);
+            await filler.FillTreeByBusinessAsync(1);
+            var level = filler.GetLevel("/products/1. Кайфы от Петерфельдо/Обувь/Женское/Сапоги");
+            var tree = filler.SearchSubTree("/products/1. Кайфы от Петерфельдо/Обувь/Женское/Сапоги");
+            var res = filler.Search("Са", tree);
         }
 
     }

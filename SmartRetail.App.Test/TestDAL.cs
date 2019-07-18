@@ -391,5 +391,12 @@ namespace SmartRetail.App.Test
             }
         }
 
+        [Fact]
+        public async void TestBusinessAsync()
+        {
+            var brepo = new BusinessRepository(conn);
+            var b = await brepo.GetByIdAsync(3);
+        }
+
     }
 }

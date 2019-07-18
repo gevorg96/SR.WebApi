@@ -9,5 +9,6 @@ namespace SmartRetail.App.DAL.Repository
         IEnumerable<Shop> GetShopsByBusinessMultiMappingProducts(int businessId);
         Shop GetShopMultiMappingProducts(int shopId);
         Shop GetById(int shopId);
+
     }
 }

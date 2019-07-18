@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Dapper;
 using SmartRetail.App.DAL.Entities;
 
@@ -13,12 +14,12 @@ namespace SmartRetail.App.DAL.Repository
             this.connection = connection;
         }
         
-        public IEnumerable<Units> GetAllUnits()
+        public async Task<IEnumerable<Units>> GetAllUnitsAsync()
         {
             var sql = "select * from Units";
             using (var conn = new SqlConnection(connection))
             {
-                return conn.Query<Units>(sql);
+                return await conn.QueryAsync<Units>(sql);
             }
         }
     }

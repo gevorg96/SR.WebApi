@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,54 +14,135 @@ using SmartRetail.App.DAL.Repository;
 
 namespace SmartRetail.App.DAL.BLL.StructureFillers
 {
-    public class CathegoryTreeFiller
+    public class CathegoryTreeFiller : ITreeFiller
     {
         private static string _basePath;
-        public CathegoryTree<string> tree { get; private set; }
+
+        public CathegoryTree<ImgTwinModel> Tree { get; private set; }
         private ImagesRepository imgRepo;
         private ProductRepository productRepo;
         private ShopRepository shopRepo;
         private BusinessRepository businessRepo;
         private DropBoxBase dbBase;
-        
-        
-        public CathegoryTreeFiller(string basePath, string connectionString)
+
+
+        public CathegoryTreeFiller(string connectionString)
         {
-            _basePath = basePath;
-            tree = new CathegoryTree<string>
+            imgRepo = new ImagesRepository(connectionString);
+            businessRepo = new BusinessRepository(connectionString);
+        }
+
+        public async Task<CathegoryTree<ImgTwinModel>> FillTreeByBusinessAsync(int businessId)
+        {
+            var bTask = Task.Run(() => businessRepo.GetByIdAsync(businessId));
+            var imgTask = Task.Run(() => imgRepo.GetAllImagesInBusinessAsync(businessId));
+            var (busObj, imgs) = await Tasker.WhenAll(bTask, imgTask);
+
+            var imgPaths = new List<string>();
+
+            foreach (var img in imgs)   
             {
-                Value = _basePath,
+                imgPaths.Add(img.img_path + "/" + img.prod_id + "." + img.img_name + "." + img.img_type);
+            }
+
+            var name = businessId + ". " + busObj.name;
+
+            Tree = new CathegoryTree<ImgTwinModel>
+            {
+                Value = new ImgTwinModel { folder = name, fullpath = "/" + name },
                 Parent = null
             };
             
-            imgRepo = new ImagesRepository(connectionString);
-            productRepo = new ProductRepository(connectionString);
-            shopRepo = new ShopRepository(connectionString);
-            businessRepo = new BusinessRepository(connectionString);
-            
-            dbBase = new DropBoxBase("o9340xsv2mzn7ws", "xzky2fzfnmssik1");
-            dbBase.GeneratedAuthenticationURL();
-            dbBase.GenerateAccessToken();
+            if (imgPaths != null && imgPaths.Any())
+            {
+                foreach (var path in imgPaths)
+                {
+                    AddPath(path);
+                }
+            }
+            return Tree;
         }
 
         public void AddPath(string path)
         {
             var parts = path.Split('/');
-            var currNode = tree;
-            for (var p = 1; p < parts.Count()- 1; p++)
+            var pnext = new ImgTwinModel
             {
-                var pcurr = parts[p];
-                var pnext = parts[p + 1];
-                var t = CathegoryTree<string>.Search(tree, pnext);
+                folder = parts[1],
+                fullpath = "/" + parts[1]
+            };
+            var currNode = Tree;
+
+            for (var p = 1; p < parts.Count() - 1; p++)
+            {
+                var pn = pnext.Clone() as ImgTwinModel;
+                pn.folder = parts[p + 1];
+                pn.fullpath += ("/" + parts[p + 1]);
+
+                pnext.fullpath = pn.fullpath;
+
+                var t = CathegoryTree<ImgTwinModel>.Search(currNode, pn);
                 if (t == null)
                 {
-                    currNode = currNode.AddNode(pnext);
+                    currNode = currNode.AddNode(pn);
                 }
                 else
                 {
                     currNode = t;
                 }
             }
+        }
+        public IEnumerable<ImgTwinModel> GetLevel(string fullpath)
+        {
+            return CathegoryTree<ImgTwinModel>.Search(Tree, new ImgTwinModel { fullpath = fullpath })
+                .Nodes.Select(p => new ImgTwinModel { folder = p.Value.folder, fullpath = p.Value.fullpath, isFile = p.Value.folder.EndsWith(".jpg") }).ToList();
+        }
+
+        public CathegoryTree<ImgTwinModel> SearchSubTree(string fullpath)
+        {
+            return CathegoryTree<ImgTwinModel>.Search(Tree, new ImgTwinModel { fullpath = fullpath });
+        }
+
+
+        public IEnumerable<ImgTwinModel> Search(string search, CathegoryTree<ImgTwinModel> treePart)
+        {
+            var result = new List<ImgTwinModel>();
+            var treeList = CathegoryTree<ImgTwinModel>.ToList(treePart);
+
+            foreach (var node in treeList)
+            {
+                if (node.folder.Contains(search))
+                {
+                    result.Add(node);
+                }
+            }
+
+            return result.Select(p => new ImgTwinModel { folder = p.folder, fullpath = p.fullpath, isFile = p.folder.EndsWith(".jpg") }).ToList(); ;
+        }
+
+
+
+
+
+
+        #region Depricated
+        public CathegoryTreeFiller(string basePath, string connectionString)
+        {
+            _basePath = basePath;
+            Tree = new CathegoryTree<ImgTwinModel>
+            {
+                Value = new ImgTwinModel { folder = _basePath, fullpath = "/" + _basePath },
+                Parent = null
+            };
+
+            imgRepo = new ImagesRepository(connectionString);
+            productRepo = new ProductRepository(connectionString);
+            shopRepo = new ShopRepository(connectionString);
+            businessRepo = new BusinessRepository(connectionString);
+
+            dbBase = new DropBoxBase("o9340xsv2mzn7ws", "xzky2fzfnmssik1");
+            dbBase.GeneratedAuthenticationURL();
+            dbBase.GenerateAccessToken();
         }
 
         public async Task DownloadFiles()
@@ -89,17 +169,6 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
 
                 await SmartUpload(business.id +". " +  business.name, picInfo);
             }
-
-            //foreach (var picInfo in chain)
-            //{
-            //    var prod = productRepo.GetById(picInfo.Id);
-            //    var business = businessRepo.GetById(prod.business_id.Value);
-            //    var shops = shopRepo.GetShopsByBusiness(business.id);
-            //    foreach (var shop in shops)
-            //    {
-            //        await SmartUpload(business.id +". " +  business.name, picInfo);
-            //    }
-            //}
         }
 
         private async Task SmartUpload(string business, PicInfo picInfo)
@@ -188,5 +257,6 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
             return null;
         }
 
+        #endregion
     }
 }

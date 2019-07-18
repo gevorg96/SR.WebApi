@@ -29,10 +29,10 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
-        public FilteredProductViewModel GetProducts([FromBody]ProductFilterViewModel model)
+        public async Task<FilteredProductViewModel> GetProducts([FromBody]ProductFilterViewModel model)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
-            var products = _service.GetProducts(user);
+            var products = await _service.GetProducts(user);
 
             if (products == null || !products.Any())
             {
@@ -136,10 +136,10 @@ namespace SmartRetail.App.Web.Controllers
 
         //todo
         [HttpGet("/addproduct")]
-        public ProductDetailRequestViewModel GetInfoForCreate()
+        public async Task<ProductDetailRequestViewModel> GetInfoForCreateAsync()
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
-            return _service.GetChoiceForUser(user);
+            return await _service.GetChoiceForUserAsync(user);
         }
 
         

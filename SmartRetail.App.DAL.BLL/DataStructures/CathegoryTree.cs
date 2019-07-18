@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace SmartRetail.App.DAL.BLL.DataStructures
 {
@@ -103,5 +102,6 @@ namespace SmartRetail.App.DAL.BLL.DataStructures
 
             return treeCollection;
         }
+
     }
 }

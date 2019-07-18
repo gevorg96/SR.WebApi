@@ -63,7 +63,8 @@ namespace SmartRetail.App.Web.Models.Service
                             VendorCode = product.attr1,
                             ImgUrl = product.Image?.img_url_temp,
                             Color = product.attr10,
-                            Size = product.attr9
+                            Size = product.attr9,
+                            UnitId = product.unit_id.HasValue ? product.unit_id.Value : 0
                         });
                     }
                 }

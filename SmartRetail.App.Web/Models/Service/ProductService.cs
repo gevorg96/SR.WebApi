@@ -102,7 +102,7 @@ namespace SmartRetail.App.Web.Models.Service
                     prodGroup.Products = new List<ProductViewModel>();
                     foreach (var productViewModel in pics)
                     {
-                        var product = prodRepo.GetById(productViewModel.Id);
+                        var product = await prodRepo.GetByIdAsync(productViewModel.Id);
                         var img = imgRepo.GetById(product.id);
                         prodGroup.Products.Add(new ProductViewModel
                         {
@@ -160,7 +160,7 @@ namespace SmartRetail.App.Web.Models.Service
                 prodGroup.Products = new List<ProductViewModel>();
                 foreach (var productViewModel in pics)
                 {
-                    var product = prodRepo.GetById(productViewModel.Id);
+                    var product = await prodRepo.GetByIdAsync(productViewModel.Id);
                     var img = imgRepo.GetById(product.id);
                     prodGroup.Products.Add(new ProductViewModel
                     {
@@ -191,42 +191,18 @@ namespace SmartRetail.App.Web.Models.Service
         /// </summary>
         /// <param name="user">user info</param>
         /// <returns></returns>
-        public IEnumerable<ProductViewModel> GetProducts(UserProfile user)
+        public async Task<IEnumerable<ProductViewModel>> GetProducts(UserProfile user)
         {
             var list = new List<ProductViewModel>();
             List<Shop> shops = new List<Shop>();
 
-            if (user.shop_id.HasValue && user.shop_id != 0)
-            {
-                //get shop with products
-                shops = new List<Shop> { shopRepo.GetShopMultiMappingProducts(user.shop_id.Value) };
-            }
-            else
-            {
-                var business = businessRepo.GetWithFilter("id", user.business_id.ToString()).FirstOrDefault();
-
-                if (business != null)
-                {
-                    //get shops with products
-                    shops = shopRepo.GetShopsByBusinessMultiMappingProducts(business.id).ToList();
-                }
-            }
-
-            var products = new List<Product>();
-            if (shops != null && shops.Any())
-            {
-                foreach (var shop in shops)
-                {
-                    //add products in list from shop(s)
-                    products.AddRange(shop.Product);
-                }
-            }
+            var prods = await prodRepo.GetProductsByBusinessAsync(user.business_id.Value);
 
             //todo
             var rnd = new Random();
 
             //create ViemModels
-            foreach (var product in products)
+            foreach (var product in prods)
             {
                 list.Add(new ProductViewModel
                 {
@@ -238,7 +214,8 @@ namespace SmartRetail.App.Web.Models.Service
                     VendorCode = product.attr1,
                     ImgUrl = product.Image?.img_url_temp,
                     Color = product.attr10,
-                    Size = product.attr9
+                    Size = product.attr9,
+                    UnitId = product.unit_id.HasValue ? product.unit_id.Value : 0
                 });
             }
 
@@ -246,9 +223,9 @@ namespace SmartRetail.App.Web.Models.Service
 
         }
 
-        public ProductViewModel GetProduct(UserProfile user, int id)
+        public async Task<ProductViewModel> GetProduct(UserProfile user, int id)
         {
-            var product = prodRepo.GetById(id);
+            var product = await prodRepo.GetByIdAsync(id);
             if (product == null)
             {
                 return new ProductViewModel();
@@ -262,31 +239,9 @@ namespace SmartRetail.App.Web.Models.Service
                 Size = product.attr9,
                 Color = product.attr10,
                 UnitId = product.unit_id.HasValue ? product.unit_id.Value : 0,
-                ImgUrl = img != null && !string.IsNullOrEmpty(img.img_url_temp) ? img.img_url_temp : ""
+                ImgUrl = img != null && !string.IsNullOrEmpty(img.img_url_temp) ? img.img_url_temp : "",
             };
-
-            if (product.business_id == user.business_id)
-            {
-                if (user.shop_id.HasValue && user.shop_id == product.shop_id)
-                {
-                    var cost = costRepo.GetByProdAndShopIds(id, user.shop_id.Value);
-                    var price = priceRepo.GetPriceByProdAndShopIds(id, user.shop_id.Value);
-                    var stock = stockRepo.GetStockByShopAndProdIds(user.shop_id.Value, id);
-                    prodVm.Cost = cost != null && cost.value.HasValue ? cost.value.Value : 0;
-                    prodVm.Price = price != null && price.price.HasValue ? price.price.Value : 0;
-                    prodVm.Stock = stock != null && stock.count.HasValue ? stock.count.Value : 0;
-                    return prodVm;
-                }
-                if (user.shop_id.HasValue && user.shop_id != product.shop_id)
-                {
-                    throw new Exception("Вы не можете просматривать этот товар.");
-                }
-                if (!user.shop_id.HasValue)
-                {
-                    throw new Exception("Необходимо выбрать магазин.");
-                }
-            }
-            throw new Exception("Вы не можете просматривать этот товар.");
+            return prodVm;
         }
 
         /// <summary>
@@ -296,15 +251,14 @@ namespace SmartRetail.App.Web.Models.Service
         /// <param name="product">product view model</param>
         public async Task AddProduct(UserProfile user, ProductDetailViewModel product)
         {
-            var shop = checker.GetCorrectShop(user, product);
-            if (shop == null) return;
-            
+            //var shop = checker.GetCorrectShop(user, product);
+            //if (shop == null) return;
+            var business = await businessRepo.GetByIdAsync(user.business_id.Value);
             //create product model
             var prod = new Product
             {
                 name = product.ProdName,
-                shop_id = shop?.id ?? product.ShopId,
-                business_id = shop!= null ? shop.business_id: shop.Business.id,
+                business_id = business.id,
                 unit_id = product.UnitId,
                 attr1 = product.VendorCode,
                 attr9 = product.Size,
@@ -318,14 +272,18 @@ namespace SmartRetail.App.Web.Models.Service
             prod.Cost.Add(new Cost { value = product.Cost });
 
             //add stock link
-            prod.Stock.Add(new Stock { count = product.Stock });
+            foreach (var pair in product.Stocks)
+            {
+                prod.Stock.Add(new Stock { count = pair.Stock, shop_id = pair.ShopId });
+            }
+            
 
             //add with repo
             var pId = prodRepo.AddProduct(prod);
             var bytes = Convert.FromBase64String(product.ImgBase64);
             var contents = new MemoryStream(bytes);
-            var path = product.Category + "/" + pId + ". " + product.ProdName + ".jpg";
-            var imgUrl = await dbBase.Upload(contents, path);
+            //var path = product.Category + "/" + pId + "." + product.ProdName + ".jpg";
+            var imgUrl = await dbBase.Upload(contents, "/products/" + business.id + ". " + business.name + "/" + pId + "." + product.ProdName + ".jpg");
             var img = new Images
             {
                 img_url = imgUrl,
@@ -340,13 +298,18 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task UpdateProduct(UserProfile user, ProductDetailViewModel product)
         {
-            var shop = checker.GetCorrectShop(user, product);
-            if (shop == null) return;
-
             int prodId;
             try
             {
-                prodId = product.Id.Value;
+                var pr = await prodRepo.GetByIdAsync(product.Id.Value, user.business_id.Value);
+                if (pr != null)
+                {
+                    prodId = pr.id;
+                }
+                else
+                {
+                    throw new Exception("Не указан идентификатор товара / неверный идентификатор.");
+                }
             }
             catch (Exception)
             {
@@ -357,18 +320,13 @@ namespace SmartRetail.App.Web.Models.Service
             var price = new Price
             {
                 prod_id = prodId,
-                shop_id = product.ShopId
             };
 
             if (!string.IsNullOrEmpty(product.Category))
             {
-                var photo = imgRepo.GetById(prodId);
-                var path = await dbBase.GetFileWithSharedLink(photo.img_url);
-                var parts = path.Split("/");
-                var name = parts[parts.Length - 1];
                 try
                 {
-                    var res = await dbBase.MoveFile(path, product.Category + "/" + name);
+                    imgRepo.UpdateImage(prodId, "img_path", "N'" + product.Category + "'");
                 }
                 catch (Exception)
                 {
@@ -380,8 +338,7 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 id = prodId,
                 name = product.ProdName,
-                shop_id = shop?.id ?? product.ShopId,
-                business_id = shop != null ? shop.business_id : shop.Business.id,
+                business_id = user.business_id,
                 unit_id = product.UnitId,
                 attr1 = product.VendorCode,
                 attr9 = product.Size,
@@ -403,17 +360,13 @@ namespace SmartRetail.App.Web.Models.Service
                 {
                     price.price = product.Price;
 
-                    if (candidatePrice.shop_id != product.ShopId)
+                    try
                     {
-                        price.shop_id = product.ShopId;
-                        try
-                        {
-                            priceRepo.Update(price);
-                        }
-                        catch (Exception)
-                        {
-                            throw new Exception("Не получилось изменить цену товара.");
-                        }
+                        priceRepo.Update(price);
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception("Не получилось изменить цену товара.");
                     }
                 }
             }
@@ -431,12 +384,12 @@ namespace SmartRetail.App.Web.Models.Service
             }
         }
 
-        public ProductDetailRequestViewModel GetChoiceForUser(UserProfile user)
+        public async Task<ProductDetailRequestViewModel> GetChoiceForUserAsync(UserProfile user)
         {
             var shopService = new ShopSerivce(shopRepo);
             var prdVm = new ProductDetailRequestViewModel();
             prdVm.Shops = shopService.GetStocks(user);
-            var units = unitRepo.GetAllUnits();
+            var units = await unitRepo.GetAllUnitsAsync();
             prdVm.Units = units.Select(p => new UnitViewModel {id = p.id, name = p.value}).ToList();
             return prdVm;
         }

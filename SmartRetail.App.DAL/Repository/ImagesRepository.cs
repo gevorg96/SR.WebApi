@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using SmartRetail.App.DAL.Helpers;
+using System.Threading.Tasks;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -51,6 +53,19 @@ namespace SmartRetail.App.DAL.Repository
             using (var conn = new SqlConnection(connectionString))
             {
                 return conn.Query<Images>(sql);
+            }
+        }
+
+        public async Task<IEnumerable<Images>> GetAllImagesInBusinessAsync(int businessId)
+        {
+            string prods = "select id from Product where business_id = " + businessId;
+
+            using (var db = new SqlConnection(connectionString))
+            {
+                db.Open();
+                var prodIds = await db.QueryAsync<int>(prods);
+                string imgs = "select * from Images where prod_id in (" + QueryHelper.GetIds(prodIds) + ")";
+                return await db.QueryAsync<Images>(imgs);
             }
         }
     }

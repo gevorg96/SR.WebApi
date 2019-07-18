@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
 
 namespace SmartRetail.App.DAL.Repository
@@ -7,9 +8,11 @@ namespace SmartRetail.App.DAL.Repository
     {
         IEnumerable<Product> GetAllProductsInShop(int shopId);
         int AddProduct(Product entity);
-        Product GetById(int id);
+        Task<Product> GetByIdAsync(int id);
         void UpdateProduct(Product entity, string field);
         void UpdateProduct(Product entity);
         IEnumerable<Product> GetProductsByIds(IEnumerable<int> prodIds);
+        Task<IEnumerable<Product>> GetProductsByBusinessAsync(int businessId);
+        Task<Product> GetByIdAsync(int id, int businessId);
     }
 }

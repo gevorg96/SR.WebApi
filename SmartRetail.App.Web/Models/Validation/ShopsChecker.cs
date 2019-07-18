@@ -47,33 +47,33 @@ namespace SmartRetail.App.Web.Models.Validation
             return avl;
         }
 
-        public Shop GetCorrectShop(UserProfile user, ProductDetailViewModel product)
-        {
-            List<Shop> shops = null;
-            Business business = null;
-            if (user.shop_id.HasValue && user.shop_id != 0)
-            {
-                // get shop
-                shops = new List<Shop> { _shopRepository.GetById(user.shop_id.Value) };
-            }
-            else
-            {
-                business = _businessRepository.GetWithFilter("id", user.business_id.ToString()).FirstOrDefault();
+        //public Shop GetCorrectShop(UserProfile user, ProductDetailViewModel product)
+        //{
+        //    List<Shop> shops = null;
+        //    Business business = null;
+        //    if (user.shop_id.HasValue && user.shop_id != 0)
+        //    {
+        //        // get shop
+        //        shops = new List<Shop> { _shopRepository.GetById(user.shop_id.Value) };
+        //    }
+        //    else
+        //    {
+        //        business = _businessRepository.GetWithFilter("id", user.business_id.ToString()).FirstOrDefault();
 
-                if (business != null)
-                {
-                    //get shops
-                    shops = _shopRepository.GetShopsByBusiness(business.id).ToList();
-                }
-            }
+        //        if (business != null)
+        //        {
+        //            //get shops
+        //            shops = _shopRepository.GetShopsByBusiness(business.id).ToList();
+        //        }
+        //    }
 
-            //get correct shop 
-            var shop = shops?.FirstOrDefault(p => p.id == product.ShopId);
-            if (shop != null)
-            {
-                shop.Business = _businessRepository.GetById(shop.business_id.Value);
-            }
-            return shop;
-        }
+        //    //get correct shop 
+        //    var shop = shops?.FirstOrDefault(p => p.id == product.ShopId);
+        //    if (shop != null)
+        //    {
+        //        shop.Business = _businessRepository.GetById(shop.business_id.Value);
+        //    }
+        //    return shop;
+        //}
     }
 }

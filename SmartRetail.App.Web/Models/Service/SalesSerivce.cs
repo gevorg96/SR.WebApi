@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models.Interface;
@@ -18,6 +19,7 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IPriceRepository priceRepo;
         private readonly IImageRepository imgRepo;
         private ShopsChecker shopsChecker;
+
         public SalesSerivce(string conn)
         {
             imgRepo = new ImagesRepository(conn);
@@ -29,32 +31,32 @@ namespace SmartRetail.App.Web.Models.Service
             shopsChecker = new ShopsChecker(shopRepo, new BusinessRepository(conn));
         }
 
-        public IEnumerable<SalesViewModel> GetSales(int userId, int shopId, DateTime from, DateTime to)
+        public async Task<IEnumerable<SalesViewModel>> GetSales(int userId, int shopId, DateTime from, DateTime to)
         {
             IEnumerable<Shop> shops = new List<Shop>();
             var salesVm = new List<SalesViewModel>();
 
             var user = userRepo.GetById(userId);
-            
+
             var avl = shopsChecker.CheckAvailability(user, shopId);
-            if(!avl.isCorrectShop)
+            if (!avl.isCorrectShop)
                 return new List<SalesViewModel>();
             if (!avl.hasShop && avl.isAdmin)
-            {   
+            {
                 shops = shopRepo.GetShopsByBusiness(user.business_id.Value);
             }
-            else if(!avl.hasShop && !avl.isAdmin)
+            else if (!avl.hasShop && !avl.isAdmin)
             {
                 return new List<SalesViewModel>();
             }
-            else if(avl.hasShop)
+            else if (avl.hasShop)
             {
-                shops = new List<Shop>{shopRepo.GetById(shopId)};
+                shops = new List<Shop> { shopRepo.GetById(shopId) };
             }
 
             if (shops == null || !shops.Any())
-                return new List<SalesViewModel>();;
-            
+                return new List<SalesViewModel>();
+
 
             foreach (var shop in shops)
             {
@@ -64,6 +66,8 @@ namespace SmartRetail.App.Web.Models.Service
             foreach (var shop in shops)
             {
                 var sales = shop.Sales;
+
+                // группируем по чекам
                 var groupedSales = sales.GroupBy(p => p.bill_number).ToList();
                 foreach (var sale in groupedSales)
                 {
@@ -74,11 +78,13 @@ namespace SmartRetail.App.Web.Models.Service
                     var productsVm = new List<SalesProductViewModel>();
                     var products = new List<Product>();
                     
+                    // итерируемся по продажам в чеке
                     foreach (var s in sale)
                     {
                         totalSum += s.summ ?? 0;
-                        var prod = productRepo.GetById(s.prod_id);
+                        var prod = await productRepo.GetByIdAsync(s.prod_id);
 
+                        // заполняем информацию по продукту
                         productsVm.Add(new SalesProductViewModel
                         {
                             imageUrl = imgRepo.GetById(s.prod_id)?.img_url_temp,
@@ -90,6 +96,8 @@ namespace SmartRetail.App.Web.Models.Service
                             //Price = s.summ.HasValue && s.sales_count.HasValue ? (decimal)(s.summ/s.sales_count) : 0
                         });
                         products.Add(prod);
+                        
+                        // вытаскиваем цену
                         var price = priceRepo.GetPriceByProdId(s.prod_id);
                         if (price?.price == null) continue;
                         if (s.sales_count != null)

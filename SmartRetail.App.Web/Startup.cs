@@ -16,6 +16,7 @@ using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Service;
 using SmartRetail.App.Web.Models.Validation;
 using SmartRetail.App.DAL.Repository.Interfaces;
+using SmartRetail.App.DAL.BLL.StructureFillers;
 
 namespace SmartRetail.App.Web
 {
@@ -103,6 +104,8 @@ namespace SmartRetail.App.Web
             services.AddTransient<ISalesService, SalesSerivce>(o => new SalesSerivce(conn));
             services.AddTransient<IStockService, StockService>();
             services.AddTransient<IExpensesService, ExpensesService>();
+            services.AddTransient<ITreeFiller, CathegoryTreeFiller>(o => new CathegoryTreeFiller(conn));
+            services.AddTransient<ICategoryService, CategoryService>();
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

@@ -9,6 +9,7 @@ using System.Reflection;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
+using System.Threading.Tasks;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -75,25 +76,28 @@ namespace SmartRetail.App.DAL.Repository
                     if (id != 0)
                     {
                         var price = entity.Prices.FirstOrDefault();
-                        if (entity.Price != null && price?.price != null)
+                        if (price != null && price?.price != null)
                         {
                             connection.Execute(priceSql,
                                 new {prodId = id, Price = price.price, shopId = entity.shop_id});
                         }
 
                         var cost = entity.Cost.FirstOrDefault();
-                        if (entity.Cost != null && cost?.value != null)
+                        if (cost != null && cost?.value != null)
                         {
                             connection.Execute(costSql,
                                 new {prodId = id, Value = cost.value, shopId = entity.shop_id});
                         }
 
-                        var stock = entity.Stock.FirstOrDefault();
-                        if (entity.Stock != null && stock?.count != null)
+                        foreach (var stock in entity.Stock)
                         {
-                            connection.Execute(stockSql,
-                                new {shopId = entity.shop_id, prodId = id, Count = stock.count});
+                            if (entity.Stock != null && stock?.count != null)
+                            {
+                                connection.Execute(stockSql,
+                                    new { shopId = entity.shop_id, prodId = id, Count = stock.count });
+                            }
                         }
+
                         return id;
                     }
 
@@ -106,13 +110,13 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public new Product GetById(int id)
+        public async Task<Product> GetByIdAsync(int id)
         {
             var sql = "SELECT * FROM Product WHERE id = " + id;
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 db.Open();
-                return db.Query<Product>(sql).FirstOrDefault();
+                return await db.QueryFirstOrDefaultAsync<Product>(sql);
             }
         }
 
@@ -217,6 +221,32 @@ namespace SmartRetail.App.DAL.Repository
             return null;
         }
 
-        
+        public async Task<IEnumerable<Product>> GetProductsByBusinessAsync(int businessId)
+        {
+            var prsql = "select * from Product where business_id = " + businessId;
+            var imgSql = "select * from Images where prod_id = @prodId";
+
+            IEnumerable<Product> prods = new List<Product>();
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                prods = await db.QueryAsync<Product>(prsql);
+                foreach (var prod in prods)
+                {
+                    prod.Image = await db.QueryFirstOrDefaultAsync<Images>(imgSql, new { prodId = prod.id });
+                }
+                return prods;
+            }
+        }
+
+        public async Task<Product> GetByIdAsync(int id, int businessId)
+        {
+            var sql = "select * from Product where business_id = @BusinessId and id = @Id";
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                return await db.QueryFirstOrDefaultAsync<Product>(sql, new { BusinessId = businessId, Id = id });
+            }
+        }
     }
 }

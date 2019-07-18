@@ -9,6 +9,7 @@ using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.Web.Models.ViewModel.Sales;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace SmartRetail.App.Web.Controllers
 {
@@ -53,10 +54,10 @@ namespace SmartRetail.App.Web.Controllers
         //}
         
         [HttpGet]
-        public IEnumerable<SalesViewModel> GetSales([FromBody] SalesRequestViewModel model)
+        public async Task<IEnumerable<SalesViewModel>> GetSales([FromBody] SalesRequestViewModel model)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
-            var sales = _service.GetSales(user.UserId, model.shopId ?? 0, model.from, model.to);
+            var sales = await _service.GetSales(user.UserId, model.shopId ?? 0, model.from, model.to);
             return model.orderByDesc ? sales.OrderByDescending(p => p.reportDate) : sales.OrderBy(p => p.reportDate);
         }
     }

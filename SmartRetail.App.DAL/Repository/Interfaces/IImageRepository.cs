@@ -1,4 +1,6 @@
 using SmartRetail.App.DAL.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -7,5 +9,6 @@ namespace SmartRetail.App.DAL.Repository
         void Add(Images entity);
         Images GetById(int id);
         void UpdateImage(int prodId, string field, string value);
+        Task<IEnumerable<Images>> GetAllImagesInBusinessAsync(int businessId);
     }
 }
