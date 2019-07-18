@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SmartRetail.App.DAL.DropBox\SmartRetail.App.DAL.DropBox.csproj" />
+    <ProjectReference Include="..\SmartRetail.App.DAL\SmartRetail.App.DAL.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+        <PackageReference Include="xunit" Version="2.3.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SmartRetail.App.DAL.BLL\SmartRetail.App.DAL.BLL.csproj" />
+      <ProjectReference Include="..\SmartRetail.App.DAL.DropBox\SmartRetail.App.DAL.DropBox.csproj" />
+      <ProjectReference Include="..\SmartRetail.App.DAL\SmartRetail.App.DAL.csproj" />
+      <ProjectReference Include="..\SmartRetail.App.Web\SmartRetail.App.Web.csproj" />
+    </ItemGroup>
+
+</Project>
