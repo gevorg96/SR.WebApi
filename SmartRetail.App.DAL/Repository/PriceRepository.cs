@@ -74,8 +74,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public void Update(Price entity)
         {
-            var update = "update Price set price = " + entity.price +
-                ", shop_id = " + entity.shop_id + " where prod_id = " + entity.prod_id;
+            var update = "update Price set price = " + isNotNull(entity.price) +
+                ", shop_id = " + isNotNull(entity.shop_id) + " where prod_id = " + entity.prod_id;
 
             using (var db = new SqlConnection(_connectionString))
             {

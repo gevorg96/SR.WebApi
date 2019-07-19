@@ -50,13 +50,5 @@ namespace SmartRetail.App.Web.Controllers
             Response.ContentType = "application/json";
             return Json(exp);
         }
-
-        [HttpGet("/getwarehouses")]
-        public JsonResult GetWarehouses()
-        {
-            var wHouses = _service.GetWareHouses();
-            Response.ContentType = "application/json";
-            return Json(wHouses);
-        }
     }
 }

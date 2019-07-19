@@ -1,17 +1,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SmartRetail.App.DAL.BLL.DataServices;
-using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.DropBox;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models;
-using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Service;
 using SmartRetail.App.Web.Models.Validation;
@@ -93,8 +90,7 @@ namespace SmartRetail.App.Web
                 new UnitRepository(conn));
             services.AddTransient<IPictureWareHouse, DropBoxBase>(o =>
                 new DropBoxBase(apiKey, apiSecret));
-            
-            
+      
             services.AddTransient<ImageDataService>();
             services.AddTransient<ShopsChecker>();
 
@@ -106,13 +102,9 @@ namespace SmartRetail.App.Web
             services.AddTransient<IExpensesService, ExpensesService>();
             services.AddTransient<ITreeFiller, CathegoryTreeFiller>(o => new CathegoryTreeFiller(conn));
             services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<IUnitService, UnitService>();
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            //services.AddSpaStaticFiles(configuration =>
-            //{
-            //    configuration.RootPath = "ClientApp/build";
-            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -131,7 +123,6 @@ namespace SmartRetail.App.Web
             app.UseCors("MyPolicy");
 
             app.UseHttpsRedirection();
-            //app.UseSpaStaticFiles();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseAuthentication();
@@ -141,16 +132,6 @@ namespace SmartRetail.App.Web
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
             });
-
-            //app.UseSpa(spa =>
-            //{
-            //    spa.Options.SourcePath = "ClientApp";
-
-            //    if (env.IsDevelopment())
-            //    {
-            //        spa.UseReactDevelopmentServer(npmScript: "start");
-            //    }
-            //});
         }
     }
 }

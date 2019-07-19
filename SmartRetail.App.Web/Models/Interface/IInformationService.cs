@@ -12,6 +12,5 @@ namespace SmartRetail.App.Web.Models.Interface
         Task<JObject> GetMonthData(int whouse);
         JObject GetStocks(int whouse);
         JObject GetExpenses(int whouse);
-        JObject GetWareHouses();
     }
 }

@@ -26,9 +26,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet]
         public async Task<IEnumerable<UnitViewModel>> GetUnitsAsync()
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
             return await service.GetUnitsAsync();
-
         }
     }
 }

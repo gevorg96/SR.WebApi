@@ -23,7 +23,7 @@ namespace SmartRetail.App.Web.Models
 
         public async Task<JObject> GetDailyData(int whouse)
         {
-            var urlPhoto = _imagesRepo.GetById(1).img_url;
+            var urlPhoto = _imagesRepo.GetById(1166).img_url;
             var path = await dbClient.GetFileWithSharedLink(urlPhoto);
             var result = await dbClient.GetTempLink(path);
 
@@ -37,7 +37,7 @@ namespace SmartRetail.App.Web.Models
                 json.Add("salesCount", 15);
                 json.Add("averageBill", 432.43);
             }
-            else if (whouse == 1)
+            else
             {
                 list = new Dictionary<string, float> { { "Карандаши", 0.33f }, { "Ручки", 0.20f }, { "Мячи", 0.47f } };
                 json.Add("revenue", 130000);
@@ -45,14 +45,7 @@ namespace SmartRetail.App.Web.Models
                 json.Add("salesCount", 6);
                 json.Add("averageBill", 432.43);
             }
-            else if (whouse == 2)
-            {
-                list = new Dictionary<string, float> { { "Карандаши", 0.38f }, { "Ручки", 0.20f }, { "Мячи", 0.42f } };
-                json.Add("revenue", 135000);
-                json.Add("profit", 19000);
-                json.Add("salesCount", 9);
-                json.Add("averageBill", 432.43);
-            }
+           
             
             json.Add(new JProperty("goods", GetInfo(list)));
             return json;
@@ -60,7 +53,7 @@ namespace SmartRetail.App.Web.Models
 
         public async Task<JObject> GetMonthData(int whouse)
         {
-            var urlPhoto = _imagesRepo.GetById(1).img_url;
+            var urlPhoto = _imagesRepo.GetById(1166).img_url;
             var path = await dbClient.GetFileWithSharedLink(urlPhoto);
             var result = await dbClient.GetTempLink(path);
 
@@ -78,7 +71,7 @@ namespace SmartRetail.App.Web.Models
                 json.Add("salesCount", 650);
                 json.Add("averageBill", 365.35);
             }
-            else if (whouse == 1)
+            else 
             {
                 list.Add("Карандаши", 0.35f);
                 list.Add("Ручки", 0.15f);
@@ -87,17 +80,6 @@ namespace SmartRetail.App.Web.Models
                 json.Add("revenue", 600000);
                 json.Add("profit", 200000);
                 json.Add("salesCount", 350);
-                json.Add("averageBill", 365.35);
-            }
-            else if (whouse == 2)
-            {
-                list.Add("Карандаши", 0.30f);
-                list.Add("Ручки", 0.15f);
-                list.Add("Мячи", 0.55f);
-
-                json.Add("revenue", 640000);
-                json.Add("profit", 256000);
-                json.Add("salesCount", 300);
                 json.Add("averageBill", 365.35);
             }
 
@@ -111,7 +93,7 @@ namespace SmartRetail.App.Web.Models
 
             var list = new Dictionary<string, float>();
 
-            if (whouse == 0 || whouse > 2)
+            if (whouse == 0)
             {
                 list.Add("Карандаши", 55);
                 list.Add("Ручки", 120);
@@ -120,7 +102,7 @@ namespace SmartRetail.App.Web.Models
                 json.Add("cost", 120000);
                 json.Add("goodsCount", 950);
             }
-            else if (whouse == 1)
+            else
             {
                 list.Add("Карандаши", 25);
                 list.Add("Ручки", 50);
@@ -128,15 +110,6 @@ namespace SmartRetail.App.Web.Models
 
                 json.Add("cost", 50000);
                 json.Add("goodsCount", 500);
-            }
-            else if (whouse == 2)
-            {
-                list.Add("Карандаши", 30);
-                list.Add("Ручки", 70);
-                list.Add("Мячи", 34);
-
-                json.Add("cost", 70000);
-                json.Add("goodsCount", 450);
             }
 
             json.Add(new JProperty("goods", GetInfo(list)));
@@ -156,14 +129,7 @@ namespace SmartRetail.App.Web.Models
                     json.Add(new JProperty(type.type, rnd.Next(100, 10000)));
                 }
             }
-            else if (whouse == 1)
-            {
-                foreach (var type in exTypes)
-                {
-                    json.Add(new JProperty(type.type, rnd.Next(100, 10000)));
-                }
-            }
-            else if (whouse == 2)
+            else
             {
                 foreach (var type in exTypes)
                 {
@@ -171,24 +137,9 @@ namespace SmartRetail.App.Web.Models
                 }
             }
 
+
             return json;
 
-        }
-
-        public JObject GetWareHouses()
-        {
-            var json = new JObject();
-            var dict = new Dictionary<int, string>();
-            dict.Add(0, "Все склады");
-            dict.Add(1, "Склад на Тургеневской");
-            dict.Add(2, "Склад на Каширской");
-            var jarray = new JArray();
-            foreach (var t in dict)
-            {
-                jarray.Add(new JObject(new JProperty(t.Key.ToString(), t.Value)));
-            }
-            json.Add(new JProperty("warehouses", jarray));
-            return json;
         }
 
         private static JArray GetInfo(Dictionary<string, float> dict)
