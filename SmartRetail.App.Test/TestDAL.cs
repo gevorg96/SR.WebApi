@@ -34,6 +34,7 @@ namespace SmartRetail.App.Test
         private readonly ICostRepository costRepo;
         private readonly IStockRepository stockRepo;
         private readonly IUserRepository userRepo;
+        private readonly IOrderStockRepository orderStockRepo;
         private readonly ShopsChecker checker;
         private readonly IProductService prodService;
 
@@ -53,6 +54,7 @@ namespace SmartRetail.App.Test
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
             prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, checker, costRepo, stockRepo);
+            orderStockRepo = new OrderStockRepository(conn);
         }
 
         [Fact]
@@ -501,6 +503,12 @@ namespace SmartRetail.App.Test
             };
 
             await prodService.AddProduct(userRepo.GetById(5), prod);
+        }
+
+        [Fact]
+        public async void TestPureOrderStocks()
+        {
+            var result = await orderStockRepo.GetPureOrderStocksByProdId(1158);
         }
 
     }

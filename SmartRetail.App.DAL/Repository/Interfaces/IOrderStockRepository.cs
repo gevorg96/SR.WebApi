@@ -8,5 +8,6 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
     {
         Task<IEnumerable<OrderStock>> GetOrderStocksByProdIds(IEnumerable<int> prodIds);
         Task<IEnumerable<OrderStock>> GetOrderStocksByProdId(int prodId);
+        Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdId(int prodId);
     }
 }
