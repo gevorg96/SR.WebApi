@@ -37,7 +37,9 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdId(int prodId)
         {
-            var sql = "select * from OrderStock as OS join Orders as O ON OS.order_id = O.id where OS.prod_id = " + prodId + " and OS.curr_stocks != 0 order by order_id";
+            var sql = "select * from OrderStock as OS join Orders as O ON OS.order_id = O.id where OS.prod_id = "
+                + prodId + " and OS.curr_stocks != 0 order by order_id";
+
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
