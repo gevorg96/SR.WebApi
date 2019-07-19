@@ -9,7 +9,7 @@ using SmartRetail.App.DAL.Helpers;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class BusinessRepository: EntityRepository<Business>, IBusinessRepository
+    public class BusinessRepository: IBusinessRepository
     {
         private readonly string _connectionString;
 
@@ -18,7 +18,7 @@ namespace SmartRetail.App.DAL.Repository
             _connectionString = conn;
         }
 
-        public new IEnumerable<Business> GetAll()
+        public IEnumerable<Business> GetAll()
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
@@ -38,7 +38,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public new void Add(Business b)
+        public void Add(Business b)
         {
             var sql = "insert into Business (name, tel) values (@name, @tel})"; 
             using (IDbConnection db = new SqlConnection(_connectionString))
@@ -48,7 +48,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public new Business GetById(int id)
+        public Business GetById(int id)
         {
             var sql = "SELECT * FROM Business WHERE id = @BusinessId"; 
             using (IDbConnection db = new SqlConnection(_connectionString))

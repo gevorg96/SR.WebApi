@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using SmartRetail.App.DAL.Templates;
 
@@ -16,7 +17,7 @@ namespace SmartRetail.App.DAL.Helpers
                 return null;
             }
             query = query.Replace("table", table);
-            
+
             if (fields == null || fields.Count == 0)
             {
                 query = query.Replace("fields", "*");
@@ -45,5 +46,20 @@ namespace SmartRetail.App.DAL.Helpers
             return sb.ToString().Substring(0, sb.Length - 1);
         }
 
+        public static string GetSqlString(PropertyInfo p, object o)
+        {
+            var pt = p.PropertyType.ToString();
+            switch (pt)
+            {
+                case "System.String":
+                    return "N'" + o + "'";
+                case "System.Int32":
+                case "System.Nullable`1[System.Int32]":
+                    return o.ToString();
+            }
+
+            return null;
         }
+
+    }
 }

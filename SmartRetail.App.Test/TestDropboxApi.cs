@@ -258,7 +258,7 @@ namespace SmartRetail.App.Test
             var basepath = "/dropbox/dotnetapi/products/";
 
             
-            var p = prodrepo.GetById(138);
+            var p = prodrepo.GetByIdAsync(138);
             var img = imgrepo.GetById(138);
             var imgpath = await dbBase.GetFilePath(img.img_url);
             var imgtailpath = string.Join('/',imgpath.Split('/').Skip(6));
@@ -275,23 +275,23 @@ namespace SmartRetail.App.Test
         [Fact]
         public async void TestMoveV2()
         {
-            InitDropbox();
-            var bRepo = new BusinessRepository(conn);
-            var shoprepo = new ShopRepository(conn);
-            var prodrepo = new ProductRepository(conn);
-            var imgrepo = new ImagesRepository(conn);
-            var basepath = "/dropbox/dotnetapi/products/";
+            //InitDropbox();
+            //var bRepo = new BusinessRepository(conn);
+            //var shoprepo = new ShopRepository(conn);
+            //var prodrepo = new ProductRepository(conn);
+            //var imgrepo = new ImagesRepository(conn);
+            //var basepath = "/dropbox/dotnetapi/products/";
 
-            var p = prodrepo.GetById(138);
-            var img = imgrepo.GetById(138);
-            var oldshop = shoprepo.GetById(p.shop_id.Value);
-            var new_shop = shoprepo.GetById(3);
+            //var p = prodrepo.GetByIdAsync(138);
+            //var img = imgrepo.GetById(138);
+            //var oldshop = shoprepo.GetById(p.shop_id.Value);
+            //var new_shop = shoprepo.GetById(3);
             
-            var imgpath = await dbBase.GetFileWithSharedLink(img.img_url);
-            var old = (oldshop.id + ". " + oldshop.name).ToLower();
-            var newv = (new_shop.id + ". " + new_shop.name).ToLower();
-            var new_path = imgpath.ToLower().Replace(old, newv);
-            var moveRes = await dbBase.MoveFile(imgpath, new_path);
+            //var imgpath = await dbBase.GetFileWithSharedLink(img.img_url);
+            //var old = (oldshop.id + ". " + oldshop.name).ToLower();
+            //var newv = (new_shop.id + ". " + new_shop.name).ToLower();
+            //var new_path = imgpath.ToLower().Replace(old, newv);
+            //var moveRes = await dbBase.MoveFile(imgpath, new_path);
         }
         
         
@@ -332,7 +332,7 @@ namespace SmartRetail.App.Test
                 await dbBase.MoveFile(source2, target);
             }
 
-            var prod = prodRepo.GetById(1);
+            var prod = prodRepo.GetByIdAsync(1);
             var image = await dbBase.GetAllFolders("/Dropbox/", true);
             
         }

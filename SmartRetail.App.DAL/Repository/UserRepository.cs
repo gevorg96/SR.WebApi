@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class UserRepository : EntityRepository<UserProfile>, IUserRepository
+    public class UserRepository : IUserRepository
     {
         private string connectionString;
 
@@ -12,6 +12,8 @@ namespace SmartRetail.App.DAL.Repository
         {
             connectionString = conn;
         }
+
+        #region Create
 
         public new void Add(UserProfile entity)
         {
@@ -22,6 +24,10 @@ namespace SmartRetail.App.DAL.Repository
                 connection.Execute(sql, new { UserName = entity.UserName, Email = entity.Email, Password = entity.Password, ShopId = entity.shop_id, BusinessId = entity.business_id , AccessGrade = entity.access_grade});
             }
         }
+
+        #endregion
+
+        #region Read
 
         public new UserProfile GetById(int id)
         {
@@ -41,6 +47,10 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
+        #endregion
+
+        #region Update
+
         public void Update(UserProfile entity, string field, string value)
         {
             string sql = string.Format("UPDATE UserProfile SET {0} = '{1}' WHERE UserId = {2};", field, value, entity.UserId);
@@ -50,5 +60,7 @@ namespace SmartRetail.App.DAL.Repository
                 connection.Execute(sql);
             }
         }
+
+        #endregion
     }
 }

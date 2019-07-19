@@ -6,7 +6,8 @@ namespace SmartRetail.App.DAL.Repository
 {
     public interface IProductRepository
     {
-        IEnumerable<Product> GetAllProductsInShop(int shopId);
+        IEnumerable<Product> GetWithFilter(string field, string value);
+        IEnumerable<Product> GetAll();
         int AddProduct(Product entity);
         Task<Product> GetByIdAsync(int id);
         void UpdateProduct(Product entity, string field);

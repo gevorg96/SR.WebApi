@@ -10,7 +10,7 @@ using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class PriceRepository : EntityRepository<Price>, IPriceRepository
+    public class PriceRepository : IPriceRepository
     {
         private readonly string _connectionString;
 
@@ -19,7 +19,7 @@ namespace SmartRetail.App.DAL.Repository
             _connectionString = conn;
         }
 
-        public new void Add(Price entity)
+        public void Add(Price entity)
         {
             var insert = "insert into Price (prod_id, price, shop_id) values (" + entity.prod_id + ", " + isNotNull(entity.price) + ", " +
                 isNotNull(entity.shop_id) + ")";
@@ -72,7 +72,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public new void Update(Price entity)
+        public void Update(Price entity)
         {
             var update = "update Price set price = " + entity.price +
                 ", shop_id = " + entity.shop_id + " where prod_id = " + entity.prod_id;

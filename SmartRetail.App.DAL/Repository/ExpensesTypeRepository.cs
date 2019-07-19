@@ -2,10 +2,11 @@
 using System.Data.SqlClient;
 using Dapper;
 using SmartRetail.App.DAL.Entities;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class ExpensesTypeRepository: EntityRepository<ExpensesType>
+    public class ExpensesTypeRepository: EntityRepository<ExpensesType>, IExpensesTypeRepository
     {
         private readonly string conn;
         

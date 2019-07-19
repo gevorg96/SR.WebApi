@@ -8,7 +8,7 @@ using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class SalesRepository :EntityRepository<Sales>, ISalesRepository
+    public class SalesRepository : ISalesRepository
     {
         private readonly string conn;
 
@@ -16,6 +16,8 @@ namespace SmartRetail.App.DAL.Repository
         {
             this.conn = conn;
         }
+
+        #region Read
 
         public IEnumerable<Sales> GetSalesByShopAndReportDate(int shopId, DateTime from, DateTime to)
         {
@@ -42,6 +44,10 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
+        #endregion
+
+        #region Create
+
         public void AddSales(Sales sales)
         {
             var sql = "INSERT INTO Sales (prod_id, shop_id, report_date, bill_number, summ, sales_count, unit_id)" +
@@ -55,5 +61,7 @@ namespace SmartRetail.App.DAL.Repository
                 connection.Execute(sql);
             }
         }
+
+        #endregion
     }
 }

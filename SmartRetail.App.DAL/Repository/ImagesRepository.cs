@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class ImagesRepository : EntityRepository<Images>, IImageRepository
+    public class ImagesRepository : IImageRepository
     {
         private string connectionString;
 
@@ -18,7 +18,7 @@ namespace SmartRetail.App.DAL.Repository
             connectionString = conn;
         }
 
-        public new void Add(Images entity)
+        public void Add(Images entity)
         {
             string sql = "INSERT INTO Images (ROWGUID, prod_id, img_type, img_name, img_url, img_url_temp, img_path) Values (@ROWGUID, @prod_id, @img_type, @img_name, @img_url, @img_url_temp, @img_path);";
 
@@ -29,7 +29,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public new Images GetById(int id)
+        public Images GetById(int id)
         {
             string sql = "SELECT * FROM Images WHERE prod_id = @Id";
             using (var connection = new SqlConnection(connectionString))

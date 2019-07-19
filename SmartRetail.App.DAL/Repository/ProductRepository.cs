@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class ProductRepository : EntityRepository<Product>, IProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly string _connectionString;
         private QueryBuilder qb;
@@ -23,6 +23,8 @@ namespace SmartRetail.App.DAL.Repository
             _connectionString = conn;
             qb = new QueryBuilder();
         }
+
+        #region Read
 
         public IEnumerable<Product> GetWithFilter(string field, string value)
         {
@@ -34,7 +36,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public new IEnumerable<Product> GetAll()
+        public IEnumerable<Product> GetAll()
         {
             var sql = "SELECT * FROM Product";
             using (IDbConnection db = new SqlConnection(_connectionString))
@@ -44,19 +46,68 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public IEnumerable<Product> GetAllProductsInShop(int shopId)
+        public async Task<Product> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var sql = "SELECT * FROM Product WHERE id = " + id;
+            using (IDbConnection db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                return await db.QueryFirstOrDefaultAsync<Product>(sql);
+            }
         }
+
+        public async Task<Product> GetByIdAsync(int id, int businessId)
+        {
+            var sql = "select * from Product where business_id = @BusinessId and id = @Id";
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                return await db.QueryFirstOrDefaultAsync<Product>(sql, new { BusinessId = businessId, Id = id });
+            }
+        }
+
+        public IEnumerable<Product> GetProductsByIds(IEnumerable<int> prodIds)
+        {
+            qb.Clear();
+            var sql = "select * from Product where id in (" + QueryHelper.GetIds(prodIds) + ")";
+
+            using (var db = new SqlConnection())
+            {
+                db.Open();
+                return db.Query<Product>(sql);
+            }
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsByBusinessAsync(int businessId)
+        {
+            var prsql = "select * from Product where business_id = " + businessId;
+            var imgSql = "select * from Images where prod_id = @prodId";
+
+            IEnumerable<Product> prods = new List<Product>();
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                prods = await db.QueryAsync<Product>(prsql);
+                foreach (var prod in prods)
+                {
+                    prod.Image = await db.QueryFirstOrDefaultAsync<Images>(imgSql, new { prodId = prod.id });
+                }
+                return prods;
+            }
+        }
+
+        #endregion
+
+        #region Create
 
         public int AddProduct(Product entity)
         {
             //shop_id,
             string prodSql = string.Format("INSERT INTO Product ( business_id, supplier_id, name, attr1, " +
                                            "attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9, attr10, unit_id) Values ( {0}, {1}, {2}, " +
-                                           "{3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13});",  isNotNull(entity.business_id),
+                                           "{3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13});", isNotNull(entity.business_id),
                 isNotNull(entity.supplier_id), isNotNull(entity.name), isNotNull(entity.attr1), isNotNull(entity.attr2),
-                isNotNull(entity.attr3), isNotNull(entity.attr4), isNotNull(entity.attr5), isNotNull(entity.attr6), 
+                isNotNull(entity.attr3), isNotNull(entity.attr4), isNotNull(entity.attr5), isNotNull(entity.attr6),
                 isNotNull(entity.attr7), isNotNull(entity.attr8), isNotNull(entity.attr9), isNotNull(entity.attr10), isNotNull(entity.unit_id));
 
             string priceSql = "INSERT INTO Price (prod_id, price, shop_id) VALUES (@prodId, @Price, @shopId)";
@@ -79,14 +130,14 @@ namespace SmartRetail.App.DAL.Repository
                         if (price != null && price?.price != null)
                         {
                             connection.Execute(priceSql,
-                                new {prodId = id, Price = price.price, shopId = entity.shop_id});
+                                new { prodId = id, Price = price.price, shopId = entity.shop_id });
                         }
 
                         var cost = entity.Cost.FirstOrDefault();
                         if (cost != null && cost?.value != null)
                         {
                             connection.Execute(costSql,
-                                new {prodId = id, Value = cost.value, shopId = entity.shop_id});
+                                new { prodId = id, Value = cost.value, shopId = entity.shop_id });
                         }
 
                         foreach (var stock in entity.Stock)
@@ -94,7 +145,7 @@ namespace SmartRetail.App.DAL.Repository
                             if (entity.Stock != null && stock?.count != null)
                             {
                                 connection.Execute(stockSql,
-                                    new { shopId = entity.shop_id, prodId = id, Count = stock.count });
+                                    new { shopId = stock.shop_id, prodId = id, Count = stock.count });
                             }
                         }
 
@@ -110,21 +161,15 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task<Product> GetByIdAsync(int id)
-        {
-            var sql = "SELECT * FROM Product WHERE id = " + id;
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return await db.QueryFirstOrDefaultAsync<Product>(sql);
-            }
-        }
+        #endregion
+
+        #region Update
 
         public void UpdateProduct(Product entity, string field)
         {
             var pi = entity.GetType().GetProperty(field);
             var value = pi.GetValue(entity);
-            var sql = "update Product set " + field + " = " + GetSqlString(pi,value);
+            var sql = "update Product set " + field + " = " + QueryHelper.GetSqlString(pi,value);
             using (var db = new SqlConnection(_connectionString))
             {
                 try
@@ -160,7 +205,7 @@ namespace SmartRetail.App.DAL.Repository
                     var oldValue = p.GetValue(row);
                     if (newValue != null && (oldValue == null || newValue.ToString() != oldValue.ToString()))
                     {
-                        sb.Append(p.Name + " = " + GetSqlString(p, p.GetValue(entity)) + ", ");
+                        sb.Append(p.Name + " = " + QueryHelper.GetSqlString(p, p.GetValue(entity)) + ", ");
                     }
                 }
                 if (sb.Length < 20) return;
@@ -171,28 +216,9 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public IEnumerable<Product> GetProducts(int id)
-        {
-            var sql = "SELECT * FROM Product WHERE id > " + id;
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Product>(sql);
-            }
-        }
+        #endregion
 
-        public IEnumerable<Product> GetProductsByIds(IEnumerable<int> prodIds)
-        {
-            qb.Clear();
-            var sql = "select * from Product where id in (" + QueryHelper.GetIds(prodIds) + ")";
-
-            using(var db = new SqlConnection())
-            {
-                db.Open();
-                return db.Query<Product>(sql);
-            }
-        }
-
+        #region Helpers
 
         private int GetMaxId(IEnumerable<Product> products, int? shopId = null)
         {
@@ -206,47 +232,22 @@ namespace SmartRetail.App.DAL.Repository
             return ids.Max();
         }
 
-        private string GetSqlString(PropertyInfo p, object o)
+
+        #endregion
+
+        #region Depricated
+
+        public IEnumerable<Product> GetProducts(int id)
         {
-            var pt = p.PropertyType.ToString();
-            switch (pt)
-            {
-                case "System.String":
-                    return "N'" + o + "'";
-                case "System.Int32":
-                case "System.Nullable`1[System.Int32]":
-                    return o.ToString();
-            }
-
-            return null;
-        }
-
-        public async Task<IEnumerable<Product>> GetProductsByBusinessAsync(int businessId)
-        {
-            var prsql = "select * from Product where business_id = " + businessId;
-            var imgSql = "select * from Images where prod_id = @prodId";
-
-            IEnumerable<Product> prods = new List<Product>();
-            using (var db = new SqlConnection(_connectionString))
+            var sql = "SELECT * FROM Product WHERE id > " + id;
+            using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 db.Open();
-                prods = await db.QueryAsync<Product>(prsql);
-                foreach (var prod in prods)
-                {
-                    prod.Image = await db.QueryFirstOrDefaultAsync<Images>(imgSql, new { prodId = prod.id });
-                }
-                return prods;
+                return db.Query<Product>(sql);
             }
         }
 
-        public async Task<Product> GetByIdAsync(int id, int businessId)
-        {
-            var sql = "select * from Product where business_id = @BusinessId and id = @Id";
-            using (var db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return await db.QueryFirstOrDefaultAsync<Product>(sql, new { BusinessId = businessId, Id = id });
-            }
-        }
+        #endregion
+
     }
 }

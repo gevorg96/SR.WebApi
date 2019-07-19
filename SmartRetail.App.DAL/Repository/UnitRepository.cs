@@ -6,14 +6,16 @@ using SmartRetail.App.DAL.Entities;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class UnitRepository: EntityRepository<Units>, IUnitRepository
+    public class UnitRepository:  IUnitRepository
     {
         private readonly string connection;
         public UnitRepository(string connection)
         {
             this.connection = connection;
         }
-        
+
+        #region Read
+
         public async Task<IEnumerable<Units>> GetAllUnitsAsync()
         {
             var sql = "select * from Units";
@@ -22,5 +24,8 @@ namespace SmartRetail.App.DAL.Repository
                 return await conn.QueryAsync<Units>(sql);
             }
         }
+        
+        #endregion
+
     }
 }

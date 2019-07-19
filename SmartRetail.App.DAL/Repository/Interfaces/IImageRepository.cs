@@ -9,6 +9,7 @@ namespace SmartRetail.App.DAL.Repository
         void Add(Images entity);
         Images GetById(int id);
         void UpdateImage(int prodId, string field, string value);
+        IEnumerable<Images> GetAllImages();
         Task<IEnumerable<Images>> GetAllImagesInBusinessAsync(int businessId);
     }
 }

@@ -7,7 +7,7 @@ using SmartRetail.App.DAL.Entities;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class ExpensesRepository: EntityRepository<Expenses>, IExpensesRepository
+    public class ExpensesRepository: IExpensesRepository
     {
         private readonly string _connectionString;
 

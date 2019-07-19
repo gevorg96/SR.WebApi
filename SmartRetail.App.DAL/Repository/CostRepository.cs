@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class CostRepository : EntityRepository<Cost>, ICostRepository
+    public class CostRepository : ICostRepository
     {
         private readonly string conn;
         public CostRepository(string conn)
