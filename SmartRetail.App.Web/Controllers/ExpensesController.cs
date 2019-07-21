@@ -27,10 +27,10 @@ namespace SmartRetail.App.Web.Controllers
         }
         
         [HttpGet]
-        public IEnumerable<ExpensesViewModel> GetExpenses([FromBody] ExpensesRequestViewModel model)
+        public IEnumerable<ExpensesViewModel> GetExpenses(int? shopId, DateTime from, DateTime to)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
-            var expenses = _service.GetExpenses(user, model.shopId, model.from, model.to);
+            var expenses = _service.GetExpenses(user, shopId, from, to);
             if (expenses == null || !expenses.Any())
                 return new List<ExpensesViewModel>();
             return expenses;

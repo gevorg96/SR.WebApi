@@ -29,7 +29,7 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<FilteredProductViewModel> GetProducts([FromBody]ProductFilterViewModel model)
+        public async Task<FilteredProductViewModel> GetProducts(int? page = 1, int? limit = 10, string name = null, string color = null, string size = null)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
             var products = await _service.GetProducts(user);
@@ -39,38 +39,30 @@ namespace SmartRetail.App.Web.Controllers
                 return new FilteredProductViewModel { Products = new List<ProductViewModel>() };
             }
 
-            if (!string.IsNullOrEmpty(model.name))
+            if (!string.IsNullOrEmpty(name))
             {
-                products = products.Where(p => p.ProdName.ToLower().StartsWith(model.name.ToLower()));
+                products = products.Where(p => p.ProdName.ToLower().StartsWith(name.ToLower()));
             }
 
-            if (!string.IsNullOrEmpty(model.color))
+            if (!string.IsNullOrEmpty(color))
             {
-                products = products.Where(p => p != null && !string.IsNullOrEmpty(p.Color) && p.Color.ToLower().Contains(model.color.ToLower()));
+                products = products.Where(p => p != null && !string.IsNullOrEmpty(p.Color) && p.Color.ToLower().Contains(color.ToLower()));
             }
 
-            if (!string.IsNullOrEmpty(model.size))
+            if (!string.IsNullOrEmpty(size))
             {
-                products = products.Where(p => p != null && !string.IsNullOrEmpty(p.Size) && p.Size.ToLower().Contains(model.size));
+                products = products.Where(p => p != null && !string.IsNullOrEmpty(p.Size) && p.Size.ToLower().Contains(size));
             }
 
-            if (!model.page.HasValue)
-            {
-                model.page = 1;
-            }
-            if (!model.limit.HasValue)
-            {
-                model.limit = 5;
-            }
-            var items = products.Skip((model.page.Value - 1) * model.limit.Value).Take(model.limit.Value).ToList();
+            var items = products.Skip((page.Value - 1) * limit.Value).Take(limit.Value).ToList();
 
             var prod = new FilteredProductViewModel
             {
                 Products = items,
-                PageViewModel = new PageViewModel(products.Count(), model.page.Value, model.limit.Value),
-                SelectedProductName = model.name,
-                SelectedProductColor = model.color,
-                SelectedProductSize = model.size
+                PageViewModel = new PageViewModel(products.Count(), page.Value, limit.Value),
+                SelectedProductName = name,
+                SelectedProductColor = color,
+                SelectedProductSize = size
             };
             return prod;
         }

@@ -29,10 +29,14 @@ namespace SmartRetail.App.Web.Controllers
         }
         
         [HttpGet]
-        public FilteredProductViewModel GetProducts([FromBody] ProductFilterViewModel model)
+        public FilteredProductViewModel GetProducts(int? page = 1, int? limit = 10, string name = null, string color = null, string size = null, int? shopId = null)
         {
+            if (shopId == null)
+            {
+                throw new System.Exception("Необходимо выбрать склад.");
+            }
             var user = _userRepo.GetByLogin(User.Identity.Name);
-            var stocks = _service.GetStocks(user, model.shopId);
+            var stocks = _service.GetStocks(user, shopId);
             if (stocks == null || !stocks.Any())
             {
                 var vm = new FilteredProductViewModel
@@ -42,26 +46,18 @@ namespace SmartRetail.App.Web.Controllers
                 };
                 return vm;
             }
-            if (!string.IsNullOrEmpty(model.name))
+            if (!string.IsNullOrEmpty(name))
             {
-                stocks = stocks.Where(p => p.ProdName.Contains(model.name));
-            }
-            if (!model.page.HasValue)
-            {
-                model.page = 1;
-            }
-            if (!model.limit.HasValue)
-            {
-                model.limit = 5;
+                stocks = stocks.Where(p => p.ProdName.Contains(name));
             }
 
-            var items = stocks.Skip((model.page.Value - 1) * model.limit.Value).Take(model.limit.Value).ToList();
+            var items = stocks.Skip((page.Value - 1) * limit.Value).Take(limit.Value).ToList();
 
             var prod = new FilteredProductViewModel
             {
                 Products = items,
-                PageViewModel = new PageViewModel(stocks.Count(), model.page.Value, model.limit.Value),
-                SelectedProductName = model.name,
+                PageViewModel = new PageViewModel(stocks.Count(), page.Value, limit.Value),
+                SelectedProductName = name,
             };
             return prod;
         }

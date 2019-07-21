@@ -23,18 +23,22 @@ namespace SmartRetail.App.Web.Controllers
             catService = _catService;
         }
 
-        [HttpGet]
-        public async Task<ProductGroupViewModel> GetProductGroups([FromBody]FolderRequestViewModel folderPath)
-        {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+        //[HttpGet]
+        //public async Task<ProductGroupViewModel> GetProductGroups([FromBody]FolderRequestViewModel folderPath)
+        //{
+        //    var user = userRepo.GetByLogin(User.Identity.Name);
 
-            return await catService.GetNexLevelGroup(user, folderPath.path, folderPath.needProducts);
-        }
+        //    return await catService.GetNexLevelGroup(user, folderPath.path, folderPath.needProducts);
+        //}
 
         [HttpPost]
         public async Task<ProductGroupViewModel> Search([FromBody] FolderRequestSearchVeiwModel model)
         {
             var user = userRepo.GetByLogin(User.Identity.Name);
+            if (string.IsNullOrEmpty(model.searchCriteria))
+            {
+                return await catService.GetNexLevelGroup(user, model.path, model.needProducts);
+            }
             return await catService.Search(user, model.searchCriteria, model.path);
         }
     }

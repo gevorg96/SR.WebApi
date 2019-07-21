@@ -29,11 +29,21 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<SalesViewModel>> GetSales([FromBody] SalesRequestViewModel model)
+        public async Task<IEnumerable<SalesViewModel>> GetSales(int? shopId, DateTime? from, DateTime? to, bool orderByDesc = true)
         {
+            if (shopId == null)
+            {
+                throw new Exception("Необходимо выбрать магазин.");
+            }
+            if (!from.HasValue || !to.HasValue)
+            {
+                from = DateTime.Now.AddMonths(-1);
+                to = DateTime.Now;
+            }
+
             var user = _userRepo.GetByLogin(User.Identity.Name);
-            var sales = await _service.GetSales(user.UserId, model.shopId ?? 0, model.from, model.to);
-            return model.orderByDesc ? sales.OrderByDescending(p => p.reportDate) : sales.OrderBy(p => p.reportDate);
+            var sales = await _service.GetSales(user.UserId, shopId ?? 0, from.Value, to.Value);
+            return orderByDesc ? sales.OrderByDescending(p => p.reportDate) : sales.OrderBy(p => p.reportDate);
         }
     }
 }
