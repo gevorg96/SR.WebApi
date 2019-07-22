@@ -18,11 +18,16 @@ namespace SmartRetail.App.DAL.Repository
             conn = connection;
         }
 
-        //public Task Add(Orders entity)
-        //{
-        //    var sql = "insert into Orders (prod_id, cost_id, count, stock_sale, report_date) values( {0}, {1}, {2}, {3}, {4})";
-        //    return new Task(()=> 2*2);
-        //}
+        public async Task AddOrderAsync(Orders entity)
+        {
+            var sql = "insert into Orders (prod_id, cost, count, report_date) values(" + 
+                entity.prod_id +", " + entity.cost + ", " + entity.count + ", '" + entity.report_date.Value.ToString("MM.dd.yyyy HH:mm:ss") + "')";
+            using (var db = new SqlConnection(conn))
+            {
+                db.Open();
+                await db.ExecuteAsync(sql);
+            }
+        }
 
         public async Task<IEnumerable<Orders>> GetOrdersByProdId(int prodId)
         {

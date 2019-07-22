@@ -8,7 +8,7 @@ namespace SmartRetail.App.DAL.Repository
     public interface ISalesRepository
     {
         IEnumerable<Sales> GetSalesByShopAndReportDate(int shopId, DateTime from, DateTime to);
-        void AddSales(Sales sales);
-
+        Task AddSalesAsync(Sales sales);
+        Task<IEnumerable<Sales>> GetSalesByProdIdAndBill(int billNumber, int prodId);
     }
 }

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Validation;
 using SmartRetail.App.Web.Models.ViewModel;
+using SmartRetail.App.Web.Models.ViewModel.Sales;
 
 namespace SmartRetail.App.Web.Models.Service
 {
@@ -18,17 +20,37 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IProductRepository productRepo;
         private readonly IPriceRepository priceRepo;
         private readonly IImageRepository imgRepo;
+        private readonly IStrategy strategy;
         private ShopsChecker shopsChecker;
 
-        public SalesSerivce(string conn)
+        public SalesSerivce(IUserRepository userRepository, IShopRepository shopRepository, ISalesRepository salesRepository, IProductRepository productRepository,
+            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy strategy, ShopsChecker _shopsChecker)
         {
-            imgRepo = new ImagesRepository(conn);
-            userRepo = new UserRepository(conn);
-            shopRepo = new ShopRepository(conn);
-            salesRepo = new SalesRepository(conn);
-            productRepo = new ProductRepository(conn);
-            priceRepo = new PriceRepository(conn);
-            shopsChecker = new ShopsChecker(shopRepo, new BusinessRepository(conn));
+            imgRepo = imageRepository;
+            userRepo = userRepository;
+            shopRepo = shopRepository;
+            salesRepo = salesRepository;
+            productRepo = productRepository;
+            priceRepo = priceRepository;
+            shopsChecker = _shopsChecker;
+        }
+
+        public async Task AddSale(SalesCreateViewModel model)
+        {
+            var salesModels = model.products.Select(p => new Sales
+            {
+                prod_id = p.prodId,
+                shop_id = model.shopId,
+                report_date = model.reportDate,
+                bill_number = 1,
+                sales_count = p.count,
+                summ = priceRepo.GetPriceByProdAndShopIds(p.prodId, model.shopId).price * (1 - p.discount / 100) * p.count
+            });
+            foreach (var sale in salesModels)
+            {
+                await salesRepo.AddSalesAsync(sale);
+                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, sale, sale.prod_id, sale.shop_id.Value);
+            }
         }
 
         public async Task<IEnumerable<SalesViewModel>> GetSales(int userId, int shopId, DateTime from, DateTime to)

@@ -1,14 +1,10 @@
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using SmartRetail.App.DAL.Repository;
-using SmartRetail.App.Web.Models;
 using SmartRetail.App.Web.Models.Interface;
-using SmartRetail.App.Web.Models.Validation;
 using SmartRetail.App.Web.Models.ViewModel;
-using SmartRetail.App.Web.Models.ViewModel.Products;
 using SmartRetail.App.Web.ViewModels;
 
 namespace SmartRetail.App.Web.Controllers
@@ -21,21 +17,25 @@ namespace SmartRetail.App.Web.Controllers
     {
         private readonly IStockService _service;
         private readonly IUserRepository _userRepo;
-        
-        public StocksController(IStockService service, IUserRepository userRepo)
+        private readonly IShopSerivce _shopService;
+
+        public StocksController(IStockService service, IUserRepository userRepo, IShopSerivce shopSerivce)
         {
             _service = service;
             _userRepo = userRepo;
+            _shopService = shopSerivce;
         }
         
         [HttpGet]
         public FilteredProductViewModel GetProducts(int? page = 1, int? limit = 10, string name = null, string color = null, string size = null, int? shopId = null)
         {
+            var user = _userRepo.GetByLogin(User.Identity.Name);
+
             if (shopId == null)
             {
-                throw new System.Exception("Необходимо выбрать склад.");
+                var shops = _shopService.GetStocks(user);
+                shopId = shops.FirstOrDefault()?.id;
             }
-            var user = _userRepo.GetByLogin(User.Identity.Name);
             var stocks = _service.GetStocks(user, shopId);
             if (stocks == null || !stocks.Any())
             {

@@ -14,6 +14,8 @@ using SmartRetail.App.Web.Models.Service;
 using SmartRetail.App.Web.Models.Validation;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.DAL.BLL.StructureFillers;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using SmartRetail.App.DAL.BLL.Utils;
 
 namespace SmartRetail.App.Web
 {
@@ -93,18 +95,26 @@ namespace SmartRetail.App.Web
       
             services.AddTransient<ImageDataService>();
             services.AddTransient<ShopsChecker>();
+            services.AddTransient<IStrategy, FifoStrategy>();
+            services.AddTransient<ITreeFiller, CathegoryTreeFiller>(o => new CathegoryTreeFiller(conn));
 
             services.AddTransient<IShopSerivce, ShopSerivce>();
             services.AddTransient<IInformationService, MainService>(o => new MainService(conn));
             services.AddTransient<IProductService, ProductService>();
-            services.AddTransient<ISalesService, SalesSerivce>(o => new SalesSerivce(conn));
+            services.AddTransient<ISalesService, SalesSerivce>();
             services.AddTransient<IStockService, StockService>();
             services.AddTransient<IExpensesService, ExpensesService>();
-            services.AddTransient<ITreeFiller, CathegoryTreeFiller>(o => new CathegoryTreeFiller(conn));
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IUnitService, UnitService>();
-            
+           
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -124,13 +134,26 @@ namespace SmartRetail.App.Web
 
             app.UseHttpsRedirection();
             app.UseDefaultFiles();
-            app.UseStaticFiles();
             app.UseAuthentication();
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                }
             });
         }
     }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.Helpers;
+using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -15,6 +16,17 @@ namespace SmartRetail.App.DAL.Repository
         {
             conn = connection;
         }
+
+        public async Task AddOrderStockAsync(OrderStock entity)
+        {
+            var sql = "insert into OrderStock (order_id, prod_id, curr_stocks) values (" + entity.order_id + ", " + entity.prod_id + ", " + entity.curr_stocks + ")";
+            using (var db = new SqlConnection(conn))
+            {
+                db.Open();
+                await db.ExecuteAsync(sql);
+            }
+        }
+
         public async Task<IEnumerable<OrderStock>> GetOrderStocksByProdId(int prodId)
         {
             var sql = "select * from OrderStock where prod_id = " + prodId;
@@ -50,6 +62,16 @@ namespace SmartRetail.App.DAL.Repository
                         return orderStock;
                     }, splitOn: "id");
                 return orderStocks.AsList();
+            }
+        }
+
+        public async Task UpdateOrderStockAsync(OrderStock entity)
+        {
+            var sql = "update OrderStock set curr_stocks = " + isNotNull(entity.curr_stocks) + " where id = " + entity.id;
+            using (var db = new SqlConnection(conn))
+            {
+                db.Open();
+                await db.ExecuteAsync(sql);
             }
         }
     }

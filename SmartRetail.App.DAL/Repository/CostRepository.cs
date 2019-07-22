@@ -4,6 +4,8 @@ using System.Data.SqlClient;
 using Dapper;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -32,6 +34,16 @@ namespace SmartRetail.App.DAL.Repository
             {
                 db.Open();
                 return db.Query<Cost>(sql).FirstOrDefault();
+            }
+        }
+
+        public async Task UpdateCostValueAsync(Cost entity)
+        {
+            var sql = "update Cost set value = " + isNotNull(entity.value) + " where id = " + entity.id;
+            using (var db = new SqlConnection(conn))
+            {
+                db.Open();
+                await db.ExecuteAsync(sql);
             }
         }
 

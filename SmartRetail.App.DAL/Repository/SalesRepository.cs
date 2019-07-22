@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using SmartRetail.App.DAL.Entities;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
@@ -48,7 +49,7 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Create
 
-        public void AddSales(Sales sales)
+        public async Task AddSalesAsync(Sales sales)
         {
             var sql = "INSERT INTO Sales (prod_id, shop_id, report_date, bill_number, summ, sales_count, unit_id)" +
                       "values ( " + isNotNull(sales.prod_id) + ", " + isNotNull(sales.shop_id) + ", '" +
@@ -58,7 +59,17 @@ namespace SmartRetail.App.DAL.Repository
             using (var connection = new SqlConnection(conn))
             {
                 connection.Open();
-                connection.Execute(sql);
+                await connection.ExecuteAsync(sql);
+            }
+        }
+
+        public async Task<IEnumerable<Sales>> GetSalesByProdIdAndBill(int billNumber, int prodId)
+        {
+            var select = "select * from Sales where bill_number = " + billNumber + " and prod_id = " + prodId;
+            using (var db = new SqlConnection(conn))
+            {
+                db.Open();
+                return await db.QueryAsync<Sales>(select);
             }
         }
 

@@ -6,6 +6,6 @@ namespace SmartRetail.App.DAL.BLL.Utils
 {
     public interface IStrategy
     {
-        Task UpdateAverageCost(Direction direction, IEntity entity, int productId);
+        Task UpdateAverageCost(Direction direction, IEntity entity, int productId, int shopId);
     }
 }

@@ -1,14 +1,24 @@
-﻿import React from 'react';
-import { Route } from 'react-router';
-import Layout from './components/Layout';
-import Home from './components/Home';
-import Counter from './components/Counter';
-import FetchData from './components/FetchData';
+// @flow
+import React from 'react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './store';
+import { ToastContainer } from "react-toastify";
 
-export default () => (
-  <Layout>
-    <Route exact path='/' component={Home} />
-    <Route path='/counter' component={Counter} />
-    <Route path='/fetchdata/:startDateIndex?' component={FetchData} />
-  </Layout>
-);
+import './assets/_scss/main.scss';
+
+import Routes from './routes/index';
+
+const App = () => [
+  <Provider store={store} key="Provider">
+    <PersistGate loading={null} persistor={persistor}>
+      <Routes />
+    </PersistGate>
+  </Provider>,
+  <ToastContainer
+    key="ToastContainer"
+    autoClose={3000}
+  />
+];
+
+export default App;

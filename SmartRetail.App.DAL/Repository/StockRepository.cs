@@ -83,23 +83,16 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Create
 
-        public int Add(Stock entity)
+        public async Task AddAsync(Stock entity)
         {
             var sql = "INSERT INTO Stock (shop_id, prod_id, count) values(" + isNotNull(entity.shop_id) + ", " +
                       entity.prod_id +
                       ", " + isNotNull(entity.count) + ")";
-            var selectSql = "SELECT * FROM Stock WHERE prod_id = " + entity.prod_id;
+          
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                conn.Execute(sql);
-                var s = conn.Query<Stock>(selectSql).FirstOrDefault();
-                if (s != null)
-                {
-                    return s.id;
-                }
-
-                return 0;
+                await conn.ExecuteAsync(sql);
             }
         }
 
@@ -112,9 +105,14 @@ namespace SmartRetail.App.DAL.Repository
             return null;
         }
 
-        public Task UpdateValueAsync(Stock entity)
+        public async Task UpdateValueAsync(Stock entity)
         {
-            throw new System.NotImplementedException();
+            var sql = "update Stock set count = " + entity.count + " where id = " + entity.id;
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                await conn.ExecuteAsync(sql);
+            }
         }
 
 

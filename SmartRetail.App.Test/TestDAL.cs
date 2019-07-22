@@ -15,6 +15,7 @@ using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel.Products;
 using SmartRetail.App.Web.Models.ViewModel;
+using SmartRetail.App.DAL.BLL.Utils;
 
 namespace SmartRetail.App.Test
 {
@@ -33,7 +34,9 @@ namespace SmartRetail.App.Test
         private readonly IPriceRepository priceRepo;
         private readonly ICostRepository costRepo;
         private readonly IStockRepository stockRepo;
+        private readonly ISalesRepository salesRepo;
         private readonly IUserRepository userRepo;
+        private readonly IOrderRepository orderRepo;
         private readonly IOrderStockRepository orderStockRepo;
         private readonly ShopsChecker checker;
         private readonly IProductService prodService;
@@ -49,6 +52,8 @@ namespace SmartRetail.App.Test
             costRepo = new CostRepository(conn);
             stockRepo = new StockRepository(conn);
             userRepo = new UserRepository(conn);
+            orderRepo = new OrderRepository(conn);
+            salesRepo = new SalesRepository(conn);
             dbBase = new DropBoxBase("o9340xsv2mzn7ws", "xzky2fzfnmssik1");
             checker = new ShopsChecker(shopRepo,businessRepo);
             dbBase.GeneratedAuthenticationURL();
@@ -339,12 +344,12 @@ namespace SmartRetail.App.Test
                 sale.shop_id = product.shop_id;
                 sale.bill_number = i / 10 + b;
                 sale.summ = (decimal?)rnd.NextDouble() + 2000;
-                salesRepo.AddSales(sale);
+                salesRepo.AddSalesAsync(sale);
             }
         }
 
         [Fact]
-        public void AddStocks()
+        public async void AddStocks()
         {
             var stockRepo = new StockRepository(conn);
             var rnd = new Random();
@@ -356,7 +361,7 @@ namespace SmartRetail.App.Test
             {
                 s.prod_id = i;
                 s.count = rnd.Next(1, 20);
-                stockRepo.Add(s);
+                await stockRepo.AddAsync(s);
             }
         }
 
@@ -511,5 +516,51 @@ namespace SmartRetail.App.Test
             var result = await orderStockRepo.GetPureOrderStocksByProdId(1158);
         }
 
+
+        [Fact]
+        public async void TestFifoStrategyOrders()
+        {
+            var strategy = new FifoStrategy(prodRepo,orderStockRepo,stockRepo,costRepo);
+            var order = new Orders
+            {
+                prod_id = 1194,
+                cost = 1650,
+                count = 20,
+                report_date = new DateTime(2019, 7, 21)
+            };
+
+            await orderRepo.AddOrderAsync(order);
+            var orderDal = (await orderRepo.GetOrdersByProdId(1194)).OrderBy(p => p.id).Last();
+
+            await strategy.UpdateAverageCost(DAL.Helpers.Direction.Order, orderDal, 1194, 1);
+        }
+
+        //[Fact]
+        //public async void TestReccursiveUpdate()
+        //{
+        //    var strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
+        //    await strategy.UpdateOrderStockBySales(24, 1194);
+        //}
+
+        [Fact]
+        public async void TestFifoStrategySales()
+        {
+            var strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
+            var sales = new Sales
+            {
+                prod_id = 1194,
+                shop_id = 1,
+                report_date = DateTime.Now,
+                bill_number = 3,
+                summ = 3500,
+                sales_count = 35,
+                unit_id = 1
+            };
+
+            await salesRepo.AddSalesAsync(sales);
+            var salesDal = (await salesRepo.GetSalesByProdIdAndBill(sales.bill_number.Value, sales.prod_id)).OrderBy(p => p.id).Last();
+
+            await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, salesDal, 1194, 1);
+        }
     }
 }

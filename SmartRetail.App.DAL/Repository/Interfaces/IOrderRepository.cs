@@ -8,6 +8,6 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
     {
         Task<IEnumerable<Orders>> GetOrdersByProdId(int prodId);
         Task<IEnumerable<Orders>> GetOrdersByProdIds(IEnumerable<int> prodIds);
-        //Task Add(Orders entity);
+        Task AddOrderAsync(Orders entity);
     }
 }

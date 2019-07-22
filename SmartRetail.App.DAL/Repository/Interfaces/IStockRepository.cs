@@ -9,7 +9,7 @@ namespace SmartRetail.App.DAL.Repository
         IEnumerable<Stock> GetStocksWithProducts(int shopId);
         IEnumerable<Stock> GetStocksWithProductsByBusiness(int businessId);
         Stock GetStockByShopAndProdIds(int shopId, int prodId);
-        int Add(Stock entity);
+        Task AddAsync(Stock entity);
         Task UpdateAsync(Stock entity);
         Task UpdateValueAsync(Stock entity);
 
