@@ -80,6 +80,8 @@ namespace SmartRetail.App.Web
                 new PriceRepository(conn));
             services.AddTransient<IProductRepository, ProductRepository>(o =>
                 new ProductRepository(conn));
+            services.AddTransient<ISalesRepository, SalesRepository>(o =>
+                new SalesRepository(conn));
             services.AddTransient<IExpensesRepository, ExpensesRepository>(o =>
                 new ExpensesRepository(conn));
             services.AddTransient<ICostRepository, CostRepository>(o =>
@@ -90,6 +92,8 @@ namespace SmartRetail.App.Web
                 new StockRepository(conn));
             services.AddTransient<IUnitRepository, UnitRepository>(o =>
                 new UnitRepository(conn));
+            services.AddTransient<IOrderStockRepository, OrderStockRepository>(o =>
+                new OrderStockRepository(conn));
             services.AddTransient<IPictureWareHouse, DropBoxBase>(o =>
                 new DropBoxBase(apiKey, apiSecret));
       
