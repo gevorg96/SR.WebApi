@@ -82,5 +82,16 @@ namespace SmartRetail.App.DAL.Repository
                 return await db.QueryAsync<Orders>(sql);
             }
         }
+
+        public async Task<Orders> GetLastCancellationAsync(int shopId, int prodId, DateTime from, DateTime to)
+        {
+            var sql = "select * from Orders where shop_id = " + shopId + " and report_date between '" +
+               from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and count < 0";
+            using (var db = new SqlConnection(conn))
+            {
+                var res = await db.QueryAsync<Orders>(sql);
+                return res.AsList().FindLast(p => p.prod_id == prodId);
+            }
+        }
     }
 }

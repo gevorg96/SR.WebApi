@@ -12,6 +12,7 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
         Task<IEnumerable<Orders>> GetOrdersByShopId(int shopId, DateTime from, DateTime to);
         Task<Orders> GetLastOrderAsync(int shopId, int prodId, DateTime from, DateTime to);
         Task<IEnumerable<Orders>> GetCancellationsByShopId(int shopId, DateTime from, DateTime to);
+        Task<Orders> GetLastCancellationAsync(int shopId, int prodId, DateTime from, DateTime to);
         Task AddOrderAsync(Orders entity);
     }
 }

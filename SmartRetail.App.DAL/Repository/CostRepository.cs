@@ -29,11 +29,11 @@ namespace SmartRetail.App.DAL.Repository
 
         public Cost GetByProdAndShopIds(int prodId, int shopId)
         {
-            var sql = "select * from Cost where prod_id = " + prodId + " and shop_id = " + shopId;
+            var sql = "select * from Cost where prod_id = " + prodId;
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                return db.Query<Cost>(sql).FirstOrDefault();
+                return db.QueryFirstOrDefault<Cost>(sql);
             }
         }
 

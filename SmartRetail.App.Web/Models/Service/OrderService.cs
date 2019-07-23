@@ -17,7 +17,6 @@ namespace SmartRetail.App.Web.Models.Service
     {
         private readonly IOrderRepository orderRepo;
         private readonly IStrategy strategy;
-        private readonly IUserRepository userRepo;
         private readonly IShopRepository shopRepo;
         private readonly IProductRepository productRepo;
         private readonly IImageRepository imgRepo;
@@ -27,7 +26,6 @@ namespace SmartRetail.App.Web.Models.Service
             IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker)
         {
             imgRepo = imageRepository;
-            userRepo = userRepository;
             shopRepo = shopRepository;
             orderRepo = orderRepository;
             productRepo = productRepository;
@@ -100,7 +98,8 @@ namespace SmartRetail.App.Web.Models.Service
                         image = (await imgRepo.GetByIdAsync(item.prod_id)).img_url_temp,
                         name = prodDal.name,
                         price = item.cost,
-                        count = item.count
+                        count = item.count,
+                        vendorCode = prodDal.attr1
                     };
                     prod.totalPrice = prod.price * prod.count;
                     orderVm.products.Add(prod);

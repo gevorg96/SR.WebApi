@@ -113,7 +113,7 @@ namespace SmartRetail.App.Web
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IUnitService, UnitService>();
             services.AddTransient<IOrderService, OrderService>();
-           
+            services.AddTransient<ICancellationService, CancellationService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

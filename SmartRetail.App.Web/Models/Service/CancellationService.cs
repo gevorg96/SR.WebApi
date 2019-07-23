@@ -16,25 +16,42 @@ namespace SmartRetail.App.Web.Models.Service
     {
         private readonly IOrderRepository orderRepo;
         private readonly IStrategy strategy;
-        private readonly IUserRepository userRepo;
         private readonly IShopRepository shopRepo;
         private readonly IProductRepository productRepo;
         private readonly IImageRepository imgRepo;
+        private readonly ICostRepository costRepo;
         private ShopsChecker shopsChecker;
 
         public CancellationService(IUserRepository userRepository, IShopRepository shopRepository, IOrderRepository orderRepository, IProductRepository productRepository,
-            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker)
+            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ICostRepository costRepository, ShopsChecker _shopsChecker)
         {
             imgRepo = imageRepository;
-            userRepo = userRepository;
             shopRepo = shopRepository;
             orderRepo = orderRepository;
             productRepo = productRepository;
             shopsChecker = _shopsChecker;
             strategy = _strategy;
+            costRepo = costRepository;
         }
 
-        public IShopRepository ShopRepo => shopRepo;
+        public async Task AddCancellations(OrderCreateViewModel model)
+        {
+            var cancels = model.products.Select(p => new Orders
+            {
+                prod_id = p.id,
+                cost = 0,
+                count = -p.count,
+                report_date = model.reportDate,
+                shop_id = model.shopId
+            });
+
+            foreach (var cancel in cancels)
+            {
+                await orderRepo.AddOrderAsync(cancel);
+                var cancelDal = await orderRepo.GetLastCancellationAsync(cancel.shop_id.Value, cancel.prod_id, model.reportDate.AddSeconds(-1), model.reportDate);
+                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Cancellation, cancelDal, cancelDal.prod_id, cancelDal.shop_id.Value);
+            }
+        }
 
         public async Task<IEnumerable<OrderViewModel>> GetCancellations(UserProfile user, DateTime from, DateTime to, int shopId)
         {
@@ -76,13 +93,15 @@ namespace SmartRetail.App.Web.Models.Service
                 foreach (var item in group)
                 {
                     var prodDal = await productRepo.GetByIdAsync(item.prod_id);
+                    var costDal = costRepo.GetByProdAndShopIds(item.prod_id, item.shop_id.Value);
                     var prod = new OrderRowViewModel
                     {
                         id = item.id,
                         image = (await imgRepo.GetByIdAsync(item.prod_id)).img_url_temp,
                         name = prodDal.name,
-                        price = item.cost,
-                        count = item.count
+                        price = costDal.value,
+                        count = -item.count,
+                        vendorCode = prodDal.attr1
                     };
                     prod.totalPrice = prod.price * prod.count;
                     orderVm.products.Add(prod);
