@@ -68,7 +68,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
 
         private async Task CancellationStrategy(Orders cancel, int productId, int shopId)
         {
-            var count = -(decimal)cancel.count;
+            var count = -cancel.count;
             await UpdateOrderStockBySales(count, productId);
             await UpdateCostAndStocks(productId, shopId);
         }

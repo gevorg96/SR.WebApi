@@ -1,6 +1,5 @@
 ﻿using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.DAL.Helpers;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SmartRetail.App.Web.Models.Service
 {
-    public class OrderService: IOrderService
+    public class CancellationService : ICancellationService
     {
         private readonly IOrderRepository orderRepo;
         private readonly IStrategy strategy;
@@ -23,7 +22,7 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IImageRepository imgRepo;
         private ShopsChecker shopsChecker;
 
-        public OrderService(IUserRepository userRepository, IShopRepository shopRepository, IOrderRepository orderRepository, IProductRepository productRepository,
+        public CancellationService(IUserRepository userRepository, IShopRepository shopRepository, IOrderRepository orderRepository, IProductRepository productRepository,
             IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker)
         {
             imgRepo = imageRepository;
@@ -35,26 +34,9 @@ namespace SmartRetail.App.Web.Models.Service
             strategy = _strategy;
         }
 
-        public async Task AddOrder(OrderCreateViewModel model)
-        {
-            var orders = model.products.Select(p => new Orders
-            {
-                prod_id = p.id,
-                cost = p.price,
-                count = p.count,
-                report_date = model.reportDate,
-                shop_id = model.shopId
-            });
+        public IShopRepository ShopRepo => shopRepo;
 
-            foreach (var order in orders)
-            {
-                await orderRepo.AddOrderAsync(order);
-                var orderDal = await orderRepo.GetLastOrderAsync(order.shop_id.Value, order.prod_id, model.reportDate.AddSeconds(-1), model.reportDate);
-                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Order, orderDal, orderDal.prod_id, orderDal.shop_id.Value);
-            }
-        }
-
-        public async Task<IEnumerable<OrderViewModel>> GetOrders(UserProfile user, DateTime from, DateTime to, int shopId)
+        public async Task<IEnumerable<OrderViewModel>> GetCancellations(UserProfile user, DateTime from, DateTime to, int shopId)
         {
             IEnumerable<Shop> shops = new List<Shop>();
             var orders = new List<OrderViewModel>();
@@ -81,7 +63,7 @@ namespace SmartRetail.App.Web.Models.Service
 
             foreach (var shop in shops)
             {
-                ordersDal.AddRange(await orderRepo.GetOrdersByShopId(shop.id, from, to));
+                ordersDal.AddRange(await orderRepo.GetCancellationsByShopId(shop.id, from, to));
             }
 
             var orderGroups = ordersDal.GroupBy(p => p.report_date).OrderByDescending(p => p.Key);
