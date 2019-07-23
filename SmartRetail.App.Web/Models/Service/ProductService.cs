@@ -103,7 +103,7 @@ namespace SmartRetail.App.Web.Models.Service
                     foreach (var productViewModel in pics)
                     {
                         var product = await prodRepo.GetByIdAsync(productViewModel.Id);
-                        var img = imgRepo.GetById(product.id);
+                        var img = await imgRepo.GetByIdAsync(product.id);
                         prodGroup.Products.Add(new ProductViewModel
                         {
                             Id = product.id,
@@ -161,7 +161,7 @@ namespace SmartRetail.App.Web.Models.Service
                 foreach (var productViewModel in pics)
                 {
                     var product = await prodRepo.GetByIdAsync(productViewModel.Id);
-                    var img = imgRepo.GetById(product.id);
+                    var img = await imgRepo.GetByIdAsync(product.id);
                     prodGroup.Products.Add(new ProductViewModel
                     {
                         Id = product.id,
@@ -230,7 +230,7 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 return new ProductViewModel();
             }
-            var img = imgRepo.GetById(id);
+            var img = await imgRepo.GetByIdAsync(id);
             var prodVm = new ProductViewModel
             {
                 Id = product.id,

@@ -24,7 +24,7 @@ namespace SmartRetail.App.Web.Models.Service
         private ShopsChecker shopsChecker;
 
         public SalesSerivce(IUserRepository userRepository, IShopRepository shopRepository, ISalesRepository salesRepository, IProductRepository productRepository,
-            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy strategy, ShopsChecker _shopsChecker)
+            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker)
         {
             imgRepo = imageRepository;
             userRepo = userRepository;
@@ -33,19 +33,30 @@ namespace SmartRetail.App.Web.Models.Service
             productRepo = productRepository;
             priceRepo = priceRepository;
             shopsChecker = _shopsChecker;
+            strategy = _strategy;
         }
 
         public async Task AddSale(SalesCreateViewModel model)
         {
-            var salesModels = model.products.Select(p => new Sales
+            var dtNow = model.reportDate;
+            var sales = salesRepo.GetSalesByShopAndReportDate(model.shopId, new DateTime(dtNow.Year, dtNow.Month, dtNow.Day), dtNow);
+            var bnumber = 1;
+            if (sales != null || sales.Any())
+            {
+                bnumber = sales.Max(p => p.bill_number).Value + 1;
+            }
+
+            var salesModels = await Task.WhenAll(model.products.Select(async p => new Sales
             {
                 prod_id = p.prodId,
                 shop_id = model.shopId,
                 report_date = model.reportDate,
-                bill_number = 1,
+                bill_number = bnumber,
                 sales_count = p.count,
-                summ = priceRepo.GetPriceByProdAndShopIds(p.prodId, model.shopId).price * (1 - p.discount / 100) * p.count
-            });
+                summ = p.summ,
+                unit_id = (await productRepo.GetByIdAsync(p.prodId)).unit_id
+            }));
+
             foreach (var sale in salesModels)
             {
                 await salesRepo.AddSalesAsync(sale);
@@ -109,7 +120,7 @@ namespace SmartRetail.App.Web.Models.Service
                         // заполняем информацию по продукту
                         productsVm.Add(new SalesProductViewModel
                         {
-                            imageUrl = imgRepo.GetById(s.prod_id)?.img_url_temp,
+                            imageUrl = (await imgRepo.GetByIdAsync(s.prod_id))?.img_url_temp,
                             ProdName = s.Product.name,
                             VendorCode = "",
                             Summ = s.summ ?? 0,

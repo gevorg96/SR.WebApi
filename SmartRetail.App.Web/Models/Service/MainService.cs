@@ -23,7 +23,7 @@ namespace SmartRetail.App.Web.Models
 
         public async Task<JObject> GetDailyData(int whouse)
         {
-            var urlPhoto = _imagesRepo.GetById(1166).img_url;
+            var urlPhoto = (await _imagesRepo.GetByIdAsync(1166)).img_url;
             var path = await dbClient.GetFileWithSharedLink(urlPhoto);
             var result = await dbClient.GetTempLink(path);
 
@@ -53,7 +53,7 @@ namespace SmartRetail.App.Web.Models
 
         public async Task<JObject> GetMonthData(int whouse)
         {
-            var urlPhoto = _imagesRepo.GetById(1166).img_url;
+            var urlPhoto = (await _imagesRepo.GetByIdAsync(1166)).img_url;
             var path = await dbClient.GetFileWithSharedLink(urlPhoto);
             var result = await dbClient.GetTempLink(path);
 

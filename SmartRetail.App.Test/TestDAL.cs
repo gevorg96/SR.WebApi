@@ -562,5 +562,22 @@ namespace SmartRetail.App.Test
 
             await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, salesDal, 1194, 1);
         }
+
+        [Fact]
+        public async void TestFifoStrategyCancellation()
+        {
+            var strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
+            var cancel = new Orders
+            {
+                prod_id = 1194,
+                cost = 0,
+                count = -3,
+                report_date = new DateTime(2019, 7, 22)
+            };
+            await orderRepo.AddOrderAsync(cancel);
+            var cancelDal = (await orderRepo.GetOrdersByProdId(1194)).OrderBy(p => p.id).Last();
+
+            await strategy.UpdateAverageCost(DAL.Helpers.Direction.Cancellation, cancelDal, 1194, 1);
+        }
     }
 }

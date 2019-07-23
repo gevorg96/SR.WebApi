@@ -3,6 +3,7 @@
     public enum Direction
     {
         Sale,
-        Order
+        Order,
+        Cancellation
     }
 }

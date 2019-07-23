@@ -21,11 +21,11 @@ namespace SmartRetail.App.DAL.Repository
             var sql = "";
             if (shopId.HasValue)
             {
-                sql = "SELECT * FROM Expenses WHERE business_id = @BusinessId AND shop_id = @ShopId and report_date between '" + from.ToString("MM.dd.yyyy") + "' and '" + to.ToString("MM.dd.yyyy") + "'";
+                sql = "SELECT * FROM Expenses WHERE business_id = @BusinessId AND shop_id = @ShopId and report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "'";
             }
             else
             {
-                sql = "SELECT * FROM Expenses WHERE business_id = @BusinessId and report_date between '" + from.ToString("MM.dd.yyyy") + "' and '" + to.ToString("MM.dd.yyyy") + "'";
+                sql = "SELECT * FROM Expenses WHERE business_id = @BusinessId and report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "'";
             }
 
             var subSql = "select * from ExpensesType where id = @TypeId";

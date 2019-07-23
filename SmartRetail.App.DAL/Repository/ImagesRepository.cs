@@ -29,12 +29,12 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public Images GetById(int id)
+        public async Task<Images> GetByIdAsync(int id)
         {
             string sql = "SELECT * FROM Images WHERE prod_id = @Id";
             using (var connection = new SqlConnection(connectionString))
             {
-                return connection.Query<Images>(sql, new {Id = id}).First();
+                return await connection.QueryFirstOrDefaultAsync<Images>(sql, new { Id = id });
             }
         }
 

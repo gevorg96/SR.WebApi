@@ -80,6 +80,8 @@ namespace SmartRetail.App.Web
                 new PriceRepository(conn));
             services.AddTransient<IProductRepository, ProductRepository>(o =>
                 new ProductRepository(conn));
+            services.AddTransient<IOrderRepository, OrderRepository>(o =>
+                new OrderRepository(conn));
             services.AddTransient<ISalesRepository, SalesRepository>(o =>
                 new SalesRepository(conn));
             services.AddTransient<IExpensesRepository, ExpensesRepository>(o =>
@@ -110,6 +112,7 @@ namespace SmartRetail.App.Web
             services.AddTransient<IExpensesService, ExpensesService>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IUnitService, UnitService>();
+            services.AddTransient<IOrderService, OrderService>();
            
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

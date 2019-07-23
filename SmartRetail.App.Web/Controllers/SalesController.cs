@@ -26,11 +26,11 @@ namespace SmartRetail.App.Web.Controllers
         private readonly IUserRepository userRepo;
         private HttpClient client;
 
-        public SalesController(ISalesService _service, IUserRepository _userRepo, IShopSerivce _shopSerivce)
+        public SalesController(ISalesService _service, IUserRepository _userRepo, IShopSerivce _shopService)
         {
             service = _service;
             userRepo = _userRepo;
-            shopService = _shopSerivce;
+            shopService = _shopService;
         }
 
         [HttpGet]
@@ -53,16 +53,26 @@ namespace SmartRetail.App.Web.Controllers
             return orderByDesc ? sales.OrderByDescending(p => p.reportDate) : sales.OrderBy(p => p.reportDate);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> AddSale([FromBody] SalesCreateViewModel model)
-        //{
-        //    var user = userRepo.GetByLogin(User.Identity.Name);
-        //    var shops = shopService.GetStocks(user).Select(p => p.id);
-            
-        //    if (shops.Contains(model.shopId))
-        //    {
+        [HttpPost]
+        public async Task<IActionResult> AddSale([FromBody] SalesCreateViewModel model)
+        {
+            var user = userRepo.GetByLogin(User.Identity.Name);
+            var shops = shopService.GetStocks(user).Select(p => p.id);
 
-        //    }
-        //}
+            if (shops.Contains(model.shopId))
+            {
+                try
+                {
+                    await service.AddSale(model);
+                    return Ok("Продажа добавлена.");
+                }
+                catch (Exception ex)
+                {
+                    return new UnprocessableEntityResult();
+                }
+            }
+
+            return BadRequest("Не выбран магазин/склад, либо выбран не тот :(");
+        }
     }
 }

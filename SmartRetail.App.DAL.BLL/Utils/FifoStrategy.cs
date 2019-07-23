@@ -15,7 +15,8 @@ namespace SmartRetail.App.DAL.BLL.Utils
         private readonly IStockRepository stockRepo;
         private readonly ICostRepository costRepo;
 
-        public FifoStrategy(IProductRepository productRepository, IOrderStockRepository orderStockRepository, IStockRepository stockRepository, ICostRepository costRepository)
+        public FifoStrategy(IProductRepository productRepository, IOrderStockRepository orderStockRepository, 
+            IStockRepository stockRepository, ICostRepository costRepository)
         {
             prodRepo = productRepository;
             orderStockRepo = orderStockRepository;
@@ -29,13 +30,18 @@ namespace SmartRetail.App.DAL.BLL.Utils
             {
                 case Direction.Sale:
                     var sale = entity as Sales;
-                    if (entity != null)
+                    if (sale != null)
                         await SaleStrategy(sale, productId, shopId);
                     break;
                 case Direction.Order:
                     var order = entity as Orders;
-                    if (entity != null)
+                    if (order != null)
                         await OrderStrategy(order, productId, shopId);
+                    break;
+                case Direction.Cancellation:
+                    var cancel = entity as Orders;
+                    if (cancel != null)
+                        await CancellationStrategy(cancel, productId, shopId);
                     break;
                 default:
                     break;
@@ -59,6 +65,14 @@ namespace SmartRetail.App.DAL.BLL.Utils
             await UpdateOrderStockBySales(sale.sales_count, productId);
             await UpdateCostAndStocks(productId, shopId);
         }
+
+        private async Task CancellationStrategy(Orders cancel, int productId, int shopId)
+        {
+            var count = -(decimal)cancel.count;
+            await UpdateOrderStockBySales(count, productId);
+            await UpdateCostAndStocks(productId, shopId);
+        }
+
 
         private async Task<decimal?> UpdateOrderStockBySales(decimal? salesCount, int prodId)
         {

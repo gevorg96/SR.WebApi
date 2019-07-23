@@ -25,7 +25,7 @@ namespace SmartRetail.App.DAL.Repository
             var dtStart = from;
             var dtEnd = to;
 
-            var sql = "select * from Sales where shop_id = " + shopId +" and report_date between '" + from.ToString("MM.dd.yyyy") + "' and '" + dtEnd.ToString("MM.dd.yyyy")  +"'";
+            var sql = "select * from Sales where shop_id = " + shopId +" and report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + dtEnd.ToString("MM.dd.yyyy HH:mm:ss")  +"'";
             var subSql = "select * from Product where id = @ProdId";
             var priceSelect = "select * from Price where prod_id = @ProdId";
 

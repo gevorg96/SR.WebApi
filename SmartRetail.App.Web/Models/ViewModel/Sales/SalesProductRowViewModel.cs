@@ -4,6 +4,6 @@
     {
         public int prodId { get; set; }
         public decimal count { get; set; }
-        public int discount { get; set; }
+        public int summ { get; set; }
     }
 }

@@ -60,7 +60,7 @@ namespace SmartRetail.App.Test
         {
             InitDropbox();
             var imgRepo = new ImagesRepository(conn);
-            var photo = imgRepo.GetById(1);
+            var photo = await  imgRepo.GetByIdAsync(1);
             var path = await dbBase.GetFileWithSharedLink(photo.img_url);
             var result = await dbBase.GetTempLink(path);
         }
@@ -81,7 +81,7 @@ namespace SmartRetail.App.Test
         {
             InitDropbox();
             var imgRepo = new ImagesRepository(conn);
-            var photo = imgRepo.GetById(1);
+            var photo = await imgRepo.GetByIdAsync(1);
             var path = await dbBase.GetFileWithSharedLink(photo.img_url);
             await dbBase.MoveFile(path, ChangePath(path));
         }
@@ -259,7 +259,7 @@ namespace SmartRetail.App.Test
 
             
             var p = prodrepo.GetByIdAsync(138);
-            var img = imgrepo.GetById(138);
+            var img = await imgrepo.GetByIdAsync(138);
             var imgpath = await dbBase.GetFilePath(img.img_url);
             var imgtailpath = string.Join('/',imgpath.Split('/').Skip(6));
 

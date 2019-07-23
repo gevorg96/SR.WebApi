@@ -20,14 +20,17 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task AddOrderAsync(Orders entity)
         {
-            var sql = "insert into Orders (prod_id, cost, count, report_date) values(" + 
-                entity.prod_id +", " + entity.cost + ", " + entity.count + ", '" + entity.report_date.Value.ToString("MM.dd.yyyy HH:mm:ss") + "')";
+            var sql = "insert into Orders (prod_id, cost, count, report_date, shop_id) values(" + 
+                entity.prod_id +", " + entity.cost + ", " + entity.count + ", '" + 
+                entity.report_date.Value.ToString("MM.dd.yyyy HH:mm:ss") + "', " +entity.shop_id + ");" ;
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
                 await db.ExecuteAsync(sql);
             }
         }
+
+
 
         public async Task<IEnumerable<Orders>> GetOrdersByProdId(int prodId)
         {
@@ -46,6 +49,27 @@ namespace SmartRetail.App.DAL.Repository
             {
                 db.Open();
                 return await db.QueryAsync<Orders>(sql);
+            }
+        }
+
+        public async Task<IEnumerable<Orders>> GetOrdersByShopId(int shopId, DateTime from, DateTime to)
+        {
+            var sql = "select * from Orders where shop_id = " + shopId + " and report_date between '" + 
+                from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and count > 0";
+            using (var db = new SqlConnection(conn))
+            {
+                return await db.QueryAsync<Orders>(sql);
+            }
+        }
+
+        public async Task<Orders> GetLastOrderAsync(int shopId, int prodId, DateTime from, DateTime to)
+        {
+            var sql = "select * from Orders where shop_id = " + shopId + " and report_date between '" +
+               from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and count > 0";
+            using (var db = new SqlConnection(conn))
+            {
+                var res = await db.QueryAsync<Orders>(sql);
+                return res.AsList().FindLast(p => p.prod_id == prodId);
             }
         }
     }
