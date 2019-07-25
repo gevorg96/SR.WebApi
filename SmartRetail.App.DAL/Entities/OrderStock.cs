@@ -6,7 +6,7 @@
         public int? order_id { get; set; }
         public int? prod_id { get; set; }
         public decimal? curr_stocks { get; set; }
-
+        public int shop_id { get; set; }
         public virtual Orders Order {get; set;}
     }
 }

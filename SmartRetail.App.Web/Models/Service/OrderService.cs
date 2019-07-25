@@ -38,7 +38,7 @@ namespace SmartRetail.App.Web.Models.Service
             var orders = model.products.Select(p => new Orders
             {
                 prod_id = p.id,
-                cost = p.price,
+                cost = p.price.Value,
                 count = p.count,
                 report_date = model.reportDate,
                 shop_id = model.shopId
@@ -47,8 +47,8 @@ namespace SmartRetail.App.Web.Models.Service
             foreach (var order in orders)
             {
                 await orderRepo.AddOrderAsync(order);
-                var orderDal = await orderRepo.GetLastOrderAsync(order.shop_id.Value, order.prod_id, model.reportDate.AddSeconds(-1), model.reportDate);
-                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Order, orderDal, orderDal.prod_id, orderDal.shop_id.Value);
+                var orderDal = await orderRepo.GetLastOrderAsync(order.shop_id, order.prod_id, model.reportDate.AddSeconds(-1), model.reportDate);
+                await strategy.UpdateAverageCost(Direction.Order, orderDal, orderDal.prod_id, orderDal.shop_id);
             }
         }
 
@@ -87,7 +87,7 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 var orderVm = new OrderViewModel
                 {
-                    reportDate = group.Key.Value
+                    reportDate = group.Key
                 };
                 foreach (var item in group)
                 {

@@ -14,7 +14,7 @@ namespace SmartRetail.App.DAL.Entities
 
         public virtual ICollection<Business> Businesses { get; set; }
         public virtual ICollection<Product> Product { get; set; }
-        public virtual ICollection<Sales> Sales { get; set; }
+        public virtual ICollection<Bills> Bills { get; set; }
         public virtual ICollection<Stock> Stock { get; set; }
         public virtual ICollection<UserProfile> Users { get; set; }
         public virtual Business Business { get; set; }

@@ -54,7 +54,8 @@ namespace SmartRetail.App.DAL.BLL.Utils
             {
                 order_id = order.id,
                 prod_id = order.prod_id,
-                curr_stocks = (decimal?)order.count
+                curr_stocks = order.count,
+                shop_id = shopId
             };
             await orderStockRepo.AddOrderStockAsync(orderStock);
 
@@ -62,21 +63,21 @@ namespace SmartRetail.App.DAL.BLL.Utils
         }
         private async Task SaleStrategy(Sales sale, int productId, int shopId)
         {
-            await UpdateOrderStockBySales(sale.sales_count, productId);
+            await UpdateOrderStockBySales(sale.count, productId, shopId);
             await UpdateCostAndStocks(productId, shopId);
         }
 
         private async Task CancellationStrategy(Orders cancel, int productId, int shopId)
         {
             var count = -(cancel.count);
-            await UpdateOrderStockBySales(count, productId);
+            await UpdateOrderStockBySales(count, productId, shopId);
             await UpdateCostAndStocks(productId, shopId);
         }
 
 
-        private async Task<decimal?> UpdateOrderStockBySales(decimal? salesCount, int prodId)
+        private async Task<decimal?> UpdateOrderStockBySales(decimal? salesCount, int prodId, int shopId)
         {
-            var pureOrderStocks = await orderStockRepo.GetPureOrderStocksByProdId(prodId);
+            var pureOrderStocks = await orderStockRepo.GetPureOrderStocksByProdAndShopIds(prodId, shopId);
             if (pureOrderStocks.Any())
             {
                 var item = pureOrderStocks.FirstOrDefault();
@@ -93,7 +94,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
                     {
                         item.curr_stocks = 0;
                         await orderStockRepo.UpdateOrderStockAsync(item);
-                        return await UpdateOrderStockBySales(temporary, prodId);
+                        return await UpdateOrderStockBySales(temporary, prodId, shopId);
                     }
                 }
             }
@@ -112,13 +113,29 @@ namespace SmartRetail.App.DAL.BLL.Utils
                 multipleSum += item.curr_stocks * (item.Order != null ? item.Order.cost : 0);
                 count += item.curr_stocks;
             }
-            var averageCost = multipleSum / count;
+            decimal? averageCost = 0;
+            if (count != 0)
+            {
+                averageCost = multipleSum / count;
+
+            }
 
             var cost = costRepo.GetByProdId(productId).FirstOrDefault();
-            cost.value = averageCost;
-
-            await costRepo.UpdateCostValueAsync(cost);
-
+            if (cost != null)
+            {
+                cost.value = averageCost;
+                await costRepo.UpdateCostValueAsync(cost);
+            }
+            else
+            {
+                var c = new Cost
+                {
+                    prod_id = productId,
+                    value = averageCost
+                };
+                await costRepo.AddCostAsync(c);
+            }
+            
             var stockDal = stockRepo.GetStockByShopAndProdIds(shopId, productId);
             if (stockDal != null)
             {

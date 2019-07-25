@@ -22,7 +22,7 @@ namespace SmartRetail.App.DAL.Repository
         {
             var sql = "insert into Orders (prod_id, cost, count, report_date, shop_id) values(" + 
                 entity.prod_id +", " + entity.cost + ", " + entity.count + ", '" + 
-                entity.report_date.Value.ToString("MM.dd.yyyy HH:mm:ss") + "', " +entity.shop_id + ");" ;
+                entity.report_date.ToString("MM.dd.yyyy HH:mm:ss") + "', " +entity.shop_id + ");" ;
             using (var db = new SqlConnection(conn))
             {
                 db.Open();

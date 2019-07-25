@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.BLL.DataServices;
+using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.DropBox;
 using SmartRetail.App.DAL.Entities;
+using SmartRetail.App.DAL.Helpers;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
@@ -33,6 +35,8 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IPriceRepository priceRepo;
         private readonly ICostRepository costRepo;
         private readonly IStockRepository stockRepo;
+        private readonly IOrderRepository orderRepo;
+        private readonly IStrategy strategy;
         private readonly ShopsChecker checker;
         private const string dropboxBasePath = "/dropbox/dotnetapi/products";
 
@@ -41,7 +45,7 @@ namespace SmartRetail.App.Web.Models.Service
         #region Constructor
         public ProductService(IShopRepository _shopRepo, IBusinessRepository _businessRepo, IImageRepository _imgRepo, 
             IPictureWareHouse _dbBase, IProductRepository _prodRepo, IUnitRepository _unitRepo, IPriceRepository _priceRepo,
-            ShopsChecker _checker, ICostRepository _costRepo, IStockRepository _stockRepo)
+            ShopsChecker _checker, ICostRepository _costRepo, IStockRepository _stockRepo, IOrderRepository orderRepository, IStrategy _strategy)
         {
             shopRepo = _shopRepo;
             businessRepo = _businessRepo;
@@ -51,6 +55,8 @@ namespace SmartRetail.App.Web.Models.Service
             priceRepo = _priceRepo;
             costRepo = _costRepo;
             stockRepo = _stockRepo;
+            orderRepo = orderRepository;
+            strategy = _strategy;
             dbBase = _dbBase;
             checker = _checker;
             dbBase.GeneratedAuthenticationURL();
@@ -268,18 +274,27 @@ namespace SmartRetail.App.Web.Models.Service
             //add price link
             prod.Prices.Add(new Price { price = product.Price });
 
-            //add cost link
-            prod.Cost.Add(new Cost { value = product.Cost });
+            //add with repo
+            var pId = prodRepo.AddProduct(prod);
 
             //add stock link
             foreach (var pair in product.Stocks)
             {
                 prod.Stock.Add(new Stock { count = pair.Stock, shop_id = pair.ShopId });
+                var dt = DateTime.Now;
+                var order = new Orders
+                {
+                    prod_id = pId,
+                    cost = product.Cost.Value,
+                    count = pair.Stock,
+                    report_date = dt,
+                    shop_id = pair.ShopId
+                };
+                await orderRepo.AddOrderAsync(order);
+                var orderDal = await orderRepo.GetLastOrderAsync(order.shop_id, order.prod_id, dt.AddSeconds(-1), dt);
+                await strategy.UpdateAverageCost(Direction.Order, orderDal, orderDal.prod_id, orderDal.shop_id);
             }
-            
 
-            //add with repo
-            var pId = prodRepo.AddProduct(prod);
             var bytes = Convert.FromBase64String(product.ImgBase64);
             var contents = new MemoryStream(bytes);
             //var path = product.Category + "/" + pId + "." + product.ProdName + ".jpg";

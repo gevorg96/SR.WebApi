@@ -48,8 +48,8 @@ namespace SmartRetail.App.Web.Models.Service
             foreach (var cancel in cancels)
             {
                 await orderRepo.AddOrderAsync(cancel);
-                var cancelDal = await orderRepo.GetLastCancellationAsync(cancel.shop_id.Value, cancel.prod_id, model.reportDate.AddSeconds(-1), model.reportDate);
-                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Cancellation, cancelDal, cancelDal.prod_id, cancelDal.shop_id.Value);
+                var cancelDal = await orderRepo.GetLastCancellationAsync(cancel.shop_id, cancel.prod_id, model.reportDate.AddSeconds(-1), model.reportDate);
+                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Cancellation, cancelDal, cancelDal.prod_id, cancelDal.shop_id);
             }
         }
 
@@ -88,12 +88,12 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 var orderVm = new OrderViewModel
                 {
-                    reportDate = group.Key.Value
+                    reportDate = group.Key
                 };
                 foreach (var item in group)
                 {
                     var prodDal = await productRepo.GetByIdAsync(item.prod_id);
-                    var costDal = costRepo.GetByProdAndShopIds(item.prod_id, item.shop_id.Value);
+                    var costDal = costRepo.GetByProdAndShopIds(item.prod_id, item.shop_id);
                     var prod = new OrderRowViewModel
                     {
                         id = item.id,

@@ -111,8 +111,6 @@ namespace SmartRetail.App.DAL.Repository
                 isNotNull(entity.attr7), isNotNull(entity.attr8), isNotNull(entity.attr9), isNotNull(entity.attr10), isNotNull(entity.unit_id));
 
             string priceSql = "INSERT INTO Price (prod_id, price, shop_id) VALUES (@prodId, @Price, @shopId)";
-            string costSql = "INSERT INTO Cost (prod_id, value, shop_id) VALUES (@prodId, @Value, @shopId)";
-            string stockSql = "INSERT INTO Stock (shop_id, prod_id, count) VALUES(@shopId, @prodId, @Count)";
 
             var selectSql = "SELECT * FROM Product WHERE business_id = " + entity.business_id + " AND name = N'" + entity.name + "'";
 
@@ -132,23 +130,6 @@ namespace SmartRetail.App.DAL.Repository
                             connection.Execute(priceSql,
                                 new { prodId = id, Price = price.price, shopId = entity.shop_id });
                         }
-
-                        var cost = entity.Cost.FirstOrDefault();
-                        if (cost != null && cost?.value != null)
-                        {
-                            connection.Execute(costSql,
-                                new { prodId = id, Value = cost.value, shopId = entity.shop_id });
-                        }
-
-                        foreach (var stock in entity.Stock)
-                        {
-                            if (entity.Stock != null && stock?.count != null)
-                            {
-                                connection.Execute(stockSql,
-                                    new { shopId = stock.shop_id, prodId = id, Count = stock.count });
-                            }
-                        }
-
                         return id;
                     }
 

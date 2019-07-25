@@ -9,5 +9,6 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
         IEnumerable<Cost> GetByProdId(int prodId);
         Cost GetByProdAndShopIds(int prodId, int shopId);
         Task UpdateCostValueAsync(Cost entity);
+        Task AddCostAsync(Cost entity);
     }
 }

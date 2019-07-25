@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Validation;
 using SmartRetail.App.Web.Models.ViewModel;
@@ -16,6 +17,7 @@ namespace SmartRetail.App.Web.Models.Service
     {
         private readonly IUserRepository userRepo;
         private readonly IShopRepository shopRepo;
+        private readonly IBillsRepository billsRepo;
         private readonly ISalesRepository salesRepo;
         private readonly IProductRepository productRepo;
         private readonly IPriceRepository priceRepo;
@@ -23,12 +25,13 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IStrategy strategy;
         private ShopsChecker shopsChecker;
 
-        public SalesSerivce(IUserRepository userRepository, IShopRepository shopRepository, ISalesRepository salesRepository, IProductRepository productRepository,
+        public SalesSerivce(IUserRepository userRepository, IShopRepository shopRepository, IBillsRepository billsRepository, ISalesRepository salesRepository, IProductRepository productRepository,
             IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker)
         {
             imgRepo = imageRepository;
             userRepo = userRepository;
             shopRepo = shopRepository;
+            billsRepo = billsRepository;
             salesRepo = salesRepository;
             productRepo = productRepository;
             priceRepo = priceRepository;
@@ -36,32 +39,39 @@ namespace SmartRetail.App.Web.Models.Service
             strategy = _strategy;
         }
 
-        public async Task AddSale(SalesCreateViewModel model)
+        public async Task<int> AddSale(SalesCreateViewModel model)
         {
-            var dtNow = model.reportDate;
-            var sales = salesRepo.GetSalesByShopAndReportDate(model.shopId, new DateTime(dtNow.Year, dtNow.Month, dtNow.Day), dtNow);
-            var bnumber = 1;
-            if (sales != null || sales.Any())
+            var bill = new Bills
             {
-                bnumber = sales.Max(p => p.bill_number).Value + 1;
-            }
-
-            var salesModels = await Task.WhenAll(model.products.Select(async p => new Sales
+                shop_id = model.shopId,
+                sum = model.totalSum,
+                report_date = model.reportDate
+            };
+            bill.Sales = (await Task.WhenAll(model.products.Select(async p => new Sales
             {
                 prod_id = p.prodId,
-                shop_id = model.shopId,
-                report_date = model.reportDate,
-                bill_number = bnumber,
-                sales_count = p.count,
-                summ = p.summ,
+                count = p.count,
+                sum = p.summ,
                 unit_id = (await productRepo.GetByIdAsync(p.prodId)).unit_id
-            }));
+            }))).ToList();
 
-            foreach (var sale in salesModels)
+            var billId = await billsRepo.AddBillAsync(bill);
+            foreach (var sale in bill.Sales)
             {
-                await salesRepo.AddSalesAsync(sale);
-                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, sale, sale.prod_id, sale.shop_id.Value);
+                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, sale, sale.prod_id, model.shopId);
             }
+            return billId;
+        }
+
+        public async Task<SalesViewModel> GetBill(UserProfile user, int billId)
+        {
+            var bill = await billsRepo.GetByIdAsync(billId);
+            if (bill == null)
+            {
+                return new SalesViewModel();
+            }
+            var sales = await GetSales(user.UserId, bill.shop_id, bill.report_date.AddSeconds(-1), bill.report_date.AddSeconds(1));
+            return sales.FirstOrDefault(p => p.id == billId);
         }
 
         public async Task<IEnumerable<SalesViewModel>> GetSales(int userId, int shopId, DateTime from, DateTime to)
@@ -93,63 +103,102 @@ namespace SmartRetail.App.Web.Models.Service
 
             foreach (var shop in shops)
             {
-                shop.Sales = salesRepo.GetSalesByShopAndReportDate(shop.id, from, to).ToList();
+                shop.Bills = (await billsRepo.GetBillsWithSales(shop.id, from, to)).ToList();
             }
 
             foreach (var shop in shops)
             {
-                var sales = shop.Sales;
+                var bills = shop.Bills;
 
-                // группируем по чекам
-                var groupedSales = sales.GroupBy(p => p.bill_number).ToList();
-                foreach (var sale in groupedSales)
+                foreach (var bill in bills)
                 {
                     decimal totalSum = 0;
-                    decimal totalSumFirst = 0;
-                    decimal discount = 0;
                     
+                    decimal discount = 0;
+
                     var productsVm = new List<SalesProductViewModel>();
                     var products = new List<Product>();
-                    
-                    // итерируемся по продажам в чеке
-                    foreach (var s in sale)
-                    {
-                        totalSum += s.summ ?? 0;
-                        var prod = await productRepo.GetByIdAsync(s.prod_id);
 
-                        // заполняем информацию по продукту
+                    foreach (var sale in bill.Sales)
+                    {
                         productsVm.Add(new SalesProductViewModel
                         {
-                            imageUrl = (await imgRepo.GetByIdAsync(s.prod_id))?.img_url_temp,
-                            ProdName = s.Product.name,
+                            imageUrl = (await imgRepo.GetByIdAsync(sale.prod_id))?.img_url_temp,
+                            ProdName = sale.Product.name,
                             VendorCode = "",
-                            Summ = s.summ ?? 0,
-                            Count = s.sales_count ?? 0,
-                            Price = s.Product?.Price?.price
-                            //Price = s.summ.HasValue && s.sales_count.HasValue ? (decimal)(s.summ/s.sales_count) : 0
+                            Summ = sale.sum*sale.count,
+                            Count = sale.count,
+                            Price = sale.Product?.Price?.price
+                            
                         });
-                        products.Add(prod);
-                        
-                        // вытаскиваем цену
-                        var price = priceRepo.GetPriceByProdId(s.prod_id);
-                        if (price?.price == null) continue;
-                        if (s.sales_count != null)
-                            totalSumFirst += price.price.Value * s.sales_count.Value;
+                        if (sale.Product.Price != null && sale.Product.Price.price.HasValue)
+                        {
+                            totalSum += sale.Product.Price.price.Value * sale.count;
+                        }
                     }
 
-                    discount = totalSumFirst != 0 ? Math.Ceiling((1 - totalSum / totalSumFirst) * 100) : 0;
-                    
+                    discount = totalSum != 0 ? Math.Ceiling((1 - bill.sum / totalSum) * 100) : 0;
                     var saleVm = new SalesViewModel
-                    {   
-                        billNumber = sale.Key.Value,
-                        reportDate = sale.First().report_date,
+                    {
+                        id = bill.id,
+                        reportDate = bill.report_date,
                         products = productsVm,
-                        totalSum = totalSum,
+                        totalSum = bill.sum,
                         discount = discount < 0 ? 0 : discount
                     };
                     salesVm.Add(saleVm);
-
                 }
+
+                // группируем по чекам
+                //var groupedSales = sales.GroupBy(p => p.bill_number).ToList();
+                //foreach (var sale in groupedSales)
+                //{
+                //    decimal totalSum = 0;
+                //    decimal totalSumFirst = 0;
+                //    decimal discount = 0;
+
+                //    var productsVm = new List<SalesProductViewModel>();
+                //    var products = new List<Product>();
+
+                //    // итерируемся по продажам в чеке
+                //    foreach (var s in sale)
+                //    {
+                //        totalSum += s.summ ?? 0;
+                //        var prod = await productRepo.GetByIdAsync(s.prod_id);
+
+                //        // заполняем информацию по продукту
+                //        productsVm.Add(new SalesProductViewModel
+                //        {
+                //            imageUrl = (await imgRepo.GetByIdAsync(s.prod_id))?.img_url_temp,
+                //            ProdName = s.Product.name,
+                //            VendorCode = "",
+                //            Summ = s.summ ?? 0,
+                //            Count = s.sales_count ?? 0,
+                //            Price = s.Product?.Price?.price
+                //            //Price = s.summ.HasValue && s.sales_count.HasValue ? (decimal)(s.summ/s.sales_count) : 0
+                //        });
+                //        products.Add(prod);
+
+                //        // вытаскиваем цену
+                //        var price = priceRepo.GetPriceByProdId(s.prod_id);
+                //        if (price?.price == null) continue;
+                //        if (s.sales_count != null)
+                //            totalSumFirst += price.price.Value * s.sales_count.Value;
+                //    }
+
+                //    discount = totalSumFirst != 0 ? Math.Ceiling((1 - totalSum / totalSumFirst) * 100) : 0;
+
+                //    var saleVm = new SalesViewModel
+                //    {   
+                //        id = sale.Key.Value,
+                //        reportDate = sale.First().report_date,
+                //        products = productsVm,
+                //        totalSum = totalSum,
+                //        discount = discount < 0 ? 0 : discount
+                //    };
+                //    salesVm.Add(saleVm);
+
+                //}
             }
             return salesVm;
         }

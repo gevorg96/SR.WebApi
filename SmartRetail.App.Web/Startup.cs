@@ -84,6 +84,8 @@ namespace SmartRetail.App.Web
                 new OrderRepository(conn));
             services.AddTransient<ISalesRepository, SalesRepository>(o =>
                 new SalesRepository(conn));
+            services.AddTransient<IBillsRepository, BillsRepository>(o =>
+                new BillsRepository(conn));
             services.AddTransient<IExpensesRepository, ExpensesRepository>(o =>
                 new ExpensesRepository(conn));
             services.AddTransient<ICostRepository, CostRepository>(o =>

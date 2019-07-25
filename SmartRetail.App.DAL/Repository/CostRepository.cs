@@ -47,5 +47,14 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
+        public async Task AddCostAsync(Cost entity)
+        {
+            var sql = "insert into Cost (prod_id, value) values (@prodId, @value)";
+            using (var db = new SqlConnection(conn))
+            {
+                db.Open();
+                await db.ExecuteAsync(sql, new { prodId = entity.prod_id, value = entity.value});
+            }
+        }
     }
 }

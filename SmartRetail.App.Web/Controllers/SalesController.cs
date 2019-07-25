@@ -53,6 +53,32 @@ namespace SmartRetail.App.Web.Controllers
             return orderByDesc ? sales.OrderByDescending(p => p.reportDate) : sales.OrderBy(p => p.reportDate);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBill(int id)
+        {
+            if (id == 0)
+            {
+                return new BadRequestObjectResult("Не выбрана продажа.");
+            }
+            var user = userRepo.GetByLogin(User.Identity.Name);
+            try
+            {
+                var product = await service.GetBill(user, id);
+                if (product != null)
+                {
+                    return Ok(product);
+                }
+                else
+                {
+                    throw new Exception("Нет такой продажи.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddSale([FromBody] SalesCreateViewModel model)
         {
@@ -63,8 +89,9 @@ namespace SmartRetail.App.Web.Controllers
             {
                 try
                 {
-                    await service.AddSale(model);
-                    return Ok("Продажа добавлена.");
+                    var billId = await service.AddSale(model);
+                    model.id = billId;
+                    return Ok(model);
                 }
                 catch (Exception ex)
                 {
