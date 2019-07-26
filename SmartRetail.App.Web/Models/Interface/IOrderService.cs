@@ -9,6 +9,7 @@ namespace SmartRetail.App.Web.Models.Interface
     public interface IOrderService
     {
         Task<IEnumerable<OrderViewModel>> GetOrders(UserProfile user, DateTime from, DateTime to, int shopId);
-        Task AddOrder(OrderCreateViewModel model);
+        Task<OrderCreateViewModel> AddOrder(OrderCreateViewModel model);
+        Task<OrderViewModel> GetOrder(UserProfile user, int id);
     }
 }

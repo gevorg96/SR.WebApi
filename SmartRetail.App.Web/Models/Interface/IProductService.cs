@@ -9,7 +9,7 @@ namespace SmartRetail.App.Web.Models.Interface
     public interface IProductService
     {
        Task<IEnumerable<ProductViewModel>> GetProducts(UserProfile user);
-        Task AddProduct(UserProfile user, ProductDetailViewModel product);
+        Task<ProductDetailViewModel> AddProduct(UserProfile user, ProductDetailViewModel product);
         void ChangePath(UserProfile user, int prodId, string newPath);
         Task<ProductGroupViewModel> GetNexLevelGroup(UserProfile user, string fullpath, bool needProducts=true);
         Task<ProductGroupViewModel> Search(UserProfile user, string name, ulong start, ulong limit, string path = null);

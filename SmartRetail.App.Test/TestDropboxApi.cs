@@ -22,9 +22,7 @@ namespace SmartRetail.App.Test
     {
         private const string conn =
             "Data Source=SQL6001.site4now.net;Initial Catalog=DB_A497DE_retailsys;User Id=DB_A497DE_retailsys_admin;Password=1234QWer;";
-
         private const string basePath = "/dropbox/dotnetapi/products";
-
         private DropBoxBase dbBase;
 
         private void InitDropbox()
@@ -33,7 +31,6 @@ namespace SmartRetail.App.Test
             var url = dbBase.GeneratedAuthenticationURL();
             var token = dbBase.GenerateAccessToken();
         }
-
 
         [Fact]
         public async void TestDropBox()
@@ -64,7 +61,6 @@ namespace SmartRetail.App.Test
             var path = await dbBase.GetFileWithSharedLink(photo.img_url);
             var result = await dbBase.GetTempLink(path);
         }
-
 
         [Fact]
         public void PathFill()
@@ -102,10 +98,6 @@ namespace SmartRetail.App.Test
             var items = await dbBase.GetAllFolders(path);
             var folders = items.Entries.Where(p => p.IsFolder)
                 .Select(p => new FolderViewModel {folder = p.Name, fullpath = p.PathLower}).ToList();
-
-
-            
-
             //var t = res.Entries.Where(p => p.IsFolder).Select(p => p.PathDisplay).ToList();
         }
 
@@ -167,7 +159,6 @@ namespace SmartRetail.App.Test
             var filler = new CathegoryTreeFiller(basePath, conn);
             var s = (new ShopRepository(conn)).GetById(1);
             var b = (new BusinessRepository(conn)).GetById(s.business_id.Value);
-
             await filler.GetAllFoldersDropbox(b, s);
         }
 
@@ -189,7 +180,6 @@ namespace SmartRetail.App.Test
             foreach (var product in prods)
             {
                 var imageUrl = await dbBase.Upload(dropboxpath, product.id + ". " + product.name + ".jpg", files[c]).ConfigureAwait(false);
-
                 var tempLink = ImageDataService.MakeTemporary(imageUrl);
 
                 var img = new Images
@@ -257,7 +247,6 @@ namespace SmartRetail.App.Test
             var imgrepo = new ImagesRepository(conn);
             var basepath = "/dropbox/dotnetapi/products/";
 
-            
             var p = prodrepo.GetByIdAsync(138);
             var img = await imgrepo.GetByIdAsync(138);
             var imgpath = await dbBase.GetFilePath(img.img_url);
@@ -269,7 +258,6 @@ namespace SmartRetail.App.Test
             var b = bRepo.GetById(shop.business_id.Value);
             var new_path = basepath + b.id + ". " + b.name + "/" + shop.id + ". " + shop.name + "/" + imgtailpath;
             var t = await dbBase.MoveFile(imgpath, new_path);
-
         }
 
         [Fact]
@@ -294,7 +282,6 @@ namespace SmartRetail.App.Test
             //var moveRes = await dbBase.MoveFile(imgpath, new_path);
         }
         
-        
         private IEnumerable<string> DirSearch(List<string> list, string sDir)
         {
             foreach (string d in Directory.GetDirectories(sDir))
@@ -315,14 +302,12 @@ namespace SmartRetail.App.Test
             InitDropbox();
         }
 
-
         [Fact]
         public async void MoveAllFilesToRoot()
         {
             InitDropbox();
             var imgRepo = new ImagesRepository(conn);
             var prodRepo = new ProductRepository(conn);
-
             var images = imgRepo.GetAllImages(); 
             foreach (var img in images)
             {
@@ -331,11 +316,9 @@ namespace SmartRetail.App.Test
                 var target = string.Join('/', source2.Split('/').Take(3)) +"/" + img.prod_id + "." + img.img_name + ".jpg";
                 await dbBase.MoveFile(source2, target);
             }
-
             var prod = prodRepo.GetByIdAsync(1);
             var image = await dbBase.GetAllFolders("/Dropbox/", true);
             
         }
     }
-
 }

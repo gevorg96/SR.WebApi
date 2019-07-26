@@ -5,6 +5,7 @@ namespace SmartRetail.App.Web.Models.ViewModel.Orders
 {
     public class OrderViewModel
     {
+        public int id { get; set; }
         public DateTime reportDate { get; set; }
         public List<OrderRowViewModel> products { get; set; }
         public OrderViewModel()

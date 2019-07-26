@@ -99,8 +99,8 @@ namespace SmartRetail.App.Web.Controllers
             var user = _userRepo.GetByLogin(User.Identity.Name);
             try
             {
-                await _service.AddProduct(user, product);
-                return Ok(product);
+                var prod = await _service.AddProduct(user, product);
+                return Ok(prod);
             }
             catch (Exception e)
             {

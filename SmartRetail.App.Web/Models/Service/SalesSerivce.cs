@@ -56,10 +56,8 @@ namespace SmartRetail.App.Web.Models.Service
             }))).ToList();
 
             var billId = await billsRepo.AddBillAsync(bill);
-            foreach (var sale in bill.Sales)
-            {
-                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, sale, sale.prod_id, model.shopId);
-            }
+            await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, bill);
+
             return billId;
         }
 

@@ -35,7 +35,7 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IPriceRepository priceRepo;
         private readonly ICostRepository costRepo;
         private readonly IStockRepository stockRepo;
-        private readonly IOrderRepository orderRepo;
+        private readonly IOrdersRepository ordersRepo;
         private readonly IStrategy strategy;
         private readonly ShopsChecker checker;
         private const string dropboxBasePath = "/dropbox/dotnetapi/products";
@@ -45,7 +45,7 @@ namespace SmartRetail.App.Web.Models.Service
         #region Constructor
         public ProductService(IShopRepository _shopRepo, IBusinessRepository _businessRepo, IImageRepository _imgRepo, 
             IPictureWareHouse _dbBase, IProductRepository _prodRepo, IUnitRepository _unitRepo, IPriceRepository _priceRepo,
-            ShopsChecker _checker, ICostRepository _costRepo, IStockRepository _stockRepo, IOrderRepository orderRepository, IStrategy _strategy)
+            ShopsChecker _checker, ICostRepository _costRepo, IStockRepository _stockRepo, IOrdersRepository ordersRepository, IStrategy _strategy)
         {
             shopRepo = _shopRepo;
             businessRepo = _businessRepo;
@@ -55,7 +55,7 @@ namespace SmartRetail.App.Web.Models.Service
             priceRepo = _priceRepo;
             costRepo = _costRepo;
             stockRepo = _stockRepo;
-            orderRepo = orderRepository;
+            ordersRepo = ordersRepository;
             strategy = _strategy;
             dbBase = _dbBase;
             checker = _checker;
@@ -255,7 +255,7 @@ namespace SmartRetail.App.Web.Models.Service
         /// </summary>
         /// <param name="user">user info</param>
         /// <param name="product">product view model</param>
-        public async Task AddProduct(UserProfile user, ProductDetailViewModel product)
+        public async Task<ProductDetailViewModel> AddProduct(UserProfile user, ProductDetailViewModel product)
         {
             //var shop = checker.GetCorrectShop(user, product);
             //if (shop == null) return;
@@ -277,27 +277,36 @@ namespace SmartRetail.App.Web.Models.Service
             //add with repo
             var pId = prodRepo.AddProduct(prod);
 
-            //add stock link
-            foreach (var pair in product.Stocks)
+            if (product.Cost.HasValue)
             {
-                prod.Stock.Add(new Stock { count = pair.Stock, shop_id = pair.ShopId });
-                var dt = DateTime.Now;
-                var order = new Orders
+                foreach (var pair in product.Stocks)
                 {
-                    prod_id = pId,
-                    cost = product.Cost.Value,
-                    count = pair.Stock,
-                    report_date = dt,
-                    shop_id = pair.ShopId
-                };
-                await orderRepo.AddOrderAsync(order);
-                var orderDal = await orderRepo.GetLastOrderAsync(order.shop_id, order.prod_id, dt.AddSeconds(-1), dt);
-                await strategy.UpdateAverageCost(Direction.Order, orderDal, orderDal.prod_id, orderDal.shop_id);
+                    prod.Stock.Add(new Stock { count = pair.Stock, shop_id = pair.ShopId });
+                    var dt = DateTime.Now;
+                    var order = new Orders
+                    {
+                        report_date = dt,
+                        shop_id = pair.ShopId,
+                        isOrder = true,
+                        OrderDetails = new List<OrderDetails>
+                    {
+                        new OrderDetails
+                        {
+                            prod_id = pId,
+                            cost = product.Cost.Value,
+                            count = pair.Stock
+                        }
+                    }
+                    };
+                    var id = await ordersRepo.AddOrderAsync(order);
+                    var orderDal = (await ordersRepo.GetOrdersByShopIdInDateRange(order.shop_id, dt.AddSeconds(-1), dt)).FirstOrDefault(p => p.id == id);
+                    await strategy.UpdateAverageCost(Direction.Order, orderDal);
+                }
             }
-
+           
             var bytes = Convert.FromBase64String(product.ImgBase64);
             var contents = new MemoryStream(bytes);
-            //var path = product.Category + "/" + pId + "." + product.ProdName + ".jpg";
+            
             var imgUrl = await dbBase.Upload(contents, "/products/" + business.id + ". " + business.name + "/" + pId + "." + product.ProdName + ".jpg");
             var img = new Images
             {
@@ -309,6 +318,8 @@ namespace SmartRetail.App.Web.Models.Service
                 img_path = product.Category
             };
             imgRepo.Add(img);
+            product.Id = pId;
+            return product;
         }
 
         public async Task UpdateProduct(UserProfile user, ProductDetailViewModel product)

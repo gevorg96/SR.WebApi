@@ -15,41 +15,77 @@ namespace SmartRetail.App.Web.Models.Service
 {
     public class OrderService: IOrderService
     {
-        private readonly IOrderRepository orderRepo;
+        private readonly IOrdersRepository ordersRepo;
         private readonly IStrategy strategy;
         private readonly IShopRepository shopRepo;
         private readonly IProductRepository productRepo;
         private readonly IImageRepository imgRepo;
         private ShopsChecker shopsChecker;
 
-        public OrderService(IUserRepository userRepository, IShopRepository shopRepository, IOrderRepository orderRepository, IProductRepository productRepository,
+        public OrderService(IUserRepository userRepository, IShopRepository shopRepository, IOrdersRepository ordersRepository, IProductRepository productRepository,
             IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker)
         {
             imgRepo = imageRepository;
             shopRepo = shopRepository;
-            orderRepo = orderRepository;
+            ordersRepo = ordersRepository;
             productRepo = productRepository;
             shopsChecker = _shopsChecker;
             strategy = _strategy;
         }
 
-        public async Task AddOrder(OrderCreateViewModel model)
+        public async Task<OrderCreateViewModel> AddOrder(OrderCreateViewModel model)
         {
-            var orders = model.products.Select(p => new Orders
+            var order = new Orders
+            {
+                isOrder = true,
+                report_date = model.reportDate,
+                shop_id = model.shopId
+            };
+
+            order.OrderDetails = model.products.Select(p => new OrderDetails
             {
                 prod_id = p.id,
                 cost = p.price.Value,
-                count = p.count,
-                report_date = model.reportDate,
-                shop_id = model.shopId
-            });
+                count = p.count
+            }).ToList();
 
-            foreach (var order in orders)
+            var id = await ordersRepo.AddOrderAsync(order);
+            var orderDal = (await ordersRepo.GetOrdersByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).FirstOrDefault(p => p.id == id);
+            await strategy.UpdateAverageCost(Direction.Order, orderDal);
+            model.id = id;
+            return model;
+        }
+
+        public async Task<OrderViewModel> GetOrder(UserProfile user, int id)
+        {
+            var order = await ordersRepo.GetByIdWithMultiAsync(id);
+            if (order == null || !order.isOrder)
             {
-                await orderRepo.AddOrderAsync(order);
-                var orderDal = await orderRepo.GetLastOrderAsync(order.shop_id, order.prod_id, model.reportDate.AddSeconds(-1), model.reportDate);
-                await strategy.UpdateAverageCost(Direction.Order, orderDal, orderDal.prod_id, orderDal.shop_id);
+                return new OrderViewModel();
             }
+
+            var vm = new OrderViewModel
+            {
+                id = order.id,
+                reportDate = order.report_date
+            };
+
+            foreach (var item in order.OrderDetails)
+            {
+                var img = await imgRepo.GetByIdAsync(item.prod_id);
+                var prod = await productRepo.GetByIdAsync(item.prod_id);
+                vm.products.Add(new OrderRowViewModel
+                {
+                    vendorCode = prod.attr1,
+                    name = prod.name,
+                    count = item.count,
+                    price = item.cost,
+                    totalPrice = item.cost * item.count,
+                    image = img != null && !string.IsNullOrEmpty(img.img_url_temp) ? img.img_url_temp : ""
+                });
+            }
+
+            return vm;
         }
 
         public async Task<IEnumerable<OrderViewModel>> GetOrders(UserProfile user, DateTime from, DateTime to, int shopId)
@@ -79,22 +115,22 @@ namespace SmartRetail.App.Web.Models.Service
 
             foreach (var shop in shops)
             {
-                ordersDal.AddRange(await orderRepo.GetOrdersByShopId(shop.id, from, to));
+                ordersDal.AddRange(await ordersRepo.GetOrdersByShopIdInDateRange(shop.id, from, to));
             }
 
-            var orderGroups = ordersDal.GroupBy(p => p.report_date).OrderByDescending(p => p.Key);
+            var orderGroups = ordersDal.OrderByDescending(p => p.report_date);
             foreach (var group in orderGroups)
             {
                 var orderVm = new OrderViewModel
                 {
-                    reportDate = group.Key
+                    id = group.id,
+                    reportDate = group.report_date
                 };
-                foreach (var item in group)
+                foreach (var item in group.OrderDetails)
                 {
                     var prodDal = await productRepo.GetByIdAsync(item.prod_id);
                     var prod = new OrderRowViewModel
                     {
-                        id = item.id,
                         image = (await imgRepo.GetByIdAsync(item.prod_id)).img_url_temp,
                         name = prodDal.name,
                         price = item.cost,

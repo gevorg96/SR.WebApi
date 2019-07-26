@@ -11,6 +11,8 @@ namespace SmartRetail.App.DAL.Repository
 {
     public class OrderRepository : IOrderRepository
     {
+        #region Depricated
+
         private readonly string conn;
 
         public OrderRepository(string connection)
@@ -20,14 +22,14 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task AddOrderAsync(Orders entity)
         {
-            var sql = "insert into Orders (prod_id, cost, count, report_date, shop_id) values(" + 
-                entity.prod_id +", " + entity.cost + ", " + entity.count + ", '" + 
-                entity.report_date.ToString("MM.dd.yyyy HH:mm:ss") + "', " +entity.shop_id + ");" ;
-            using (var db = new SqlConnection(conn))
-            {
-                db.Open();
-                await db.ExecuteAsync(sql);
-            }
+            //var sql = "insert into Orders (prod_id, cost, count, report_date, shop_id) values(" + 
+            //    entity.prod_id +", " + entity.cost + ", " + entity.count + ", '" + 
+            //    entity.report_date.ToString("MM.dd.yyyy HH:mm:ss") + "', " +entity.shop_id + ");" ;
+            //using (var db = new SqlConnection(conn))
+            //{
+            //    db.Open();
+            //    await db.ExecuteAsync(sql);
+            //}
         }
 
 
@@ -64,13 +66,14 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Orders> GetLastOrderAsync(int shopId, int prodId, DateTime from, DateTime to)
         {
-            var sql = "select * from Orders where shop_id = " + shopId + " and report_date between '" +
-               from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and count > 0";
-            using (var db = new SqlConnection(conn))
-            {
-                var res = await db.QueryAsync<Orders>(sql);
-                return res.AsList().FindLast(p => p.prod_id == prodId);
-            }
+            //var sql = "select * from Orders where shop_id = " + shopId + " and report_date between '" +
+            //   from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and count > 0";
+            //using (var db = new SqlConnection(conn))
+            //{
+            //    var res = await db.QueryAsync<Orders>(sql);
+            //    return res.AsList().FindLast(p => p.prod_id == prodId);
+            //}
+            return null;
         }
 
         public async Task<IEnumerable<Orders>> GetCancellationsByShopId(int shopId, DateTime from, DateTime to)
@@ -85,13 +88,16 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Orders> GetLastCancellationAsync(int shopId, int prodId, DateTime from, DateTime to)
         {
-            var sql = "select * from Orders where shop_id = " + shopId + " and report_date between '" +
-               from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and count < 0";
-            using (var db = new SqlConnection(conn))
-            {
-                var res = await db.QueryAsync<Orders>(sql);
-                return res.AsList().FindLast(p => p.prod_id == prodId);
-            }
+            //var sql = "select * from Orders where shop_id = " + shopId + " and report_date between '" +
+            //   from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and count < 0";
+            //using (var db = new SqlConnection(conn))
+            //{
+            //    var res = await db.QueryAsync<Orders>(sql);
+            //    return res.AsList().FindLast(p => p.prod_id == prodId);
+            //}
+            return null;
         }
+
+        #endregion
     }
 }

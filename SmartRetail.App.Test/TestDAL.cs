@@ -38,6 +38,8 @@ namespace SmartRetail.App.Test
         private readonly ISalesRepository salesRepo;
         private readonly IUserRepository userRepo;
         private readonly IOrderRepository orderRepo;
+        private readonly IOrdersRepository ordersRepo;
+        private readonly IOrderDetailsRepository orderDetailsRepo;
         private readonly IBillsRepository billsRepo;
         private readonly IOrderStockRepository orderStockRepo;
         private readonly ShopsChecker checker;
@@ -63,10 +65,11 @@ namespace SmartRetail.App.Test
             checker = new ShopsChecker(shopRepo,businessRepo);
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
-            prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, checker, costRepo, stockRepo,orderRepo, strategy);
+            prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, checker, costRepo, stockRepo,ordersRepo, strategy);
             orderStockRepo = new OrderStockRepository(conn);
             strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
             salesService = new SalesSerivce(userRepo, shopRepo, billsRepo, salesRepo, prodRepo, priceRepo, imgRepo, strategy, checker);
+            ordersRepo = new OrdersRepository(conn);
         }
 
         [Fact]
@@ -525,17 +528,17 @@ namespace SmartRetail.App.Test
             var strategy = new FifoStrategy(prodRepo,orderStockRepo,stockRepo,costRepo);
             var order = new Orders
             {
-                prod_id = 1183,
-                cost = 3450,
-                count = 8,
+                //prod_id = 1183,
+                //cost = 3450,
+                //count = 8,
                 report_date = new DateTime(2019, 7, 19),
                 shop_id = 1
             };
 
             await orderRepo.AddOrderAsync(order);
-            var orderDal = (await orderRepo.GetOrdersByProdId(order.prod_id)).OrderBy(p => p.id).Last();
+            //var orderDal = (await orderRepo.GetOrdersByProdId(order.prod_id)).OrderBy(p => p.id).Last();
 
-            await strategy.UpdateAverageCost(DAL.Helpers.Direction.Order, orderDal, order.prod_id, order.shop_id);
+            //await strategy.UpdateAverageCost(DAL.Helpers.Direction.Order, orderDal, order.prod_id, order.shop_id);
         }
 
         //[Fact]
@@ -578,15 +581,15 @@ namespace SmartRetail.App.Test
             var strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
             var cancel = new Orders
             {
-                prod_id = 1194,
-                cost = 0,
-                count = -3,
+                //prod_id = 1194,
+                //cost = 0,
+                //count = -3,
                 report_date = new DateTime(2019, 7, 22)
             };
             await orderRepo.AddOrderAsync(cancel);
             var cancelDal = (await orderRepo.GetOrdersByProdId(1194)).OrderBy(p => p.id).Last();
 
-            await strategy.UpdateAverageCost(DAL.Helpers.Direction.Cancellation, cancelDal, 1194, 1);
+            await strategy.UpdateAverageCost(DAL.Helpers.Direction.Cancellation, cancelDal);
         }
 
         [Fact]
@@ -594,5 +597,12 @@ namespace SmartRetail.App.Test
         {
             var bills = await billsRepo.GetBillsWithSales(1, new DateTime(2019, 1, 1), new DateTime(2019, 8, 1));
         }
+
+        [Fact]
+        public async Task TestGetOrdersAsync()
+        {
+            var t = await ordersRepo.GetCancellationsByShopIdInDateRange(3, new DateTime(2019, 7, 14), new DateTime(2019, 7, 16));
+        }
+
     }
 }

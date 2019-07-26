@@ -80,8 +80,8 @@ namespace SmartRetail.App.Web
                 new PriceRepository(conn));
             services.AddTransient<IProductRepository, ProductRepository>(o =>
                 new ProductRepository(conn));
-            services.AddTransient<IOrderRepository, OrderRepository>(o =>
-                new OrderRepository(conn));
+            services.AddTransient<IOrdersRepository, OrdersRepository>(o =>
+                new OrdersRepository(conn));
             services.AddTransient<ISalesRepository, SalesRepository>(o =>
                 new SalesRepository(conn));
             services.AddTransient<IBillsRepository, BillsRepository>(o =>
@@ -117,7 +117,7 @@ namespace SmartRetail.App.Web
             services.AddTransient<IOrderService, OrderService>();
             services.AddTransient<ICancellationService, CancellationService>();
 
-            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //// In production, the React files will be served from this directory
             //services.AddSpaStaticFiles(configuration =>
@@ -144,16 +144,14 @@ namespace SmartRetail.App.Web
             app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseAuthentication();
-
             app.UseStaticFiles();
-            //app.UseSpaStaticFiles();
 
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute(
-            //        name: "default",
-            //        template: "{controller}/{action=Index}/{id?}");
-            //});
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action=Index}/{id?}");
+            });
 
             //app.UseSpa(spa =>
             //{

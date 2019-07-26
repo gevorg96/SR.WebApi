@@ -19,7 +19,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task AddOrderStockAsync(OrderStock entity)
         {
-            var sql = "insert into OrderStock (order_id, prod_id, curr_stocks) values (" + entity.order_id + ", " + entity.prod_id + ", " + entity.curr_stocks + ")";
+            var sql = "insert into OrderStock (order_id, prod_id, curr_stocks, shop_id) values (" + entity.order_id + ", " + entity.prod_id + ", " + entity.curr_stocks + ", " + entity.shop_id + ")";
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
@@ -49,16 +49,16 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdAndShopIds(int prodId, int shopId)
         {
-            var sql = "select * from OrderStock as OS join Orders as O ON OS.order_id = O.id where OS.prod_id = "
-                + prodId + " and OS.curr_stocks != 0 and OS.shop_id = " + shopId +" order by order_id";
+            var sql = "select * from OrderStock as OS join OrderDetails as O ON OS.order_id = O.id where OS.prod_id = "
+                + prodId + " and OS.curr_stocks != 0 and OS.shop_id = " + shopId + " order by OS.order_id";
 
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                var orderStocks = await db.QueryAsync<OrderStock, Orders, OrderStock>(sql,
-                    (orderStock, order) =>
+                var orderStocks = await db.QueryAsync<OrderStock, OrderDetails, OrderStock>(sql,
+                    (orderStock, orderDetail) =>
                     {
-                        orderStock.Order = order;
+                        orderStock.OrderDetail = orderDetail;
                         return orderStock;
                     }, splitOn: "id");
                 return orderStocks.AsList();
@@ -67,16 +67,16 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdId(int prodId)
         {
-            var sql = "select * from OrderStock as OS join Orders as O ON OS.order_id = O.id where OS.prod_id = "
-                + prodId + " and OS.curr_stocks != 0 order by order_id";
+            var sql = "select * from OrderStock as OS join OrderDetails as O ON OS.order_id = O.id where OS.prod_id = "
+                + prodId + " and OS.curr_stocks != 0 order by OS.order_id";
 
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                var orderStocks = await db.QueryAsync<OrderStock, Orders, OrderStock>(sql,
-                    (orderStock, order) =>
+                var orderStocks = await db.QueryAsync<OrderStock, OrderDetails, OrderStock>(sql,
+                    (orderStock, orderDetail) =>
                     {
-                        orderStock.Order = order;
+                        orderStock.OrderDetail = orderDetail;
                         return orderStock;
                     }, splitOn: "id");
                 return orderStocks.AsList();

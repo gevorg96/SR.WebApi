@@ -24,56 +24,65 @@ namespace SmartRetail.App.DAL.BLL.Utils
             costRepo = costRepository;
         }
 
-        public async Task UpdateAverageCost(Direction direction, IEntity entity, int productId, int shopId)
+        public async Task UpdateAverageCost(Direction direction, IEntity entity)
         {
             switch (direction)
             {
                 case Direction.Sale:
-                    var sale = entity as Sales;
+                    var sale = entity as Bills;
                     if (sale != null)
-                        await SaleStrategy(sale, productId, shopId);
+                        await SaleStrategy(sale);
                     break;
                 case Direction.Order:
                     var order = entity as Orders;
                     if (order != null)
-                        await OrderStrategy(order, productId, shopId);
+                        await OrderStrategy(order);
                     break;
                 case Direction.Cancellation:
                     var cancel = entity as Orders;
                     if (cancel != null)
-                        await CancellationStrategy(cancel, productId, shopId);
+                        await CancellationStrategy(cancel);
                     break;
                 default:
                     break;
             }
         }
 
-        private async Task OrderStrategy(Orders order, int productId, int shopId)
+        private async Task OrderStrategy(Orders order)
         {
-            var orderStock = new OrderStock
+            foreach (var orderDetail in order.OrderDetails)
             {
-                order_id = order.id,
-                prod_id = order.prod_id,
-                curr_stocks = order.count,
-                shop_id = shopId
-            };
-            await orderStockRepo.AddOrderStockAsync(orderStock);
-
-            await UpdateCostAndStocks(productId, shopId);
+                var orderStock = new OrderStock
+                {
+                    order_id = orderDetail.id,
+                    prod_id = orderDetail.prod_id,
+                    curr_stocks = orderDetail.count,
+                    shop_id = order.shop_id
+                };
+                await orderStockRepo.AddOrderStockAsync(orderStock);
+                await UpdateCostAndStocks(orderDetail.prod_id, order.shop_id);
+            }
         }
-        private async Task SaleStrategy(Sales sale, int productId, int shopId)
+
+        private async Task SaleStrategy(Bills sale)
         {
-            await UpdateOrderStockBySales(sale.count, productId, shopId);
-            await UpdateCostAndStocks(productId, shopId);
+            foreach (var item in sale.Sales)
+            {
+                await UpdateOrderStockBySales(item.count, item.prod_id, sale.shop_id);
+                await UpdateCostAndStocks(item.prod_id, sale.shop_id);
+            }
+            
         }
 
-        private async Task CancellationStrategy(Orders cancel, int productId, int shopId)
+        private async Task CancellationStrategy(Orders cancel)
         {
-            var count = -(cancel.count);
-            await UpdateOrderStockBySales(count, productId, shopId);
-            await UpdateCostAndStocks(productId, shopId);
+            foreach (var item in cancel.OrderDetails)
+            {
+                var count = item.count;
+                await UpdateOrderStockBySales(count, item.prod_id, cancel.shop_id);
+                await UpdateCostAndStocks(item.prod_id, cancel.shop_id);
+            }
         }
-
 
         private async Task<decimal?> UpdateOrderStockBySales(decimal? salesCount, int prodId, int shopId)
         {
@@ -110,7 +119,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
 
             foreach (var item in pureOrderStocks)
             {
-                multipleSum += item.curr_stocks * (item.Order != null ? item.Order.cost : 0);
+                multipleSum += item.curr_stocks * (item.OrderDetail != null ? item.OrderDetail.cost : 0);
                 count += item.curr_stocks;
             }
             decimal? averageCost = 0;

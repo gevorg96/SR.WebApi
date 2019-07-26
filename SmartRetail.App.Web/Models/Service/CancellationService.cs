@@ -1,5 +1,6 @@
 ﻿using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.Entities;
+using SmartRetail.App.DAL.Helpers;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
@@ -14,7 +15,7 @@ namespace SmartRetail.App.Web.Models.Service
 {
     public class CancellationService : ICancellationService
     {
-        private readonly IOrderRepository orderRepo;
+        private readonly IOrdersRepository ordersRepo;
         private readonly IStrategy strategy;
         private readonly IShopRepository shopRepo;
         private readonly IProductRepository productRepo;
@@ -22,35 +23,71 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly ICostRepository costRepo;
         private ShopsChecker shopsChecker;
 
-        public CancellationService(IUserRepository userRepository, IShopRepository shopRepository, IOrderRepository orderRepository, IProductRepository productRepository,
+        public CancellationService(IUserRepository userRepository, IShopRepository shopRepository, IOrdersRepository ordersRepository, IProductRepository productRepository,
             IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ICostRepository costRepository, ShopsChecker _shopsChecker)
         {
             imgRepo = imageRepository;
             shopRepo = shopRepository;
-            orderRepo = orderRepository;
+            ordersRepo = ordersRepository;
             productRepo = productRepository;
             shopsChecker = _shopsChecker;
             strategy = _strategy;
             costRepo = costRepository;
         }
 
-        public async Task AddCancellations(OrderCreateViewModel model)
+        public async Task<OrderCreateViewModel> AddCancellations(OrderCreateViewModel model)
         {
-            var cancels = model.products.Select(p => new Orders
+            var order = new Orders
+            {
+                isOrder = false,
+                report_date = model.reportDate,
+                shop_id = model.shopId
+            };
+
+            order.OrderDetails = model.products.Select(p => new OrderDetails
             {
                 prod_id = p.id,
                 cost = 0,
-                count = -p.count,
-                report_date = model.reportDate,
-                shop_id = model.shopId
-            });
+                count = p.count
+            }).ToList();
 
-            foreach (var cancel in cancels)
+            var id = await ordersRepo.AddCancellationAsync(order);
+            var orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).FirstOrDefault(p => p.id == id);
+            await strategy.UpdateAverageCost(Direction.Cancellation, orderDal);
+            model.id = id;
+            return model;
+        }
+
+        public async Task<OrderViewModel> GetCancellation(UserProfile user, int id)
+        {
+            var cancel = await ordersRepo.GetByIdWithMultiAsync(id);
+            if (cancel == null || cancel.isOrder)
             {
-                await orderRepo.AddOrderAsync(cancel);
-                var cancelDal = await orderRepo.GetLastCancellationAsync(cancel.shop_id, cancel.prod_id, model.reportDate.AddSeconds(-1), model.reportDate);
-                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Cancellation, cancelDal, cancelDal.prod_id, cancelDal.shop_id);
+                return new OrderViewModel();
             }
+
+            var vm = new OrderViewModel
+            {
+                id = cancel.id,
+                reportDate = cancel.report_date
+            };
+
+            foreach (var item in cancel.OrderDetails)
+            {
+                var img = await imgRepo.GetByIdAsync(item.prod_id);
+                var prod = await productRepo.GetByIdAsync(item.prod_id);
+                vm.products.Add(new OrderRowViewModel
+                {
+                    vendorCode = prod.attr1,
+                    name = prod.name,
+                    count = item.count,
+                    price = item.cost,
+                    totalPrice = item.cost * item.count,
+                    image = img != null && !string.IsNullOrEmpty(img.img_url_temp) ? img.img_url_temp : ""
+                });
+            }
+
+            return vm;
         }
 
         public async Task<IEnumerable<OrderViewModel>> GetCancellations(UserProfile user, DateTime from, DateTime to, int shopId)
@@ -80,27 +117,28 @@ namespace SmartRetail.App.Web.Models.Service
 
             foreach (var shop in shops)
             {
-                ordersDal.AddRange(await orderRepo.GetCancellationsByShopId(shop.id, from, to));
+                ordersDal.AddRange(await ordersRepo.GetCancellationsByShopIdInDateRange(shop.id, from, to));
             }
 
-            var orderGroups = ordersDal.GroupBy(p => p.report_date).OrderByDescending(p => p.Key);
+            var orderGroups = ordersDal.OrderByDescending(p => p.report_date);
             foreach (var group in orderGroups)
             {
                 var orderVm = new OrderViewModel
                 {
-                    reportDate = group.Key
+                    id = group.id,
+                    reportDate = group.report_date
                 };
-                foreach (var item in group)
+                foreach (var item in group.OrderDetails)
                 {
                     var prodDal = await productRepo.GetByIdAsync(item.prod_id);
-                    var costDal = costRepo.GetByProdAndShopIds(item.prod_id, item.shop_id);
+                    var cost = costRepo.GetByProdAndShopIds(item.prod_id, shopId);
                     var prod = new OrderRowViewModel
                     {
-                        id = item.id,
                         image = (await imgRepo.GetByIdAsync(item.prod_id)).img_url_temp,
                         name = prodDal.name,
-                        price = costDal.value,
-                        count = -item.count,
+                        price = cost.value,
+                        count = item.count,
+                        totalPrice = item.count * cost.value,
                         vendorCode = prodDal.attr1
                     };
                     prod.totalPrice = prod.price * prod.count;

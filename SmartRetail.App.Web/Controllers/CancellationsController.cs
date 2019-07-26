@@ -47,6 +47,32 @@ namespace SmartRetail.App.Web.Controllers
             return orderByDesc ? orders.OrderByDescending(p => p.reportDate) : orders.OrderBy(p => p.reportDate);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCancellation(int id)
+        {
+            if (id == 0)
+            {
+                return new BadRequestObjectResult("Не выбрано списание.");
+            }
+            var user = userRepository.GetByLogin(User.Identity.Name);
+            try
+            {
+                var cancel = await cancellationService.GetCancellation(user, id);
+                if (cancel != null)
+                {
+                    return Ok(cancel);
+                }
+                else
+                {
+                    throw new Exception("Нет такого списания.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddCancellation([FromBody]OrderCreateViewModel model)
         {
@@ -57,8 +83,8 @@ namespace SmartRetail.App.Web.Controllers
             {
                 try
                 {
-                    await cancellationService.AddCancellations(model);
-                    return Ok("Списание добавлено.");
+                    var cancel = await cancellationService.AddCancellations(model);
+                    return Ok(cancel);
                 }
                 catch (Exception ex)
                 {

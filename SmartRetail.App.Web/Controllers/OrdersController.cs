@@ -20,7 +20,7 @@ namespace SmartRetail.App.Web.Controllers
         private readonly IOrderService orderService;
         private readonly IUserRepository userRepository;
         private readonly IShopSerivce shopService;
-        public OrdersController(IUserRepository userRepo, IOrderService service,IShopSerivce _shopService)
+        public OrdersController(IUserRepository userRepo, IOrderService service, IShopSerivce _shopService)
         {
             userRepository = userRepo;
             orderService = service;
@@ -47,6 +47,32 @@ namespace SmartRetail.App.Web.Controllers
             return orderByDesc ? orders.OrderByDescending(p => p.reportDate) : orders.OrderBy(p => p.reportDate);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrder(int id)
+        {
+            if (id == 0)
+            {
+                return new BadRequestObjectResult("Не выбран приход.");
+            }
+            var user = userRepository.GetByLogin(User.Identity.Name);
+            try
+            {
+                var order = await orderService.GetOrder(user, id);
+                if (order != null)
+                {
+                    return Ok(order);
+                }
+                else
+                {
+                    throw new Exception("Нет такого прихода.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddOrders([FromBody]OrderCreateViewModel model)
         {
@@ -57,8 +83,8 @@ namespace SmartRetail.App.Web.Controllers
             {
                 try
                 {
-                    await orderService.AddOrder(model);
-                    return Ok("Приход добавлен.");
+                    var order = await orderService.AddOrder(model);
+                    return Ok(order);
                 }
                 catch (Exception ex)
                 {
