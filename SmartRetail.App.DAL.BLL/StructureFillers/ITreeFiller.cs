@@ -8,6 +8,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
     public interface ITreeFiller
     {
         Task<CathegoryTree<ImgTwinModel>> FillTreeByBusinessAsync(int businessId);
+        Task<CathegoryTree<ImgTwinModel>> FillFolderTreeByBusinessAsync(int businessId);
         void AddPath(string path);
         IEnumerable<ImgTwinModel> GetLevel(string fullpath);
         IEnumerable<ImgTwinModel> Search(string search, CathegoryTree<ImgTwinModel> treePart);

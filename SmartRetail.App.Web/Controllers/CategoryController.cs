@@ -41,5 +41,13 @@ namespace SmartRetail.App.Web.Controllers
             }
             return await catService.Search(user, model.searchCriteria, model.path);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllTreeWithoutProducts()
+        {
+            var user = userRepo.GetByLogin(User.Identity.Name);
+            var tree = await catService.GetFullFolderTree(user);
+            return Ok(tree.Nodes[0]);
+        }
     }
 }

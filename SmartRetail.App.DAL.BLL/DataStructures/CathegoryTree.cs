@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SmartRetail.App.DAL.BLL.DataStructures
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class CathegoryTree<T>
     {
+        [JsonProperty]
         public T Value;
 
+        [JsonProperty]
         public List<CathegoryTree<T>> Nodes;
 
         public CathegoryTree<T> Parent;

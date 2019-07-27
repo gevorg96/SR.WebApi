@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace SmartRetail.App.DAL.BLL.HelperClasses
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class ImgTwinModel: IComparable, ICloneable
     {
+        [JsonProperty]
         public string folder { get; set; }
+
+        [JsonProperty]
         public string fullpath { get; set; }
         public bool isFolder
         {

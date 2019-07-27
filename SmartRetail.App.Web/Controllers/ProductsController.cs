@@ -29,14 +29,15 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<FilteredProductViewModel> GetProducts(int? page = 1, int? limit = 10, string name = null, string color = null, string size = null)
+        public async Task<IActionResult> GetProducts(int? page = null, int? limit = null, string name = null, string color = null, string size = null)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
             var products = await _service.GetProducts(user);
 
             if (products == null || !products.Any())
             {
-                return new FilteredProductViewModel { Products = new List<ProductViewModel>() };
+                var m = new FilteredProductViewModel { Products = new List<ProductViewModel>() };
+                return Ok(m);
             }
 
             if (!string.IsNullOrEmpty(name))
@@ -54,6 +55,11 @@ namespace SmartRetail.App.Web.Controllers
                 products = products.Where(p => p != null && !string.IsNullOrEmpty(p.Size) && p.Size.ToLower().Contains(size));
             }
 
+            if (page == null || limit == null)
+            {
+                return Ok(products);
+            }
+
             var items = products.Skip((page.Value - 1) * limit.Value).Take(limit.Value).ToList();
 
             var prod = new FilteredProductViewModel
@@ -64,7 +70,7 @@ namespace SmartRetail.App.Web.Controllers
                 SelectedProductColor = color,
                 SelectedProductSize = size
             };
-            return prod;
+            return Ok(prod);
         }
 
         [HttpGet("{id}")]

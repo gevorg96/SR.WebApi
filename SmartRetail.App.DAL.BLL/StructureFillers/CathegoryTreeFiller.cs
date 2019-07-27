@@ -63,6 +63,37 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
             return Tree;
         }
 
+        public async Task<CathegoryTree<ImgTwinModel>> FillFolderTreeByBusinessAsync(int businessId)
+        {
+            var bTask = Task.Run(() => businessRepo.GetByIdAsync(businessId));
+            var imgTask = Task.Run(() => imgRepo.GetAllImagesInBusinessAsync(businessId));
+            var (busObj, imgs) = await Tasker.WhenAll(bTask, imgTask);
+
+            var imgPaths = new List<string>();
+
+            foreach (var img in imgs)
+            {
+                imgPaths.Add(img.img_path);
+            }
+
+            var name = businessId + ". " + busObj.name;
+
+            Tree = new CathegoryTree<ImgTwinModel>
+            {
+                Value = new ImgTwinModel { folder = name, fullpath = "/" + name },
+                Parent = null
+            };
+
+            if (imgPaths != null && imgPaths.Any())
+            {
+                foreach (var path in imgPaths)
+                {
+                    AddPath(path);
+                }
+            }
+            return Tree;
+        }
+
         public void AddPath(string path)
         {
             var parts = path.Split('/');
@@ -103,7 +134,6 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
             return CathegoryTree<ImgTwinModel>.Search(Tree, new ImgTwinModel { fullpath = fullpath });
         }
 
-
         public IEnumerable<ImgTwinModel> Search(string search, CathegoryTree<ImgTwinModel> treePart)
         {
             var result = new List<ImgTwinModel>();
@@ -119,11 +149,6 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
 
             return result.Select(p => new ImgTwinModel { folder = p.folder, fullpath = p.fullpath, isFile = p.folder.EndsWith(".jpg") }).ToList(); ;
         }
-
-
-
-
-
 
         #region Depricated
         public CathegoryTreeFiller(string basePath, string connectionString)

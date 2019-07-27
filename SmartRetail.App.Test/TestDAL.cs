@@ -581,9 +581,7 @@ namespace SmartRetail.App.Test
             var strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
             var cancel = new Orders
             {
-                //prod_id = 1194,
-                //cost = 0,
-                //count = -3,
+                shop_id = 1,
                 report_date = new DateTime(2019, 7, 22)
             };
             await orderRepo.AddOrderAsync(cancel);

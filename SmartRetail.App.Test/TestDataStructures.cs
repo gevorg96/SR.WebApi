@@ -80,5 +80,13 @@ namespace SmartRetail.App.Test
             var res = filler.Search("Са", tree);
         }
 
+        [Fact]
+        public async void GetFolderTree()
+        {
+            var filler = new CathegoryTreeFiller(conn);
+            await filler.FillTreeByBusinessAsync(1);
+            var res = await filler.FillFolderTreeByBusinessAsync(1);
+
+        }
     }
 }

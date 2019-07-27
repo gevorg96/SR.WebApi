@@ -10,6 +10,7 @@ using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel;
+using SmartRetail.App.Web.Models.ViewModel.Folders;
 
 namespace SmartRetail.App.Web.Models.Service
 {
@@ -26,6 +27,15 @@ namespace SmartRetail.App.Web.Models.Service
             businessRepo = brepo;
             productRepo = _productRepo;
             imgRepo = _imgRepo;
+        }
+
+        public async Task<CathegoryTree<ImgTwinModel>> GetFullFolderTree(UserProfile user)
+        {
+            var folderTree = new FolderTreeViewModel();
+            var businessTask = Task.Run(() => businessRepo.GetByIdAsync(user.business_id.Value));
+            var fillerTask = Task.Run(() => filler.FillFolderTreeByBusinessAsync(user.business_id.Value));
+            var (tree, business) = await Tasker.WhenAll(fillerTask, businessTask);
+            return tree;
         }
 
         public async Task<ProductGroupViewModel> GetNexLevelGroup(UserProfile user, string fullpath = null, bool needProducts = true)
