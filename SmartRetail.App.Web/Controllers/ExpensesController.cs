@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -19,21 +20,44 @@ namespace SmartRetail.App.Web.Controllers
     public class ExpensesController: ControllerBase
     {
         private readonly IExpensesService _service;
+        private readonly IShopSerivce shopService;
         private readonly IUserRepository _userRepo;
-        public ExpensesController(IUserRepository userRepo, IExpensesService service)
+        public ExpensesController(IUserRepository userRepo, IExpensesService service, IShopSerivce _shopService)
         {
             _userRepo = userRepo;
             _service = service;
+            shopService = _shopService;
         }
-        
+
         [HttpGet]
-        public IEnumerable<ExpensesViewModel> GetExpenses(int? shopId, DateTime from, DateTime to)
+        public async Task<IEnumerable<ExpensesViewModel>> GetExpenses(int? shopId, DateTime from, DateTime to)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
-            var expenses = _service.GetExpenses(user, shopId, from, to);
+            var expenses = await _service.GetExpenses(user, shopId, from, to);
             if (expenses == null || !expenses.Any())
                 return new List<ExpensesViewModel>();
             return expenses;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddExpenses([FromBody] ExpensesViewModel model)
+        {
+            var user = _userRepo.GetByLogin(User.Identity.Name);
+            var shops = shopService.GetStocks(user).Select(p => p.id).ToList();
+            if (shops.Contains(model.shopId.Value))
+            {
+                try
+                {
+                    var exModel = await _service.AddExpenses(user, model);
+                    return Ok(exModel);
+                }
+                catch (Exception ex)
+                {
+                    return new UnprocessableEntityResult();
+                }
+            }
+
+            return BadRequest("Ќе выбран магазин/склад, либо выбран не тот :(");
         }
     }
 }

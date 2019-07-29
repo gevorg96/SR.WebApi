@@ -229,7 +229,6 @@ namespace SmartRetail.App.Web.Models.Service
             }
 
             return list;
-
         }
 
         public async Task<ProductViewModel> GetProduct(UserProfile user, int id)
@@ -311,31 +310,89 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 try
                 {
-                    var bytes = Encoding.ASCII.GetBytes(product.ImgBase64);
-                    var contents = new MemoryStream(bytes);
-
-                    var imgUrl = await dbBase.Upload(contents, "/products/" + business.id + ". " + business.name + "/" + pId + "." + product.ProdName + ".jpg");
-                    var img = new Images
+                    using (var stream = product.img.OpenReadStream())
                     {
-                        img_url = imgUrl,
-                        prod_id = pId,
-                        img_name = product.ProdName,
-                        img_type = "jpg",
-                        img_url_temp = ImageDataService.MakeTemporary(imgUrl),
-                        img_path = product.Category
-                    };
-                    imgRepo.Add(img);
+                        var bytes = ReadToEnd(stream);
+                        var memory = new MemoryStream(bytes);
+                        var imgParts = product.ImgBase64.Split(".");
+                        var imgUrl = await dbBase.Upload(memory, "/products/" + business.id + ". " + business.name + "/" +
+                            pId + "." + product.ProdName + "." + imgParts[imgParts.Length - 1]);
+                        var img = new Images
+                        {
+                            img_url = imgUrl,
+                            prod_id = pId,
+                            img_name = product.ProdName,
+                            img_type = imgParts[imgParts.Length - 1],
+                            img_url_temp = ImageDataService.MakeTemporary(imgUrl),
+                            img_path = product.Category
+                        };
+                        imgRepo.Add(img);
+                    }
                 }
                 catch (Exception ex)
                 {
                     product.Id = pId;
                     return product;
-                }               
+                }
             }
 
             product.Id = pId;
             return product;
         }
+
+        public static byte[] ReadToEnd(System.IO.Stream stream)
+        {
+            long originalPosition = 0;
+
+            if (stream.CanSeek)
+            {
+                originalPosition = stream.Position;
+                stream.Position = 0;
+            }
+
+            try
+            {
+                byte[] readBuffer = new byte[4096];
+
+                int totalBytesRead = 0;
+                int bytesRead;
+
+                while ((bytesRead = stream.Read(readBuffer, totalBytesRead, readBuffer.Length - totalBytesRead)) > 0)
+                {
+                    totalBytesRead += bytesRead;
+
+                    if (totalBytesRead == readBuffer.Length)
+                    {
+                        int nextByte = stream.ReadByte();
+                        if (nextByte != -1)
+                        {
+                            byte[] temp = new byte[readBuffer.Length * 2];
+                            Buffer.BlockCopy(readBuffer, 0, temp, 0, readBuffer.Length);
+                            Buffer.SetByte(temp, totalBytesRead, (byte)nextByte);
+                            readBuffer = temp;
+                            totalBytesRead++;
+                        }
+                    }
+                }
+
+                byte[] buffer = readBuffer;
+                if (readBuffer.Length != totalBytesRead)
+                {
+                    buffer = new byte[totalBytesRead];
+                    Buffer.BlockCopy(readBuffer, 0, buffer, 0, totalBytesRead);
+                }
+                return buffer;
+            }
+            finally
+            {
+                if (stream.CanSeek)
+                {
+                    stream.Position = originalPosition;
+                }
+            }
+        }
+
+
 
         public async Task UpdateProduct(UserProfile user, ProductDetailViewModel product)
         {

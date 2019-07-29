@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -144,24 +145,15 @@ namespace SmartRetail.App.Test
         public async void TestMemoryStreamUpload()
         {
             InitDropbox();
-            var SourceFilePath = @"D:\Projects\smartretail\SR.WebApi\SmartRetail.App.Web\App_Data\photo_2019-07-28_23-45-29.jpg";
+            var SourceFilePath = @"D:\Projects\gitSR\SR.WebApi\SmartRetail.App.Web\App_Data\кросы.jpg";
             var pic = "";
             using (StreamReader sr = new StreamReader(SourceFilePath))
             {
-                pic = sr.ReadToEnd();
-                var bytes = Encoding.ASCII.GetBytes(pic);
-                var contents = new MemoryStream(bytes);
-                
-            }
+                pic = sr.ReadToEnd();                
+                var bytes = Encoding.UTF8.GetBytes(pic);
 
-
-            var pixBase64 = "";
-            using (var sr = new StreamReader(@"D:\Projects\smartretail\SR.WebApi\SmartRetail.App.Web\App_Data\1.txt"))
-            {
-                pixBase64 = sr.ReadToEnd();
-                var bytes = Encoding.ASCII.GetBytes(pixBase64);
                 var contents = new MemoryStream(bytes);
-                var url = await dbBase.Upload(contents, "/products/1. Кайфы от Петерфельдо/");
+                var url = await dbBase.Upload(contents, "/products/1. Кайфы от Петерфельдо/1210. Кроссовки.jpg");
                 imgRepo.Add(new Images
                 {
                     prod_id = 1210,
@@ -171,8 +163,27 @@ namespace SmartRetail.App.Test
                     img_type = ".jpg",
                     img_url_temp = ImageDataService.MakeTemporary(url)
                 });
-                
             }
+
+
+            //var pixBase64 = "";
+            //using (var sr = new StreamReader(@"D:\Projects\gitSR\SR.WebApi\SmartRetail.App.Web\App_Data\1.txt"))
+            //{
+            //    pixBase64 = sr.ReadToEnd();
+            //    var bytes = Encoding.ASCII.GetBytes(pixBase64);
+            //    var contents = new MemoryStream(bytes);
+            //    var url = await dbBase.Upload(contents, "/products/1. Кайфы от Петерфельдо/1210. Кроссовки.jpg");
+            //    imgRepo.Add(new Images
+            //    {
+            //        prod_id = 1210,
+            //        img_name = "Кроссовки",
+            //        img_path = "/products/1. Кайфы от Петерфельдо/Что-то/",
+            //        img_url = url,
+            //        img_type = ".jpg",
+            //        img_url_temp = ImageDataService.MakeTemporary(url)
+            //    });
+                
+            //}
         }
 
         [Fact]

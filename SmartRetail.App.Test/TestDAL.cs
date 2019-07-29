@@ -17,6 +17,8 @@ using SmartRetail.App.Web.Models.ViewModel.Products;
 using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.Web.Models.ViewModel.Sales;
+using System.IO;
+using System.Collections;
 
 namespace SmartRetail.App.Test
 {
@@ -39,6 +41,7 @@ namespace SmartRetail.App.Test
         private readonly IUserRepository userRepo;
         private readonly IOrderRepository orderRepo;
         private readonly IOrdersRepository ordersRepo;
+        private readonly IExpensesRepository expRepo;
         private readonly IOrderDetailsRepository orderDetailsRepo;
         private readonly IBillsRepository billsRepo;
         private readonly IOrderStockRepository orderStockRepo;
@@ -61,6 +64,7 @@ namespace SmartRetail.App.Test
             orderRepo = new OrderRepository(conn);
             salesRepo = new SalesRepository(conn);
             billsRepo = new BillsRepository(conn);
+            expRepo = new ExpensesRepository(conn);
             dbBase = new DropBoxBase("o9340xsv2mzn7ws", "xzky2fzfnmssik1");
             checker = new ShopsChecker(shopRepo,businessRepo);
             dbBase.GeneratedAuthenticationURL();
@@ -381,8 +385,8 @@ namespace SmartRetail.App.Test
         public void TestExpenses()
         {
             var expRepo = new ExpensesRepository(conn);
-            var expenses = expRepo.GetExpenses(1, null, new DateTime(2019, 3, 1), new DateTime(2019, 8, 1));
-            var groupExpenses = expenses.GroupBy(p => p.report_date).ToList();
+            var expenses = expRepo.GetExpensesAsync(1, null, new DateTime(2019, 3, 1), new DateTime(2019, 8, 1));
+            //var groupExpenses = expenses.GroupBy(p => p.report_date).ToList();
         }
 
         [Fact]
@@ -601,6 +605,76 @@ namespace SmartRetail.App.Test
         {
             var t = await ordersRepo.GetCancellationsByShopIdInDateRange(3, new DateTime(2019, 7, 14), new DateTime(2019, 7, 16));
         }
+
+        [Fact]
+        public async void FillExpenses()
+        {
+            var path = @"C:\Users\gevorg.kesyan\Desktop\1.rpt";
+
+            var list = new List<ExpObject>();
+            using (var sr = new StreamReader(path))
+            {
+                var str = sr.ReadLine();
+                while (!string.IsNullOrEmpty(str))
+                {
+                    var line = str.Trim().Split(';');
+                    var exp = new ExpObject
+                    {
+                        business_id = Convert.ToInt32(line[0]),
+                        shop_id = Convert.ToInt32(line[1]),
+                        expType = Convert.ToInt32(line[2]),
+                        summ = Convert.ToDecimal(line[3]),
+                        reportDate = DateTime.Parse(line[4])
+                    };
+                    list.Add(exp);
+                    str = sr.ReadLine();
+                }
+            }
+
+            var groups = list.GroupBy(p => p.business_id).ToList();
+            foreach (var item in groups)
+            {
+
+                var innergroup = item.GroupBy(p => p.shop_id);
+                foreach (var ig in innergroup)
+                {
+                    var iigroup = ig.GroupBy(p => p.reportDate);
+                    foreach (var iig in iigroup)
+                    {
+                        var expenses = new Expenses
+                        {
+                            business_id = item.Key,
+                            shop_id = ig.Key,
+                            report_date = iig.Key,
+                            sum = iig.Sum(p => p.summ)
+                        };
+                        var iigList = iig.ToList();
+                        foreach (var i in iigList)
+                        {
+                            expenses.ExpensesDetails.Add(new ExpensesDetails
+                            {
+                                expenses_type_id = i.expType,
+                                sum = i.summ
+                            });
+                        }
+
+                        await expRepo.AddExpenses(expenses);
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    internal class ExpObject
+    {
+        public int business_id { get; set; }
+        public int shop_id { get; set; }
+        public int expType { get; set; }
+
+        public decimal summ { get; set; }
+        public DateTime reportDate { get; set; }
 
     }
 }

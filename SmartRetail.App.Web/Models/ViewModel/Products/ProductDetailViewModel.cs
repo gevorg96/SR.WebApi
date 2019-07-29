@@ -15,7 +15,7 @@ namespace SmartRetail.App.Web.Models.ViewModel
         public string Size { get; set; }
         public int? UnitId { get; set; }
         public string ImgBase64 {get;set;}
-        //public IFormFile img { get; set; }
+        public IFormFile img { get; set; }
         public string Category { get; set; }
         public List<ShopStockViewModel> Stocks { get; set; }
     }

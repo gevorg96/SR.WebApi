@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Validation;
-using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.Web.Models.ViewModel.Expenses;
 
 namespace SmartRetail.App.Web.Models.Service
@@ -21,7 +22,7 @@ namespace SmartRetail.App.Web.Models.Service
             _shopsChecker = shopsChecker;
         }
 
-        public IEnumerable<ExpensesViewModel> GetExpenses(UserProfile user, int? shopId, DateTime from, DateTime to)
+        public async Task<IEnumerable<ExpensesViewModel>> GetExpenses(UserProfile user, int? shopId, DateTime from, DateTime to)
         {
             var list = new List<ExpensesViewModel>();
             IEnumerable<Expenses> expenses = null;
@@ -31,7 +32,7 @@ namespace SmartRetail.App.Web.Models.Service
                 return new List<ExpensesViewModel>();;
             if (!avl.hasShop && avl.isAdmin)
             {   
-                expenses = _expRepo.GetExpenses(user.business_id.Value, null, from, to).ToList();
+                expenses = await _expRepo.GetExpensesAsync(user.business_id.Value, null, from, to);
             }
             else if(!avl.hasShop && !avl.isAdmin)
             {
@@ -39,35 +40,54 @@ namespace SmartRetail.App.Web.Models.Service
             }
             else if(avl.hasShop)
             {
-                expenses = _expRepo.GetExpenses(user.business_id.Value, shopId.Value, from, to).ToList();
+                expenses = await _expRepo.GetExpensesAsync(user.business_id.Value, shopId.Value, from, to);
             }
 
             if (expenses == null || !expenses.Any())
                 return new List<ExpensesViewModel>();;
             
-            var groupExpenses = expenses.GroupBy(p => p.report_date).ToList();
             
-            foreach (var group in groupExpenses)
+            
+            foreach (var group in expenses)
             {
-
-                var expensesViewModel = new ExpensesViewModel {reportDate = @group.Key};
+                var expensesViewModel = new ExpensesViewModel { id = group.id, reportDate = group.report_date, totalSum = group.sum};
 
                 var dict = new List<ExpensesValueViewModel>();
-                foreach (var expense in group)
+                foreach (var ed in group.ExpensesDetails)
                 {
                     dict.Add(new ExpensesValueViewModel
                     {
-                        key = expense.ExpensesType.type,
-                        value = expense.value
+                        key = ed.ExpensesType.type,
+                        value = ed.sum
                     });
                 }
 
                 expensesViewModel.expenses = dict;
-                expensesViewModel.totalSum = dict.Sum(p => p.value);
                 list.Add(expensesViewModel);
             }
 
             return list;
         }
+
+        public async Task<ExpensesViewModel> AddExpenses(UserProfile user, ExpensesViewModel model)
+        {
+            var expenses = new Expenses
+            {
+                business_id = user.business_id.Value,
+                shop_id = model.shopId,
+                sum = model.totalSum,
+                report_date = model.reportDate
+            };
+            expenses.ExpensesDetails = (await Task.WhenAll(model.expenses.Select(async p => new ExpensesDetails
+            {
+                expenses_type_id = Convert.ToInt32(p.key),
+                sum = p.value
+            }))).ToList();
+
+            var exId = await _expRepo.AddExpenses(expenses);
+            model.id = exId;
+            return model;
+        }
+
     }
 }

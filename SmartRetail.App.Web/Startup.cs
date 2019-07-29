@@ -21,11 +21,13 @@ namespace SmartRetail.App.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
+        public IHostingEnvironment _env { get; set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -98,6 +100,8 @@ namespace SmartRetail.App.Web
                 new UnitRepository(conn));
             services.AddTransient<IOrderStockRepository, OrderStockRepository>(o =>
                 new OrderStockRepository(conn));
+            services.AddTransient<IExpensesTypeRepository, ExpensesTypeRepository>(o =>
+                new ExpensesTypeRepository(conn));
             services.AddTransient<IPictureWareHouse, DropBoxBase>(o =>
                 new DropBoxBase(apiKey, apiSecret));
       
@@ -116,6 +120,7 @@ namespace SmartRetail.App.Web
             services.AddTransient<IUnitService, UnitService>();
             services.AddTransient<IOrderService, OrderService>();
             services.AddTransient<ICancellationService, CancellationService>();
+            services.AddTransient<IExpensesTypeService, ExpensesTypeService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

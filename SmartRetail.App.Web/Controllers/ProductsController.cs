@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models;
@@ -22,8 +25,11 @@ namespace SmartRetail.App.Web.Controllers
     {
         private readonly IProductService _service;
         private readonly IUserRepository _userRepo;
-        public ProductsController(IProductService service, IUserRepository userRepo)
+        private readonly IHostingEnvironment _environment;
+
+        public ProductsController(IProductService service, IUserRepository userRepo, IHostingEnvironment IHostingEnvironment)
         {
+            _environment = IHostingEnvironment;
             _service = service;
             _userRepo = userRepo;
         }
@@ -99,21 +105,73 @@ namespace SmartRetail.App.Web.Controllers
             }
         }
         
+        //[HttpPost]
+        //[RequestSizeLimit(500000000)]
+        //public async Task<IActionResult> AddProduct([FromBody] ProductDetailViewModel product)
+        //{
+        //    var user = _userRepo.GetByLogin(User.Identity.Name);
+        //    try
+        //    {
+        //        var prod = await _service.AddProduct(user, product);
+        //        return Ok(prod);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new Exception("Возникла ошибка при добавлении: " + e.Message);
+        //    }
+        //}
+
         [HttpPost]
-        [RequestSizeLimit(500000000)]
-        public async Task<IActionResult> AddProduct([FromBody] ProductDetailViewModel product)
+        public async Task<IActionResult> AddProduct([FromForm] ProductDetailViewModel product)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
             try
             {
+                var newFileName = string.Empty;
+
+                if (HttpContext.Request.Form.Files != null)
+                {
+                    var fileName = string.Empty;
+                    string PathDB = string.Empty;
+
+                    var file = product.img;
+                    if (file.Length > 0)
+                    {
+                        //Getting FileName
+                        fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+
+                        //Assigning Unique Filename (Guid)
+                        var myUniqueFileName = Convert.ToString(Guid.NewGuid());
+
+                        //Getting file Extension
+                        var FileExtension = Path.GetExtension(fileName);
+
+                        // concating  FileName + FileExtension
+                        newFileName = myUniqueFileName + FileExtension;
+
+                        // Combines two strings into a path.
+                        //fileName = Path.Combine(_environment.ContentRootPath) + $@"\{newFileName}";
+                        //using (FileStream fs = System.IO.File.Create(fileName))
+                        //{
+                        //    file.CopyTo(fs);
+                        //    fs.Flush();
+                        //}
+                        product.ImgBase64 = newFileName;
+
+                    }
+                }
+                var prod = await _service.AddProduct(user, product);
+                return Ok(prod);
+
+            }
+            catch (Exception ex)
+            {
                 var prod = await _service.AddProduct(user, product);
                 return Ok(prod);
             }
-            catch (Exception e)
-            {
-                throw new Exception("Возникла ошибка при добавлении: " + e.Message);
-            }
         }
+
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDetailViewModel product)

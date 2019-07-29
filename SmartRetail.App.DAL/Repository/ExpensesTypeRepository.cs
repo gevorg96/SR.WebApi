@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Dapper;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
@@ -24,5 +25,13 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
+        public async Task<IEnumerable<ExpensesType>> GetAllAsync()
+        {
+            var sql = "SELECT * FROM ExpensesType";
+            using (var connection = new SqlConnection(conn))
+            {
+                return await connection.QueryAsync<ExpensesType>(sql);
+            }
+        }
     }
 }
