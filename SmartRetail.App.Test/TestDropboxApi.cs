@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dropbox.Api.Files;
@@ -24,12 +25,14 @@ namespace SmartRetail.App.Test
             "Data Source=SQL6001.site4now.net;Initial Catalog=DB_A497DE_retailsys;User Id=DB_A497DE_retailsys_admin;Password=1234QWer;";
         private const string basePath = "/dropbox/dotnetapi/products";
         private DropBoxBase dbBase;
+        private IImageRepository imgRepo;
 
         private void InitDropbox()
         {
             dbBase = new DropBoxBase("o9340xsv2mzn7ws", "xzky2fzfnmssik1");
             var url = dbBase.GeneratedAuthenticationURL();
             var token = dbBase.GenerateAccessToken();
+            imgRepo = new ImagesRepository(conn);
         }
 
         [Fact]
@@ -141,16 +144,35 @@ namespace SmartRetail.App.Test
         public async void TestMemoryStreamUpload()
         {
             InitDropbox();
-            var path = "/dropbox/dotnetapi/file.jpg";
-            var SourceFilePath = @"C:\Users\gevor\OneDrive\Рабочий стол\1.txt";
+            var SourceFilePath = @"D:\Projects\smartretail\SR.WebApi\SmartRetail.App.Web\App_Data\photo_2019-07-28_23-45-29.jpg";
             var pic = "";
             using (StreamReader sr = new StreamReader(SourceFilePath))
             {
                 pic = sr.ReadToEnd();
-                var bytes = Convert.FromBase64String(pic);
+                var bytes = Encoding.ASCII.GetBytes(pic);
                 var contents = new MemoryStream(bytes);
-                var uri = await dbBase.Upload(contents, path);
-            }        
+                
+            }
+
+
+            var pixBase64 = "";
+            using (var sr = new StreamReader(@"D:\Projects\smartretail\SR.WebApi\SmartRetail.App.Web\App_Data\1.txt"))
+            {
+                pixBase64 = sr.ReadToEnd();
+                var bytes = Encoding.ASCII.GetBytes(pixBase64);
+                var contents = new MemoryStream(bytes);
+                var url = await dbBase.Upload(contents, "/products/1. Кайфы от Петерфельдо/");
+                imgRepo.Add(new Images
+                {
+                    prod_id = 1210,
+                    img_name = "Кроссовки",
+                    img_path = "/products/1. Кайфы от Петерфельдо/Что-то/",
+                    img_url = url,
+                    img_type = ".jpg",
+                    img_url_temp = ImageDataService.MakeTemporary(url)
+                });
+                
+            }
         }
 
         [Fact]

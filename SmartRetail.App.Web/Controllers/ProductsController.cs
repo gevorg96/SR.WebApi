@@ -100,6 +100,7 @@ namespace SmartRetail.App.Web.Controllers
         }
         
         [HttpPost]
+        [RequestSizeLimit(500000000)]
         public async Task<IActionResult> AddProduct([FromBody] ProductDetailViewModel product)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);

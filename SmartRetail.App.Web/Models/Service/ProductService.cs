@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.BLL.DataServices;
 using SmartRetail.App.DAL.BLL.Utils;
@@ -210,19 +211,21 @@ namespace SmartRetail.App.Web.Models.Service
             //create ViemModels
             foreach (var product in prods)
             {
+                var cost = costRepo.GetByProdId(product.id).FirstOrDefault();
+                var price = priceRepo.GetPriceByProdId(product.id);
                 list.Add(new ProductViewModel
                 {
                     Id = product.id,
                     ProdName = product.name,
                     Stock = rnd.Next(1, 30),
-                    Cost = rnd.Next(1000, 10000),
-                    Price = rnd.Next(2000, 20000),
+                    Cost = cost != null && cost.value.HasValue ? cost.value.Value : 0,
+                    Price = price != null && price.price.HasValue ? price.price.Value : 0,
                     VendorCode = product.attr1,
                     ImgUrl = product.Image?.img_url_temp,
                     Color = product.attr10,
                     Size = product.attr9,
                     UnitId = product.unit_id.HasValue ? product.unit_id.Value : 0
-                });
+                }) ;
             }
 
             return list;
@@ -303,21 +306,33 @@ namespace SmartRetail.App.Web.Models.Service
                     await strategy.UpdateAverageCost(Direction.Order, orderDal);
                 }
             }
-           
-            var bytes = Convert.FromBase64String(product.ImgBase64);
-            var contents = new MemoryStream(bytes);
-            
-            var imgUrl = await dbBase.Upload(contents, "/products/" + business.id + ". " + business.name + "/" + pId + "." + product.ProdName + ".jpg");
-            var img = new Images
+
+            if (!string.IsNullOrEmpty(product.ImgBase64))
             {
-                img_url = imgUrl,
-                prod_id = pId,
-                img_name = product.ProdName,
-                img_type = "jpg",
-                img_url_temp = ImageDataService.MakeTemporary(imgUrl),
-                img_path = product.Category
-            };
-            imgRepo.Add(img);
+                try
+                {
+                    var bytes = Encoding.ASCII.GetBytes(product.ImgBase64);
+                    var contents = new MemoryStream(bytes);
+
+                    var imgUrl = await dbBase.Upload(contents, "/products/" + business.id + ". " + business.name + "/" + pId + "." + product.ProdName + ".jpg");
+                    var img = new Images
+                    {
+                        img_url = imgUrl,
+                        prod_id = pId,
+                        img_name = product.ProdName,
+                        img_type = "jpg",
+                        img_url_temp = ImageDataService.MakeTemporary(imgUrl),
+                        img_path = product.Category
+                    };
+                    imgRepo.Add(img);
+                }
+                catch (Exception ex)
+                {
+                    product.Id = pId;
+                    return product;
+                }               
+            }
+
             product.Id = pId;
             return product;
         }

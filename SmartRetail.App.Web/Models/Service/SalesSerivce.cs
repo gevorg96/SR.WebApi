@@ -52,7 +52,7 @@ namespace SmartRetail.App.Web.Models.Service
                 prod_id = p.prodId,
                 count = p.count,
                 sum = p.summ,
-                unit_id = (await productRepo.GetByIdAsync(p.prodId)).unit_id
+                unit_id = (await productRepo.GetByIdAsync(p.prodId))?.unit_id
             }))).ToList();
 
             var billId = await billsRepo.AddBillAsync(bill);
@@ -124,7 +124,7 @@ namespace SmartRetail.App.Web.Models.Service
                             imageUrl = (await imgRepo.GetByIdAsync(sale.prod_id))?.img_url_temp,
                             ProdName = sale.Product.name,
                             VendorCode = "",
-                            Summ = sale.sum*sale.count,
+                            Summ = sale.sum,
                             Count = sale.count,
                             Price = sale.Product?.Price?.price
                             
