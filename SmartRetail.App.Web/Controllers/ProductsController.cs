@@ -25,11 +25,9 @@ namespace SmartRetail.App.Web.Controllers
     {
         private readonly IProductService _service;
         private readonly IUserRepository _userRepo;
-        private readonly IHostingEnvironment _environment;
 
-        public ProductsController(IProductService service, IUserRepository userRepo, IHostingEnvironment IHostingEnvironment)
+        public ProductsController(IProductService service, IUserRepository userRepo)
         {
-            _environment = IHostingEnvironment;
             _service = service;
             _userRepo = userRepo;
         }
@@ -105,22 +103,6 @@ namespace SmartRetail.App.Web.Controllers
             }
         }
         
-        //[HttpPost]
-        //[RequestSizeLimit(500000000)]
-        //public async Task<IActionResult> AddProduct([FromBody] ProductDetailViewModel product)
-        //{
-        //    var user = _userRepo.GetByLogin(User.Identity.Name);
-        //    try
-        //    {
-        //        var prod = await _service.AddProduct(user, product);
-        //        return Ok(prod);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw new Exception("Возникла ошибка при добавлении: " + e.Message);
-        //    }
-        //}
-
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromForm] ProductDetailViewModel product)
         {
@@ -149,15 +131,7 @@ namespace SmartRetail.App.Web.Controllers
                         // concating  FileName + FileExtension
                         newFileName = myUniqueFileName + FileExtension;
 
-                        // Combines two strings into a path.
-                        //fileName = Path.Combine(_environment.ContentRootPath) + $@"\{newFileName}";
-                        //using (FileStream fs = System.IO.File.Create(fileName))
-                        //{
-                        //    file.CopyTo(fs);
-                        //    fs.Flush();
-                        //}
                         product.ImgBase64 = newFileName;
-
                     }
                 }
                 var prod = await _service.AddProduct(user, product);
@@ -171,35 +145,45 @@ namespace SmartRetail.App.Web.Controllers
             }
         }
 
-
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDetailViewModel product)
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDetailViewModel product)
         {
             product.Id = id;
             var user = _userRepo.GetByLogin(User.Identity.Name);
             try
             {
-                await _service.UpdateProduct(user, product);
-                return Ok("Товар изменён.");
+                var newFileName = string.Empty;
+
+                if (HttpContext.Request.Form.Files != null)
+                {
+                    var fileName = string.Empty;
+                    string PathDB = string.Empty;
+
+                    var file = product.img;
+                    if (file.Length > 0)
+                    {
+                        //Getting FileName
+                        fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+
+                        //Assigning Unique Filename (Guid)
+                        var myUniqueFileName = Convert.ToString(Guid.NewGuid());
+
+                        //Getting file Extension
+                        var FileExtension = Path.GetExtension(fileName);
+
+                        // concating  FileName + FileExtension
+                        newFileName = myUniqueFileName + FileExtension;
+                        product.ImgBase64 = newFileName;
+                    }
+                }
+                var p = await _service.UpdateProduct(user, product);
+                return Ok(p);
             }
             catch (Exception ex)
             {
                 return new BadRequestObjectResult(ex.Message);
             }
         }
-
-
-
-        //todo
-        [HttpGet("/addproduct")]
-        public async Task<ProductDetailRequestViewModel> GetInfoForCreateAsync()
-        {
-            var user = _userRepo.GetByLogin(User.Identity.Name);
-            return await _service.GetChoiceForUserAsync(user);
-        }
-
-        
 
         [HttpPost("/getproductgroups")]
         public async Task<ProductGroupViewModel> GetProductGroups([FromBody]FolderRequestViewModel folderPath)

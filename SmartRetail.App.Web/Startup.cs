@@ -121,6 +121,7 @@ namespace SmartRetail.App.Web
             services.AddTransient<IOrderService, OrderService>();
             services.AddTransient<ICancellationService, CancellationService>();
             services.AddTransient<IExpensesTypeService, ExpensesTypeService>();
+            services.AddTransient<IStockMoveService, StockMoveService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

@@ -14,7 +14,7 @@ namespace SmartRetail.App.Web.Models.Interface
         Task<ProductGroupViewModel> GetNexLevelGroup(UserProfile user, string fullpath, bool needProducts=true);
         Task<ProductGroupViewModel> Search(UserProfile user, string name, ulong start, ulong limit, string path = null);
         Task<ProductDetailRequestViewModel> GetChoiceForUserAsync(UserProfile user);
-        Task UpdateProduct(UserProfile user, ProductDetailViewModel product);
+        Task<ProductViewModel> UpdateProduct(UserProfile user, ProductDetailViewModel product);
         Task<ProductViewModel> GetProduct(UserProfile user, int id);
     }
 }

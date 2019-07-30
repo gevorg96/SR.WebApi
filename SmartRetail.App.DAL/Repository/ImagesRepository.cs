@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using SmartRetail.App.DAL.Helpers;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -44,6 +45,37 @@ namespace SmartRetail.App.DAL.Repository
             using (var conn = new SqlConnection(connectionString))
             {
                 var affectedRows = conn.Execute(sql);
+            }
+        }
+
+        public async Task UpdateImage(Images img)
+        {
+            var sql = "select * from Images where prod_id = " + img.prod_id;
+            var sb = new StringBuilder();
+            sb.Append("update Images set ");
+
+            var pi = img.GetType().GetProperties();
+
+            using (var db = new SqlConnection(connectionString))
+            {
+                db.Open();
+                var row = await db.QueryFirstOrDefaultAsync<Images>(sql.ToString());
+                for (var i = 2; i <= 6; i++)
+                {
+                    var p = pi[i];
+                    var pt = p.PropertyType.ToString();
+                    var newValue = p.GetValue(img);
+                    var oldValue = p.GetValue(row);
+                    if (newValue != null && (oldValue == null || newValue.ToString() != oldValue.ToString()))
+                    {
+                        sb.Append(p.Name + " = " + QueryHelper.GetSqlString(p, p.GetValue(img)) + ", ");
+                    }
+                }
+                if (sb.Length < 20) return;
+
+                sb.Remove(sb.Length - 2, 2);
+                sb.Append(" where prod_id = " + img.prod_id);
+                await db.ExecuteAsync(sb.ToString());
             }
         }
 

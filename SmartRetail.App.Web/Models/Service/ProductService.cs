@@ -201,23 +201,23 @@ namespace SmartRetail.App.Web.Models.Service
         public async Task<IEnumerable<ProductViewModel>> GetProducts(UserProfile user)
         {
             var list = new List<ProductViewModel>();
-            List<Shop> shops = new List<Shop>();
+            IEnumerable<Shop> shops;
 
             var prods = await prodRepo.GetProductsByBusinessAsync(user.business_id.Value);
-
-            //todo
-            var rnd = new Random();
 
             //create ViemModels
             foreach (var product in prods)
             {
                 var cost = costRepo.GetByProdId(product.id).FirstOrDefault();
                 var price = priceRepo.GetPriceByProdId(product.id);
+                shops = user.shop_id == null ? shopRepo.GetShopsByBusiness(user.business_id.Value) : new List<Shop> { shopRepo.GetById(user.shop_id.Value) };
+                var stocks = shops.Select(p => stockRepo.GetStockByShopAndProdIds(p.id, product.id));
+
                 list.Add(new ProductViewModel
                 {
                     Id = product.id,
                     ProdName = product.name,
-                    Stock = rnd.Next(1, 30),
+                    Stock = stocks.Sum(p => p.count).HasValue ? stocks.Sum(p => p.count).Value : 0,
                     Cost = cost != null && cost.value.HasValue ? cost.value.Value : 0,
                     Price = price != null && price.price.HasValue ? price.price.Value : 0,
                     VendorCode = product.attr1,
@@ -239,6 +239,11 @@ namespace SmartRetail.App.Web.Models.Service
                 return new ProductViewModel();
             }
             var img = await imgRepo.GetByIdAsync(id);
+            var price = priceRepo.GetPriceByProdId(id);
+            var cost = costRepo.GetByProdId(id).FirstOrDefault();
+            var shops = user.shop_id == null ? shopRepo.GetShopsByBusiness(user.business_id.Value) : new List<Shop> { shopRepo.GetById(user.shop_id.Value) };
+            var stocks = shops.Select(p => stockRepo.GetStockByShopAndProdIds(p.id, id));
+
             var prodVm = new ProductViewModel
             {
                 Id = product.id,
@@ -248,7 +253,11 @@ namespace SmartRetail.App.Web.Models.Service
                 Color = product.attr10,
                 UnitId = product.unit_id.HasValue ? product.unit_id.Value : 0,
                 ImgUrl = img != null && !string.IsNullOrEmpty(img.img_url_temp) ? img.img_url_temp : "",
+                Cost = cost != null && cost.value.HasValue ? cost.value.Value : 0,
+                Price =  price != null && price.price.HasValue ? price.price.Value : 0,
+                Stock = stocks.Sum(p => p.count).HasValue ? stocks.Sum(p => p.count).Value : 0
             };
+
             return prodVm;
         }
 
@@ -340,7 +349,7 @@ namespace SmartRetail.App.Web.Models.Service
             return product;
         }
 
-        public static byte[] ReadToEnd(System.IO.Stream stream)
+        private static byte[] ReadToEnd(System.IO.Stream stream)
         {
             long originalPosition = 0;
 
@@ -394,8 +403,10 @@ namespace SmartRetail.App.Web.Models.Service
 
 
 
-        public async Task UpdateProduct(UserProfile user, ProductDetailViewModel product)
+        public async Task<ProductViewModel> UpdateProduct(UserProfile user, ProductDetailViewModel product)
         {
+            var business = await businessRepo.GetByIdAsync(user.business_id.Value);
+
             int prodId;
             try
             {
@@ -420,18 +431,6 @@ namespace SmartRetail.App.Web.Models.Service
                 prod_id = prodId,
             };
 
-            if (!string.IsNullOrEmpty(product.Category))
-            {
-                try
-                {
-                    imgRepo.UpdateImage(prodId, "img_path", "N'" + product.Category + "'");
-                }
-                catch (Exception)
-                {
-                    throw new Exception("Невозможно изменить категорию.");
-                }
-            }
-
             var prod = new Product
             {
                 id = prodId,
@@ -446,7 +445,7 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 prodRepo.UpdateProduct(prod);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception("Товар не был изменён.");
             }
@@ -480,6 +479,46 @@ namespace SmartRetail.App.Web.Models.Service
                     throw new Exception("Не получилось добавить цену товара.");
                 }
             }
+
+            if (product.img != null)
+            {
+                try
+                {
+                    var imgDal = await imgRepo.GetByIdAsync(prodId);
+                    if (imgDal != null && !string.IsNullOrEmpty(imgDal.img_url))
+                    {
+                        var isDeleted = await dbBase.Delete("/products/" + business.id + ". " + business.name + "/" +
+                            imgDal.prod_id + "." + imgDal.img_name + "." + imgDal.img_type);
+                        if (!isDeleted)
+                        {
+                            throw new Exception("Невозможно заменить картинку.");
+                        }
+                    }
+
+                    using (var stream = product.img.OpenReadStream())
+                    {
+                        var bytes = ReadToEnd(stream);
+                        var memory = new MemoryStream(bytes);
+                        var imgParts = product.ImgBase64.Split(".");
+                        var imgUrl = await dbBase.Upload(memory, "/products/" + business.id+ ". " + business.name + "/" +
+                            prodId + "." + product.ProdName + "." + imgParts[imgParts.Length - 1]);
+
+                        imgDal.img_type = imgParts[imgParts.Length - 1];
+                        imgDal.img_url = imgUrl;
+                        imgDal.img_url_temp = ImageDataService.MakeTemporary(imgUrl);
+                        imgDal.img_name = product.ProdName;
+                        if (!string.IsNullOrEmpty(product.Category))
+                            imgDal.img_path = product.Category;
+                        await imgRepo.UpdateImage(imgDal);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Невозможно изменить картинку товара.");
+                }
+            }
+
+            return await GetProduct(user, prodId);
         }
 
         public async Task<ProductDetailRequestViewModel> GetChoiceForUserAsync(UserProfile user)

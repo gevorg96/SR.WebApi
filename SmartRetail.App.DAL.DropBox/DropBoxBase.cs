@@ -175,7 +175,7 @@ namespace SmartRetail.App.DAL.DropBox
                     throw new Exception("AuthenticationURI not generated !");
                 }
 
-                var folders = await DBClient.Files.DeleteAsync(path);
+                var folders = await DBClient.Files.DeleteV2Async(path);
                 return true;
             }
             catch (Exception ex)

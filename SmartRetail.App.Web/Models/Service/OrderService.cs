@@ -50,7 +50,7 @@ namespace SmartRetail.App.Web.Models.Service
             }).ToList();
 
             var id = await ordersRepo.AddOrderAsync(order);
-            var orderDal = (await ordersRepo.GetOrdersByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).FirstOrDefault(p => p.id == id);
+            var orderDal = (await ordersRepo.GetOrdersByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).Last(p => p.id == id);
             await strategy.UpdateAverageCost(Direction.Order, orderDal);
             model.id = id;
             return model;

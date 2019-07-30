@@ -52,7 +52,7 @@ namespace SmartRetail.App.Web.Models.Service
             }).ToList();
 
             var id = await ordersRepo.AddCancellationAsync(order);
-            var orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).FirstOrDefault(p => p.id == id);
+            var orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).Last(p => p.id == id);
             await strategy.UpdateAverageCost(Direction.Cancellation, orderDal);
             model.id = id;
             return model;

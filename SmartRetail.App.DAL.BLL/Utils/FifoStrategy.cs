@@ -146,9 +146,10 @@ namespace SmartRetail.App.DAL.BLL.Utils
             }
             
             var stockDal = stockRepo.GetStockByShopAndProdIds(shopId, productId);
+            var orderStockShop = await orderStockRepo.GetPureOrderStocksByProdAndShopIds(productId, shopId);
             if (stockDal != null)
             {
-                stockDal.count = count;
+                stockDal.count = orderStockShop.Sum(p => p.curr_stocks);
                 await stockRepo.UpdateValueAsync(stockDal);
             }
             else

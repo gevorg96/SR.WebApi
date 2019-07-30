@@ -9,6 +9,7 @@ namespace SmartRetail.App.DAL.DropBox
         string GeneratedAuthenticationURL();
         string GenerateAccessToken();
         Task<string> GetFileWithSharedLink(string sharedLink);
+        Task<bool> Delete(string path);
         Task<string> GetTempLink(string filePath);
         Task<ListFolderResult> GetAllFolders(string path, bool recursive = true);
         Task<SearchResult> SearchFolder(string path, string query, ulong start, ulong limit);
