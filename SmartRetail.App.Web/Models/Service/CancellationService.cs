@@ -134,7 +134,7 @@ namespace SmartRetail.App.Web.Models.Service
                     var cost = costRepo.GetByProdAndShopIds(item.prod_id, shopId);
                     var prod = new OrderRowViewModel
                     {
-                        image = (await imgRepo.GetByIdAsync(item.prod_id)).img_url_temp,
+                        image = (await imgRepo.GetByIdAsync(item.prod_id))?.img_url_temp,
                         name = prodDal.name,
                         price = cost.value,
                         count = item.count,

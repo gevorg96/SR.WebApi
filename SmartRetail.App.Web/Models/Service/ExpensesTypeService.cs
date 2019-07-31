@@ -16,7 +16,6 @@ namespace SmartRetail.App.Web.Models.Service
             repo = repository;
         }
 
-
         public async Task<IEnumerable<ExpensesTypeViewModel>> GetExpensesTypes()
         {
             var etDal = await repo.GetAllAsync();

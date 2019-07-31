@@ -217,7 +217,7 @@ namespace SmartRetail.App.Web.Models.Service
                 {
                     Id = product.id,
                     ProdName = product.name,
-                    Stock = stocks.Sum(p => p.count).HasValue ? stocks.Sum(p => p.count).Value : 0,
+                    Stock = stocks.Where(p => p != null).Sum(p => p.count).HasValue ? stocks.Where(p => p != null).Sum(p => p.count).Value : 0,
                     Cost = cost != null && cost.value.HasValue ? cost.value.Value : 0,
                     Price = price != null && price.price.HasValue ? price.price.Value : 0,
                     VendorCode = product.attr1,
