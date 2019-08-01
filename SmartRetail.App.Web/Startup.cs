@@ -124,12 +124,6 @@ namespace SmartRetail.App.Web
             services.AddTransient<IStockMoveService, StockMoveService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            //// In production, the React files will be served from this directory
-            //services.AddSpaStaticFiles(configuration =>
-            //{
-            //    configuration.RootPath = "ClientApp/build";
-            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -141,10 +135,11 @@ namespace SmartRetail.App.Web
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                //app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-            
+
+            app.UseStatusCodePages("application/json", "Status code page, status code: {0}");
             app.UseCors("MyPolicy");
 
             app.UseHttpsRedirection();

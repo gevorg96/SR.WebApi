@@ -53,11 +53,11 @@ namespace SmartRetail.App.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return new UnprocessableEntityResult();
+                    return BadRequest(ex.Message);
                 }
             }
 
-            return BadRequest("Ќе выбран магазин/склад, либо выбран не тот :(");
+            return BadRequest("Ќе выбран магазин/склад, либо выбран не тот.");
         }
     }
 }

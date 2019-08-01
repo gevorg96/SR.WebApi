@@ -84,8 +84,18 @@ namespace SmartRetail.App.Web.Models.Service
                 sum = p.value
             }))).ToList();
 
-            var exId = await _expRepo.AddExpenses(expenses);
-            model.id = exId;
+            var exId = 0;
+            try
+            {
+                exId = await _expRepo.AddExpenses(expenses);
+                model.id = exId;
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("Добавление расхода не удалось.");
+            }
+            
             return model;
         }
 

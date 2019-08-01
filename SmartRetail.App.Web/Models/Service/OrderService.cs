@@ -49,9 +49,18 @@ namespace SmartRetail.App.Web.Models.Service
                 count = p.count
             }).ToList();
 
-            var id = await ordersRepo.AddOrderAsync(order);
-            var orderDal = (await ordersRepo.GetOrdersByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).Last(p => p.id == id);
-            await strategy.UpdateAverageCost(Direction.Order, orderDal);
+            var id = 0;
+            try
+            {
+                id = await ordersRepo.AddOrderAsync(order);
+                var orderDal = (await ordersRepo.GetOrdersByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).Last(p => p.id == id);
+                await strategy.UpdateAverageCost(Direction.Order, orderDal);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Случилась ошибка при добавлении прихода.");
+            }
+            
             model.id = id;
             return model;
         }

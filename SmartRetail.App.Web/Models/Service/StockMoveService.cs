@@ -115,22 +115,30 @@ namespace SmartRetail.App.Web.Models.Service
                 count = p.value
             }).ToList();
 
-            var id = await ordersRepo.AddCancellationAsync(order);
-            var orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, dtNow.AddSeconds(-1), dtNow)).Last(p => p.id == id);
-
-            foreach (var orderDetail in order.OrderDetails)
+            try
             {
-                var cost = costRepo.GetByProdId(orderDetail.prod_id).FirstOrDefault();
-                orderDetail.cost = cost != null && cost.value.HasValue ? cost.value.Value : 0;
+                var id = await ordersRepo.AddCancellationAsync(order);
+                var orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, dtNow.AddSeconds(-1), dtNow)).Last(p => p.id == id);
+
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    var cost = costRepo.GetByProdId(orderDetail.prod_id).FirstOrDefault();
+                    orderDetail.cost = cost != null && cost.value.HasValue ? cost.value.Value : 0;
+                }
+
+                await strategy.UpdateAverageCost(Direction.Cancellation, orderDal);
+
+                order.isOrder = true;
+                order.shop_id = model.shopTo;
+                id = await ordersRepo.AddCancellationAsync(order);
+                orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, dtNow.AddSeconds(-1), dtNow)).Last(p => p.id == id);
+                await strategy.UpdateAverageCost(Direction.Order, orderDal);
             }
-
-            await strategy.UpdateAverageCost(Direction.Cancellation, orderDal);
-
-            order.isOrder = true;
-            order.shop_id = model.shopTo;
-            id = await ordersRepo.AddCancellationAsync(order);
-            orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, dtNow.AddSeconds(-1), dtNow)).Last(p => p.id == id);
-            await strategy.UpdateAverageCost(Direction.Order, orderDal);
+            catch (Exception)
+            {
+                throw new Exception("Перемещение не удалось.");
+            }
+            
         }
     }
 }

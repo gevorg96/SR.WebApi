@@ -51,9 +51,19 @@ namespace SmartRetail.App.Web.Models.Service
                 count = p.count
             }).ToList();
 
-            var id = await ordersRepo.AddCancellationAsync(order);
-            var orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).Last(p => p.id == id);
-            await strategy.UpdateAverageCost(Direction.Cancellation, orderDal);
+            var id = 0;
+            try
+            {
+                id = await ordersRepo.AddCancellationAsync(order);
+                var orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).Last(p => p.id == id);
+                await strategy.UpdateAverageCost(Direction.Cancellation, orderDal);
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("Добавление списания не удалось.");
+            }
+            
             model.id = id;
             return model;
         }

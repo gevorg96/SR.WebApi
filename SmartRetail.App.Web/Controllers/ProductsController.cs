@@ -46,7 +46,7 @@ namespace SmartRetail.App.Web.Controllers
 
             if (!string.IsNullOrEmpty(name))
             {
-                products = products.Where(p => p.ProdName.ToLower().StartsWith(name.ToLower()));
+                products = products.Where(p => !string.IsNullOrEmpty(p.ProdName) && p.ProdName.ToLower().StartsWith(name.ToLower()));
             }
 
             if (!string.IsNullOrEmpty(color))
@@ -111,7 +111,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 var newFileName = string.Empty;
 
-                if (HttpContext.Request.Form.Files != null)
+                if (HttpContext.Request.Form.Files != null && HttpContext.Request.Form.Files.Any())
                 {
                     var fileName = string.Empty;
                     string PathDB = string.Empty;
@@ -140,8 +140,7 @@ namespace SmartRetail.App.Web.Controllers
             }
             catch (Exception ex)
             {
-                var prod = await _service.AddProduct(user, product);
-                return Ok(prod);
+                return new BadRequestObjectResult(ex.Message);
             }
         }
 
@@ -154,7 +153,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 var newFileName = string.Empty;
 
-                if (HttpContext.Request.Form.Files != null)
+                if (HttpContext.Request.Form.Files != null && HttpContext.Request.Form.Files.Any())
                 {
                     var fileName = string.Empty;
                     string PathDB = string.Empty;

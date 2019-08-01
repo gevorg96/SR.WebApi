@@ -55,9 +55,17 @@ namespace SmartRetail.App.Web.Models.Service
                 unit_id = (await productRepo.GetByIdAsync(p.prodId))?.unit_id
             }))).ToList();
 
-            var billId = await billsRepo.AddBillAsync(bill);
-            await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, bill);
-
+            var billId = 0;
+            try
+            {
+                billId = await billsRepo.AddBillAsync(bill);
+                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, bill);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Случилась ошибка при добавлении продажи.");
+            }
+            
             return billId;
         }
 

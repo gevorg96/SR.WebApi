@@ -58,7 +58,7 @@ namespace SmartRetail.App.Web.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.InnerException.Message);
+                throw new Exception(ex.Message);
             }
         }
 

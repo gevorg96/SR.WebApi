@@ -268,9 +268,12 @@ namespace SmartRetail.App.Web.Models.Service
         /// <param name="product">product view model</param>
         public async Task<ProductDetailViewModel> AddProduct(UserProfile user, ProductDetailViewModel product)
         {
-            //var shop = checker.GetCorrectShop(user, product);
-            //if (shop == null) return;
+            if (string.IsNullOrEmpty(product.ProdName))
+            {
+                throw new Exception("Наименование товара не может быть пустым.");
+            }
             var business = await businessRepo.GetByIdAsync(user.business_id.Value);
+         
             //create product model
             var prod = new Product
             {
@@ -282,37 +285,19 @@ namespace SmartRetail.App.Web.Models.Service
                 attr10 = product.Color
             };
 
+
             //add price link
             prod.Prices.Add(new Price { price = product.Price });
+            int pId = 0;
 
-            //add with repo
-            var pId = prodRepo.AddProduct(prod);
-
-            if (product.Cost.HasValue)
+            try
             {
-                foreach (var pair in product.Stocks)
-                {
-                    prod.Stock.Add(new Stock { count = pair.Stock, shop_id = pair.ShopId });
-                    var dt = DateTime.Now;
-                    var order = new Orders
-                    {
-                        report_date = dt,
-                        shop_id = pair.ShopId,
-                        isOrder = true,
-                        OrderDetails = new List<OrderDetails>
-                    {
-                        new OrderDetails
-                        {
-                            prod_id = pId,
-                            cost = product.Cost.Value,
-                            count = pair.Stock
-                        }
-                    }
-                    };
-                    var id = await ordersRepo.AddOrderAsync(order);
-                    var orderDal = (await ordersRepo.GetOrdersByShopIdInDateRange(order.shop_id, dt.AddSeconds(-1), dt)).FirstOrDefault(p => p.id == id);
-                    await strategy.UpdateAverageCost(Direction.Order, orderDal);
-                }
+                //add with repo
+                pId = prodRepo.AddProduct(prod);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Не получилось добавить товар в базу. Проверьте правильность заполнения полей.");
             }
 
             if (!string.IsNullOrEmpty(product.ImgBase64))
@@ -338,10 +323,9 @@ namespace SmartRetail.App.Web.Models.Service
                         imgRepo.Add(img);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    product.Id = pId;
-                    return product;
+                    throw new Exception("Не получилось добавить картинку товара. Попробуйте снова.");
                 }
             }
 
@@ -407,6 +391,11 @@ namespace SmartRetail.App.Web.Models.Service
         {
             var business = await businessRepo.GetByIdAsync(user.business_id.Value);
 
+            if (string.IsNullOrEmpty(product.ProdName))
+            {
+                throw new Exception("Наименование товара не может быть пустым.");
+            }
+
             int prodId;
             try
             {
@@ -422,7 +411,7 @@ namespace SmartRetail.App.Web.Models.Service
             }
             catch (Exception)
             {
-                throw new Exception("Не указан идентификатор товара.");
+                throw new Exception("Не указан идентификатор товара / неверный идентификатор.");
             }
 
 
