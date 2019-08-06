@@ -31,6 +31,5 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             return link.Replace("https://www", "https://dl").Replace("?dl=0", "?dl=1");
         }
 
-        //public void C
     }
 }

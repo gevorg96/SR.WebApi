@@ -126,7 +126,30 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
         public IEnumerable<ImgTwinModel> GetLevel(string fullpath)
         {
             return CathegoryTree<ImgTwinModel>.Search(Tree, new ImgTwinModel { fullpath = fullpath })
-                .Nodes.Select(p => new ImgTwinModel { folder = p.Value.folder, fullpath = p.Value.fullpath, isFile = p.Value.folder.EndsWith(".jpg") }).ToList();
+                .Nodes.Select(p => new ImgTwinModel { folder = p.Value.folder, fullpath = p.Value.fullpath, isFile = isFile(p.Value.folder) }).ToList();
+        }
+
+        public static bool isFile(string value)
+        {
+            var parts = value.Split('.');
+            var format = parts[parts.Length - 1].ToUpperInvariant();
+            switch (format)
+            {
+                
+                case "JPG":
+                case "PNG":
+                case "JPEG":
+                case "RAW":
+                case "TIFF":
+                case "BMP":
+                case "GIF":
+                case "JP2":
+                case "PCX":
+                case "ICO":
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public CathegoryTree<ImgTwinModel> SearchSubTree(string fullpath)

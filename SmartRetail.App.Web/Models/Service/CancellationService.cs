@@ -37,6 +37,7 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<OrderCreateViewModel> AddCancellations(OrderCreateViewModel model)
         {
+           
             var order = new Orders
             {
                 isOrder = false,
@@ -47,7 +48,8 @@ namespace SmartRetail.App.Web.Models.Service
             order.OrderDetails = model.products.Select(p => new OrderDetails
             {
                 prod_id = p.id,
-                cost = 0,
+                cost = costRepo.GetByProdId(p.id).FirstOrDefault() != null && costRepo.GetByProdId(p.id).FirstOrDefault().value.HasValue ?
+                costRepo.GetByProdId(p.id).FirstOrDefault().value.Value : 0,
                 count = p.count
             }).ToList();
 

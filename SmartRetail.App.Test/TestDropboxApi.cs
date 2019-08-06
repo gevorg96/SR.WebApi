@@ -108,9 +108,9 @@ namespace SmartRetail.App.Test
         [Fact]
         public async void PicBatch()
         {
-            var picUpdater = new PicturesBatchUpdater(conn);
-            await picUpdater.Run(
-                @"D:\Projects\prom\SmartRetail.Mvc\SmartRetail.App.Web\App_Data\Pictures\Номенклатура_по_папкам\Обувь\Детское");
+            //var picUpdater = new PicturesBatchUpdater(conn);
+            //await picUpdater.Run(
+            //    @"D:\Projects\prom\SmartRetail.Mvc\SmartRetail.App.Web\App_Data\Pictures\Номенклатура_по_папкам\Обувь\Детское");
         }
 
         [Fact]

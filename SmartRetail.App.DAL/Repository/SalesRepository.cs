@@ -20,23 +20,23 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Read
 
-        public IEnumerable<Sales> GetSalesByShopAndReportDate(int shopId, DateTime from, DateTime to)
+        public async Task<IEnumerable<Sales>> GetSalesByShopAndReportDate(int shopId, DateTime from, DateTime to)
         {
-            var sql = "select * from Sales where shop_id = " + shopId +" and report_date between '" + 
-                from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss")  +"'";
+            var sql = "select * from Sales where bill_id in(select id from Bills where shop_id = " + shopId +" and report_date between '" + 
+                from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss")  +"')";
             var subSql = "select * from Product where id = @ProdId";
             var priceSelect = "select * from Price where prod_id = @ProdId";
 
             using (var connection = new SqlConnection(conn))
             {
                 connection.Open();
-                var sales = connection.Query<Sales>(sql, new {ShopId = shopId});
+                var sales = await connection.QueryAsync<Sales>(sql, new {ShopId = shopId});
 
                 foreach (var sale in sales)
                 {
-                    sale.Product = connection.Query<Product>(subSql, new { ProdId = sale.prod_id }).FirstOrDefault();
+                    sale.Product = await connection.QueryFirstOrDefaultAsync<Product>(subSql, new { ProdId = sale.prod_id });
                     if (sale.Product != null)
-                        sale.Product.Price = connection.Query<Price>(priceSelect, new {ProdId = sale.prod_id}).FirstOrDefault();
+                        sale.Product.Price = await connection.QueryFirstOrDefaultAsync<Price>(priceSelect, new { ProdId = sale.prod_id });
                 }
 
                 return sales;

@@ -33,8 +33,8 @@ namespace SmartRetail.App.DAL.Repository
             var insert = "insert into bills (shop_id, bill_number, report_date, sum) values(" + bill.shop_id +", "
                 + nextBillNumber + ", '" + bill.report_date.ToString("MM.dd.yyyy HH:mm:ss") + "', " + bill.sum + ")";
 
-            var sql = "INSERT INTO Sales (bill_id, prod_id, count, sum, unit_id)" +
-                      "values (@billId, @prodId, @Count, @Sum, @unitId)";
+            var sql = "INSERT INTO Sales (bill_id, prod_id, count, sum, unit_id, cost, profit, price)" +
+                      "values (@billId, @prodId, @Count, @Sum, @unitId, @cost, @profit, @price)";
 
             using (var db = new SqlConnection(conn))
             {
@@ -45,7 +45,10 @@ namespace SmartRetail.App.DAL.Repository
 
                 foreach (var sale in bill.Sales)
                 {
-                    await db.ExecuteAsync(sql, new { billId = billDal.id, prodId = sale.prod_id, Count = sale.count, Sum = sale.sum, unitId = isNotNull(sale.unit_id)});
+                    await db.ExecuteAsync(sql, new { billId = billDal.id, prodId = sale.prod_id, Count = sale.count,
+                        Sum = sale.sum, unitId = isNotNull(sale.unit_id), cost = isNotNull(sale.cost), profit = isNotNull(sale.profit),
+                        price = isNotNull(sale.price)
+                    });
                 }
                 return billDal.id;
             }

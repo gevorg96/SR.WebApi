@@ -19,13 +19,14 @@ using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.Web.Models.ViewModel.Sales;
 using System.IO;
 using System.Collections;
+using SmartRetail.App.DAL.BLL.DataServices;
 
 namespace SmartRetail.App.Test
 {
     public class TestDAL
     {
         private const string conn =
-            "Data Source=SQL6001.site4now.net;Initial Catalog=DB_A497DE_retailsys;User Id=DB_A497DE_retailsys_admin;Password=1234QWer;";
+            "Data Source=SQL6007.site4now.net;Initial Catalog=DB_A4C0E8_srbackend;User Id=DB_A4C0E8_srbackend_admin;Password=1234QWer;";
         private const string dropboxBasePath = "/products";
 
         private readonly IShopRepository shopRepo;
@@ -72,7 +73,7 @@ namespace SmartRetail.App.Test
             prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, checker, costRepo, stockRepo,ordersRepo, strategy);
             orderStockRepo = new OrderStockRepository(conn);
             strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
-            salesService = new SalesSerivce(userRepo, shopRepo, billsRepo, salesRepo, prodRepo, priceRepo, imgRepo, strategy, checker);
+            salesService = new SalesSerivce(userRepo, shopRepo, billsRepo, salesRepo, prodRepo, priceRepo, imgRepo, strategy, checker, costRepo);
             ordersRepo = new OrdersRepository(conn);
         }
 
@@ -662,6 +663,15 @@ namespace SmartRetail.App.Test
                     }
                 }
             }
+        }
+
+        [Fact]
+        public async void TestSalesDataService()
+        {
+            var salesDs = new SalesDataService(prodRepo, salesRepo, imgRepo, billsRepo, businessRepo, shopRepo);
+            var dailyData = await salesDs.GetDailyInfo(1);
+            var shares = await salesDs.GetShares(1);
+            var pair = await salesDs.GetTop2Products(1);
         }
 
 

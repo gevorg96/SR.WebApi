@@ -10,7 +10,10 @@ namespace SmartRetail.App.DAL.Entities
         public decimal sum { get; set; }
         public decimal count { get; set; }
         public int? unit_id { get; set; }
-    
+        public decimal cost { get; set; }
+        public decimal profit { get; set; }
+        public decimal price { get; set; }
+
         public virtual Product Product { get; set; }
         public virtual Units Units { get; set; }
     }

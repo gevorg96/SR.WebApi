@@ -106,12 +106,13 @@ namespace SmartRetail.App.Web
                 new DropBoxBase(apiKey, apiSecret));
       
             services.AddTransient<ImageDataService>();
+            services.AddTransient<ISalesDataService, SalesDataService>();
             services.AddTransient<ShopsChecker>();
             services.AddTransient<IStrategy, FifoStrategy>();
             services.AddTransient<ITreeFiller, CathegoryTreeFiller>(o => new CathegoryTreeFiller(conn));
 
             services.AddTransient<IShopSerivce, ShopSerivce>();
-            services.AddTransient<IInformationService, MainService>(o => new MainService(conn));
+            services.AddTransient<IInformationService, SummaryService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<ISalesService, SalesSerivce>();
             services.AddTransient<IStockService, StockService>();

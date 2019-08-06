@@ -21,12 +21,13 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly ISalesRepository salesRepo;
         private readonly IProductRepository productRepo;
         private readonly IPriceRepository priceRepo;
+        private readonly ICostRepository costRepo;
         private readonly IImageRepository imgRepo;
         private readonly IStrategy strategy;
         private ShopsChecker shopsChecker;
 
         public SalesSerivce(IUserRepository userRepository, IShopRepository shopRepository, IBillsRepository billsRepository, ISalesRepository salesRepository, IProductRepository productRepository,
-            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker)
+            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker, ICostRepository _costRepo)
         {
             imgRepo = imageRepository;
             userRepo = userRepository;
@@ -35,6 +36,7 @@ namespace SmartRetail.App.Web.Models.Service
             salesRepo = salesRepository;
             productRepo = productRepository;
             priceRepo = priceRepository;
+            costRepo = _costRepo;
             shopsChecker = _shopsChecker;
             strategy = _strategy;
         }
@@ -47,13 +49,25 @@ namespace SmartRetail.App.Web.Models.Service
                 sum = model.totalSum,
                 report_date = model.reportDate
             };
-            bill.Sales = (await Task.WhenAll(model.products.Select(async p => new Sales
+
+            try
             {
-                prod_id = p.prodId,
-                count = p.count,
-                sum = p.summ,
-                unit_id = (await productRepo.GetByIdAsync(p.prodId))?.unit_id
-            }))).ToList();
+                bill.Sales = (await Task.WhenAll(model.products.Select(async p => new Sales
+                {
+                    prod_id = p.prodId,
+                    count = p.count,
+                    sum = p.summ,
+                    unit_id = (await productRepo.GetByIdAsync(p.prodId))?.unit_id,
+                    cost = costRepo.GetByProdId(p.prodId).FirstOrDefault() != null && costRepo.GetByProdId(p.prodId).FirstOrDefault().value.HasValue ?
+                    costRepo.GetByProdId(p.prodId).FirstOrDefault().value.Value : 0,
+                    profit = p.summ - costRepo.GetByProdId(p.prodId).FirstOrDefault().value.Value*p.count,
+                    price = priceRepo.GetPriceByProdId(p.prodId) != null && priceRepo.GetPriceByProdId(p.prodId).price.HasValue ? priceRepo.GetPriceByProdId(p.prodId).price.Value : 0
+                }))).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Не сделан ни один приход по одному из товаров чека.");
+            }
 
             var billId = 0;
             try
@@ -61,7 +75,7 @@ namespace SmartRetail.App.Web.Models.Service
                 billId = await billsRepo.AddBillAsync(bill);
                 await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, bill);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception("Случилась ошибка при добавлении продажи.");
             }
@@ -134,12 +148,12 @@ namespace SmartRetail.App.Web.Models.Service
                             VendorCode = "",
                             Summ = sale.sum,
                             Count = sale.count,
-                            Price = sale.Product?.Price?.price
+                            Price = sale.price
                             
                         });
                         if (sale.Product.Price != null && sale.Product.Price.price.HasValue)
                         {
-                            totalSum += sale.Product.Price.price.Value * sale.count;
+                            totalSum += sale.price * sale.count;
                         }
                     }
 
