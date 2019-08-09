@@ -40,7 +40,7 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddExpenses([FromBody] ExpensesViewModel model)
+        public async Task<IActionResult> AddExpenses([FromBody] ExpensesRequestViewModel model)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
             var shops = shopService.GetStocks(user).Select(p => p.id).ToList();

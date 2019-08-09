@@ -99,12 +99,49 @@ namespace SmartRetail.App.DAL.Repository
             {
                 sql.Append(" and shop_id = " + shopid.Value);
             }
+
             using (var db = new SqlConnection(_connectionString))
             {
                 db.Open();
                 return (await db.QueryAsync<Expenses>(sql.ToString())).Last();
             }
+        }
 
+        public async Task<Expenses> GetByIdAsync(int id)
+        {
+            var sql = "select * from Expenses as e join ExpensesDetails as ed on e.id = ed.expenses_id WHERE e.id = " + id;
+            var subSql = "select * from ExpensesType where id = @TypeId";
+
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                var expDict = new Dictionary<int, Expenses>();
+
+                var exps = (await db.QueryAsync<Expenses, ExpensesDetails, Expenses>(sql,
+                    (expenses, expDetail) =>
+                    {
+                        Expenses expEntry;
+                        if (!expDict.TryGetValue(expenses.id, out expEntry))
+                        {
+                            expEntry = expenses;
+                            expEntry.ExpensesDetails = new List<ExpensesDetails>();
+                            expDict.Add(expEntry.id, expEntry);
+                        }
+
+                        expEntry.ExpensesDetails.Add(expDetail);
+                        return expEntry;
+                    },
+                    splitOn: "id")).Distinct().ToList();
+
+                foreach (var exp in exps)
+                {
+                    foreach (var ed in exp.ExpensesDetails)
+                    {
+                        ed.ExpensesType = await db.QueryFirstOrDefaultAsync<ExpensesType>(subSql, new { TypeId = ed.expenses_type_id });
+                    }
+                }
+                return exps.FirstOrDefault();
+            }
         }
     }
 }

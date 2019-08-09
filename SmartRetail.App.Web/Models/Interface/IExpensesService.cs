@@ -9,6 +9,6 @@ namespace SmartRetail.App.Web.Models.Interface
     public interface IExpensesService
     {
         Task<IEnumerable<ExpensesViewModel>> GetExpenses(UserProfile user, int? shopId, DateTime from, DateTime to);
-        Task<ExpensesViewModel> AddExpenses(UserProfile user, ExpensesViewModel model);
+        Task<ExpensesViewModel> AddExpenses(UserProfile user, ExpensesRequestViewModel model);
     }
 }

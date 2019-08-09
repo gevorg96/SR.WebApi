@@ -50,13 +50,14 @@ namespace SmartRetail.App.Web.Models.Service
             
             foreach (var group in expenses)
             {
-                var expensesViewModel = new ExpensesViewModel { id = group.id, reportDate = group.report_date, totalSum = group.sum};
+                var expensesViewModel = new ExpensesViewModel { id = group.id, reportDate = group.report_date, totalSum = group.sum, shopId = group.shop_id};
 
                 var dict = new List<ExpensesValueViewModel>();
                 foreach (var ed in group.ExpensesDetails)
                 {
                     dict.Add(new ExpensesValueViewModel
                     {
+                        id = ed.expenses_type_id,
                         key = ed.ExpensesType.type,
                         value = ed.sum
                     });
@@ -69,7 +70,7 @@ namespace SmartRetail.App.Web.Models.Service
             return list;
         }
 
-        public async Task<ExpensesViewModel> AddExpenses(UserProfile user, ExpensesViewModel model)
+        public async Task<ExpensesViewModel> AddExpenses(UserProfile user, ExpensesRequestViewModel model)
         {
             var expenses = new Expenses
             {
@@ -80,7 +81,7 @@ namespace SmartRetail.App.Web.Models.Service
             };
             expenses.ExpensesDetails = (await Task.WhenAll(model.expenses.Select(async p => new ExpensesDetails
             {
-                expenses_type_id = Convert.ToInt32(p.key),
+                expenses_type_id = Convert.ToInt32(p.id),
                 sum = p.value
             }))).ToList();
 
@@ -95,8 +96,26 @@ namespace SmartRetail.App.Web.Models.Service
 
                 throw new Exception("Добавление расхода не удалось.");
             }
-            
-            return model;
+
+            var expensesDal = await _expRepo.GetByIdAsync(exId);
+            var expensesVm = new ExpensesViewModel
+            {
+                id = expensesDal.id,
+                shopId = expensesDal.shop_id,
+                reportDate = expensesDal.report_date,
+                totalSum = expensesDal.sum,
+            };
+            expensesVm.expenses = new List<ExpensesValueViewModel>();
+            foreach (var expD in expensesDal.ExpensesDetails)
+            {
+                expensesVm.expenses.Add(new ExpensesValueViewModel
+                {
+                    key = expD.ExpensesType.type,
+                    value = expD.sum
+                });
+            }
+
+            return expensesVm;
         }
 
     }

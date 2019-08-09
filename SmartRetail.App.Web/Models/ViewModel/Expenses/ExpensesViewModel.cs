@@ -17,6 +17,6 @@ namespace SmartRetail.App.Web.Models.ViewModel.Expenses
         [JsonProperty]
         public int? shopId { get; set; }
         [JsonProperty]
-        public IEnumerable<ExpensesValueViewModel> expenses { get; set; }
+        public List<ExpensesValueViewModel> expenses { get; set; }
     }
 }
