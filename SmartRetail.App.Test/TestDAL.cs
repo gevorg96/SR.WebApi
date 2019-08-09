@@ -95,8 +95,8 @@ namespace SmartRetail.App.Test
         public void TestDailySales()
         {
             var dailyEntity = new MainService(conn);
-            var daily = dailyEntity.GetDailyData(1);
-            var month = dailyEntity.GetMonthData(1);
+            //var daily = dailyEntity.GetDailyData(1);
+            //var month = dailyEntity.GetMonthData(1);
             var stocks = dailyEntity.GetStocks(2);
             var exData = dailyEntity.GetExpenses(0);
         }
@@ -668,12 +668,21 @@ namespace SmartRetail.App.Test
         [Fact]
         public async void TestSalesDataService()
         {
-            var salesDs = new SalesDataService(prodRepo, salesRepo, imgRepo, billsRepo, businessRepo, shopRepo);
-            var dailyData = await salesDs.GetDailyInfo(1);
-            var shares = await salesDs.GetShares(1);
-            var pair = await salesDs.GetTop2Products(1);
+            var salesDs = new SalesDataService(prodRepo, salesRepo, imgRepo, billsRepo, businessRepo);
+            var dailyData = await salesDs.GeTotalInfoAsync(1);
+            var shares = await salesDs.GetSharesAsync(1);
+            var pair = await salesDs.GetTop2ProductsAsync(1);
         }
 
+        [Fact]
+        public async void TestExpensesAndStocksDataService()
+        {
+            var expensesDs = new ExpensesDataService(expRepo, new ExpensesTypeRepository(conn),shopRepo);
+            var stocksDs = new StocksDataService(costRepo,stockRepo,imgRepo);
+
+            //var exp = await expensesDs.GetMonthExpensesAsync(2);
+            var stocks = await stocksDs.GetStocks(2);
+        }
 
     }
 

@@ -6,7 +6,7 @@ namespace SmartRetail.App.DAL.Repository
 {
     public interface IStockRepository
     {
-        IEnumerable<Stock> GetStocksWithProducts(int shopId);
+        Task<IEnumerable<Stock>> GetStocksWithProducts(int shopId);
         IEnumerable<Stock> GetStocksWithProductsByBusiness(int businessId);
         Stock GetStockByShopAndProdIds(int shopId, int prodId);
         Task AddAsync(Stock entity);

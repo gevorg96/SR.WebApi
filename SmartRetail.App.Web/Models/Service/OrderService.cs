@@ -53,7 +53,7 @@ namespace SmartRetail.App.Web.Models.Service
             try
             {
                 id = await ordersRepo.AddOrderAsync(order);
-                var orderDal = (await ordersRepo.GetOrdersByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).Last(p => p.id == id);
+                var orderDal = await ordersRepo.GetByIdAsync(id);
                 await strategy.UpdateAverageCost(Direction.Order, orderDal);
             }
             catch (Exception)

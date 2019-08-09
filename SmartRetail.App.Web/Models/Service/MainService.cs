@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SmartRetail.App.DAL.DropBox;
+using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models.Interface;
 
@@ -21,7 +22,7 @@ namespace SmartRetail.App.Web.Models
             dbClient = new DropBoxBase("o9340xsv2mzn7ws", "xzky2fzfnmssik1");
         }
 
-        public async Task<JObject> GetDailyData(int whouse)
+        public async Task<JObject> GetDailyData(int whouse, UserProfile user)
         {
             var urlPhoto = (await _imagesRepo.GetByIdAsync(1166)).img_url;
             var path = await dbClient.GetFileWithSharedLink(urlPhoto);
@@ -51,7 +52,7 @@ namespace SmartRetail.App.Web.Models
             return json;
         }
 
-        public async Task<JObject> GetMonthData(int whouse)
+        public async Task<JObject> GetMonthData(int whouse, UserProfile user)
         {
             var urlPhoto = (await _imagesRepo.GetByIdAsync(1166)).img_url;
             var path = await dbClient.GetFileWithSharedLink(urlPhoto);
@@ -89,6 +90,26 @@ namespace SmartRetail.App.Web.Models
 
         public JObject GetStocks(int whouse)
         {
+            throw new NotImplementedException();
+        }
+
+        public JObject GetExpenses(int whouse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<JObject> GetStocksAsync(int whouse, UserProfile user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<JObject> GetExpensesAsync(int whouse, UserProfile user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public JObject GetStocks(int whouse, UserProfile user)
+        {
             var json = new JObject();
 
             var list = new Dictionary<string, float>();
@@ -116,7 +137,7 @@ namespace SmartRetail.App.Web.Models
             return json;
         }
 
-        public JObject GetExpenses(int whouse)
+        public JObject GetExpenses(int whouse, UserProfile user)
         {
             var rnd = new Random();
             var json = new JObject();
@@ -140,6 +161,16 @@ namespace SmartRetail.App.Web.Models
 
             return json;
 
+        }
+
+        public Task<JObject> GetStocksAsync(int whouse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<JObject> GetExpensesAsync(int whouse)
+        {
+            throw new NotImplementedException();
         }
 
         private static JArray GetInfo(Dictionary<string, float> dict)

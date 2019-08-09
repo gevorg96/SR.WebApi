@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
 
 namespace SmartRetail.App.Web.Models.Interface
 {
     public interface IStockService
     {
-        IEnumerable<ProductViewModel> GetStocks(UserProfile user, int? shopId);
+        Task<IEnumerable<ProductViewModel>> GetStocks(UserProfile user, int? shopId);
     }
 }

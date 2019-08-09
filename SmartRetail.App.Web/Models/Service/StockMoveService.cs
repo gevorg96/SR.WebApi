@@ -57,14 +57,14 @@ namespace SmartRetail.App.Web.Models.Service
         #endregion
 
 
-        public IEnumerable<StockMoveViewModel> GetProducts(UserProfile user, int shopId, string name)
+        public async Task<IEnumerable<StockMoveViewModel>> GetProducts(UserProfile user, int shopId, string name)
         {
             var list = new List<StockMoveViewModel>();
             IEnumerable<Stock> stocks = new List<Stock>();
 
             if (user.shop_id == null || user.shop_id == shopId)
             {
-                stocks = stockRepo.GetStocksWithProducts(shopId);
+                stocks = await stockRepo.GetStocksWithProducts(shopId);
             }
             else
             {

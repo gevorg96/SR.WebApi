@@ -309,7 +309,8 @@ namespace SmartRetail.App.Web.Models.Service
                         var bytes = ReadToEnd(stream);
                         var memory = new MemoryStream(bytes);
                         var imgParts = product.ImgBase64.Split(".");
-                        var imgUrl = await dbBase.Upload(memory, "/products/" + business.id + ". " + business.name + "/" +
+                        var imgUrl = await dbBase.Upload(memory,
+                            "/products/" + business.id + ". " + business.name + "/" +
                             pId + "." + product.ProdName + "." + imgParts[imgParts.Length - 1]);
                         var img = new Images
                         {
@@ -327,6 +328,58 @@ namespace SmartRetail.App.Web.Models.Service
                 {
                     throw new Exception("Не получилось добавить картинку товара. Попробуйте снова.");
                 }
+            }
+
+            var dt = DateTime.Now;
+            if (product.Cost.HasValue && product.Cost < 0)
+            {
+                throw new Exception("Себестоимость должна быть > 0.");
+            }
+            if (product.Cost.HasValue && product.Cost >= 0)
+            {
+                if (product.Stocks != null && product.Stocks.Any())
+                {
+                    foreach (var s in product.Stocks)
+                    {
+                        var order = new Orders
+                        {
+                            isOrder = true,
+                            report_date = dt,
+                            shop_id = s.ShopId,
+                            OrderDetails = new List<OrderDetails>
+                            {
+                                new OrderDetails
+                                {
+                                    prod_id = pId,
+                                    cost = product.Cost.Value,
+                                    count = s.Stock
+
+                                }
+                            }
+                        };
+
+                        try
+                        {
+                            var orderId = await ordersRepo.AddOrderAsync(order);
+                            var orderDal = await ordersRepo.GetByIdWithMultiAsync(orderId);
+                            await strategy.UpdateAverageCost(Direction.Order, orderDal);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("Не удалось добавить остаток на склад.");
+                        }
+                    }
+                }
+                else
+                {
+                    var cost = new Cost
+                    {
+                        prod_id = pId,
+                        value = product.Cost
+                    };
+                    await costRepo.AddCostAsync(cost);
+                }
+
             }
 
             product.Id = pId;

@@ -4,31 +4,50 @@ using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel.Summary;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 using SmartRetail.App.DAL.BLL.DataServices;
+using SmartRetail.App.DAL.Entities;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.Web.Models.Service
 {
     public class SummaryService : IInformationService
     {
         private readonly ISalesDataService salesDataService;
+        private readonly IExpensesDataService expensesDataService;
+        private readonly IStocksDataService stocksDataService;
         private readonly IImageRepository imgRepo;
-        public SummaryService(ISalesDataService salesDs, IImageRepository _imgRepo)
+        private readonly IExpensesTypeRepository expTypeRepo;
+        private readonly IShopRepository shopRepo;
+
+        public SummaryService(ISalesDataService salesDs, IExpensesDataService expDs, IStocksDataService stocksDs, 
+            IImageRepository _imgRepo, IExpensesTypeRepository expensesTypeRepository, IShopRepository shopRepository)
         {
             salesDataService = salesDs;
             imgRepo = _imgRepo;
+            expensesDataService = expDs;
+            stocksDataService = stocksDs;
+            expTypeRepo = expensesTypeRepository;
+            shopRepo = shopRepository;
         }
 
         #region TotalInfo
 
-        public async Task<JObject> GetInfo(int whouse)
+        public async Task<JObject> GetInfo(int whouse, UserProfile user)
         {
             var summaryVm = new SummaryViewModel();
 
-            var dailyData = await salesDataService.GetDailyInfo(whouse);
-            var shares = await salesDataService.GetShares(whouse);
-            var pair = await salesDataService.GetTop2Products(whouse);
+            if (whouse == 0)
+            {
+                var shops = shopRepo.GetShopsByBusiness(user.business_id.Value);
+            }
+
+            var dailyData = await salesDataService.GeTotalInfoAsync(whouse);
+            var shares = await salesDataService.GetSharesAsync(whouse);
+            var pair = await salesDataService.GetTop2ProductsAsync(whouse);
 
             if (pair.Item1 != 0)
             {
@@ -59,11 +78,54 @@ namespace SmartRetail.App.Web.Models.Service
 
         #endregion
 
-        public async Task<JObject> GetDailyData(int whouse)
+        public async Task<JObject> GetDailyData(int whouse, UserProfile user)
         {
             var dt = DateTime.Now;
             salesDataService.From = new DateTime(dt.Year, dt.Month, dt.Day);
-            return await GetInfo(whouse);
+            return await GetInfo(whouse, user);
+        }
+
+        public async Task<JObject> GetExpensesAsync(int whouse, UserProfile user)
+        {
+            var expenses = await expensesDataService.GetMonthExpensesAsync(whouse, user);
+            if (!EnumerableExtensions.Any(expenses))
+            {
+                var expTypes = await expTypeRepo.GetAllAsync();
+                var dict = new Dictionary<string, decimal>();
+                foreach (var et in expTypes)
+                {   
+                    dict.Add(et.type, 0);
+                }
+
+                return GetObject(dict);
+            }
+            return GetObject(expenses);
+        }
+
+        public async Task<JObject> GetMonthData(int whouse, UserProfile user)
+        {
+            var dt = DateTime.Now;
+            salesDataService.From = new DateTime(dt.Year, dt.Month, 1);
+            return await GetInfo(whouse, user);
+        }
+
+
+        public async Task<JObject> GetStocksAsync(int whouse, UserProfile user)
+        {
+            var json = new JObject();
+            var stocks = await stocksDataService.GetStocks(whouse);
+            json.Add(new JProperty("cost", stocks.cost));
+            json.Add(new JProperty("goodsCount", stocks.goodsCount));
+            json.Add(new JProperty("goods", GetInfo(stocks.goods)));
+            return json;
+        }
+
+
+        #region Depricated
+
+        public JObject GetStocks(int whouse)
+        {
+            throw new NotImplementedException();
         }
 
         public JObject GetExpenses(int whouse)
@@ -71,17 +133,8 @@ namespace SmartRetail.App.Web.Models.Service
             throw new NotImplementedException();
         }
 
-        public async Task<JObject> GetMonthData(int whouse)
-        {
-            var dt = DateTime.Now;
-            salesDataService.From = new DateTime(dt.Year, dt.Month, 1);
-            return await GetInfo(whouse);
-        }
+        #endregion
 
-        public JObject GetStocks(int whouse)
-        {
-            throw new NotImplementedException();
-        }
 
         private static JArray GetInfo(Dictionary<string, decimal> dict)
         {
@@ -94,5 +147,15 @@ namespace SmartRetail.App.Web.Models.Service
             return jarray;
         }
 
+        private static JObject GetObject(Dictionary<string, decimal> dict)
+        {
+            var json = new JObject();
+            foreach (var de in dict)
+            {
+                json.Add(new JProperty(de.Key, de.Value));
+            }
+
+            return json;
+        }
     }
 }

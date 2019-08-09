@@ -18,7 +18,8 @@ namespace SmartRetail.App.DAL.BLL.DataServices
 
         private IEnumerable<Bills> bills;
 
-        public SalesDataService(IProductRepository pRepo, ISalesRepository sRepo, IImageRepository iRepo, IBillsRepository bRepo, IBusinessRepository businessRepo)
+        public SalesDataService(IProductRepository pRepo, ISalesRepository sRepo, IImageRepository iRepo,
+            IBillsRepository bRepo, IBusinessRepository businessRepo)
         {
             _imagesRepo = iRepo;
             _billRepo = bRepo;

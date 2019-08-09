@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
@@ -29,7 +30,7 @@ namespace SmartRetail.App.Web.Models.Service
             costRepo = _costRepo;
         }
         
-        public IEnumerable<ProductViewModel> GetStocks(UserProfile user, int? shopId)
+        public async Task<IEnumerable<ProductViewModel>> GetStocks(UserProfile user, int? shopId)
         {
             var list = new List<ProductViewModel>();
             IEnumerable<Stock> stocks = new List<Stock>();
@@ -42,7 +43,7 @@ namespace SmartRetail.App.Web.Models.Service
             else if(!avl.hasShop && !avl.isAdmin)
                 return new List<ProductViewModel>();
             else if(avl.hasShop)
-                stocks = stockRepo.GetStocksWithProducts(shopId.Value);
+                stocks = await stockRepo.GetStocksWithProducts(shopId.Value);
            
             if (stocks != null && stocks.Any())
             {

@@ -56,7 +56,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public IEnumerable<Stock> GetStocksWithProducts(int shopId)
+        public async Task<IEnumerable<Stock>> GetStocksWithProducts(int shopId)
         {
             var sql = "select * from Stock where shop_id = @shopId";
             var subSql = "select * from Product where id = @prodId";
@@ -65,14 +65,14 @@ namespace SmartRetail.App.DAL.Repository
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                var stocks = connection.Query<Stock>(sql, new { shopId = shopId }).ToList();
+                var stocks = await connection.QueryAsync<Stock>(sql, new { shopId = shopId });
 
                 foreach (var stock in stocks)
                 {
-                    stock.Product = connection.Query<Product>(subSql, new { prodId = stock.prod_id }).FirstOrDefault();
+                    stock.Product = await connection.QueryFirstOrDefaultAsync<Product>(subSql, new { prodId = stock.prod_id });
                     if (stock.Product != null)
                     {
-                        stock.Product.Image = connection.Query<Images>(sub2Sql, new { prodId = stock.prod_id }).FirstOrDefault();
+                        stock.Product.Image = await connection.QueryFirstOrDefaultAsync<Images>(sub2Sql, new { prodId = stock.prod_id });
                     }
                 }
                 return stocks;

@@ -27,14 +27,14 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProducts(int shopFrom, string name)
+        public async Task<IActionResult> GetProducts(int shopFrom, string name)
         {
             if (shopFrom == 0)
                 return BadRequest("Необходимо выбрать склад.");
             var user = userRepo.GetByLogin(User.Identity.Name);
             try
             {
-                var prods = service.GetProducts(user, shopFrom, name);
+                var prods = await service.GetProducts(user, shopFrom, name);
                 return Ok(prods);
             }
             catch (Exception e)

@@ -107,6 +107,8 @@ namespace SmartRetail.App.Web
       
             services.AddTransient<ImageDataService>();
             services.AddTransient<ISalesDataService, SalesDataService>();
+            services.AddTransient<IExpensesDataService, ExpensesDataService>();
+            services.AddTransient<IStocksDataService, StocksDataService>();
             services.AddTransient<ShopsChecker>();
             services.AddTransient<IStrategy, FifoStrategy>();
             services.AddTransient<ITreeFiller, CathegoryTreeFiller>(o => new CathegoryTreeFiller(conn));

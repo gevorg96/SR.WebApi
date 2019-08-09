@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ namespace SmartRetail.App.Web.Controllers
         }
         
         [HttpGet]
-        public FilteredProductViewModel GetProducts(int? page = 1, int? limit = 10, string name = null, string color = null, string size = null, int? shopId = null)
+        public async Task<FilteredProductViewModel> GetProducts(int? page = 1, int? limit = 10, string name = null, string color = null, string size = null, int? shopId = null)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
 
@@ -36,7 +37,7 @@ namespace SmartRetail.App.Web.Controllers
                 var shops = _shopService.GetStocks(user);
                 shopId = shops.FirstOrDefault()?.id;
             }
-            var stocks = _service.GetStocks(user, shopId);
+            var stocks = await _service.GetStocks(user, shopId);
             if (stocks == null || !stocks.Any())
             {
                 var vm = new FilteredProductViewModel

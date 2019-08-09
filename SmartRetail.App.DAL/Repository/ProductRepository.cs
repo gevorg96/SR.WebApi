@@ -110,7 +110,7 @@ namespace SmartRetail.App.DAL.Repository
                 isNotNull(entity.attr3), isNotNull(entity.attr4), isNotNull(entity.attr5), isNotNull(entity.attr6),
                 isNotNull(entity.attr7), isNotNull(entity.attr8), isNotNull(entity.attr9), isNotNull(entity.attr10), isNotNull(entity.unit_id));
 
-            string priceSql = "INSERT INTO Price (prod_id, price, shop_id) VALUES (@prodId, @Price, @shopId)";
+            string priceSql = "INSERT INTO Price (prod_id, price) VALUES (@prodId, @Price)";
 
             var selectSql = "SELECT * FROM Product WHERE business_id = " + entity.business_id + " AND name = N'" + entity.name + "'";
 
@@ -128,7 +128,7 @@ namespace SmartRetail.App.DAL.Repository
                         if (price != null && price?.price != null)
                         {
                             connection.Execute(priceSql,
-                                new { prodId = id, Price = price.price, shopId = entity.shop_id });
+                                new { prodId = id, Price = isNotNull(price.price) });
                         }
                         return id;
                     }
