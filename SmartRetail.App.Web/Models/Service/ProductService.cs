@@ -242,7 +242,7 @@ namespace SmartRetail.App.Web.Models.Service
             var price = priceRepo.GetPriceByProdId(id);
             var cost = costRepo.GetByProdId(id).FirstOrDefault();
             var shops = user.shop_id == null ? shopRepo.GetShopsByBusiness(user.business_id.Value) : new List<Shop> { shopRepo.GetById(user.shop_id.Value) };
-            var stocks = shops.Select(p => stockRepo.GetStockByShopAndProdIds(p.id, id));
+            var stocks = shops.Select(p => stockRepo.GetStockByShopAndProdIds(p.id, id)).Where(p => p != null).ToList();
 
             var prodVm = new ProductViewModel
             {
@@ -255,7 +255,7 @@ namespace SmartRetail.App.Web.Models.Service
                 ImgUrl = img != null && !string.IsNullOrEmpty(img.img_url_temp) ? img.img_url_temp : "",
                 Cost = cost != null && cost.value.HasValue ? cost.value.Value : 0,
                 Price =  price != null && price.price.HasValue ? price.price.Value : 0,
-                Stock = stocks.Sum(p => p.count).HasValue ? stocks.Sum(p => p.count).Value : 0
+                Stock = stocks.Any() && stocks.Sum(p => p.count).HasValue ? stocks.Sum(p => p.count).Value : 0
             };
 
             return prodVm;
@@ -438,8 +438,6 @@ namespace SmartRetail.App.Web.Models.Service
             }
         }
 
-
-
         public async Task<ProductViewModel> UpdateProduct(UserProfile user, ProductDetailViewModel product)
         {
             var business = await businessRepo.GetByIdAsync(user.business_id.Value);
@@ -580,7 +578,6 @@ namespace SmartRetail.App.Web.Models.Service
         private static string MakeTemporary(string link)
         {
             return link.Replace("https://www", "https://dl").Replace("?dl=0", "?dl=1");
-
         }
 
         /// <summary>

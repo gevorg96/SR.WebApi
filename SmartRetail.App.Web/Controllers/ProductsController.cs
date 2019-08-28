@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -44,9 +45,13 @@ namespace SmartRetail.App.Web.Controllers
                 return Ok(m);
             }
 
+            // переделать на регулярное выражение
+            string pattern = "\\b" + name + "\\S*";    //шаблон, по которому ищутся слова в строке
+            var regex = new Regex(pattern);
+
             if (!string.IsNullOrEmpty(name))
             {
-                products = products.Where(p => !string.IsNullOrEmpty(p.ProdName) && p.ProdName.ToLower().StartsWith(name.ToLower()));
+                products = products.Where(p => !string.IsNullOrEmpty(p.ProdName) && StartsWithAny(p.ProdName.ToLower(), name.ToLower()));
             }
 
             if (!string.IsNullOrEmpty(color))
@@ -205,6 +210,20 @@ namespace SmartRetail.App.Web.Controllers
                 limit = model.limit;
             }
             return result;
+        }
+
+        private bool StartsWithAny(string prodName, string search)
+        {
+            var words = prodName.Split(' ');
+            foreach (var word in words)
+            {
+                if (word.StartsWith(search))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
     }
