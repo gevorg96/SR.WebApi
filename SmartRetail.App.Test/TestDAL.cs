@@ -20,6 +20,10 @@ using SmartRetail.App.Web.Models.ViewModel.Sales;
 using System.IO;
 using System.Collections;
 using SmartRetail.App.DAL.BLL.DataServices;
+using SmartRetail.App.DAL.BLL.DataStructures;
+using SmartRetail.App.DAL.BLL.HelperClasses;
+using SmartRetail.App.DAL.BLL.StructureFillers;
+using SmartRetail.App.DAL.Helpers;
 
 namespace SmartRetail.App.Test
 {
@@ -50,6 +54,7 @@ namespace SmartRetail.App.Test
         private readonly IProductService prodService;
         private readonly ISalesService salesService;
         private readonly IStrategy strategy;
+        private readonly IFoldersRepository foldersRepo;
 
         public TestDAL()
         {
@@ -75,6 +80,7 @@ namespace SmartRetail.App.Test
             strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
             salesService = new SalesSerivce(userRepo, shopRepo, billsRepo, salesRepo, prodRepo, priceRepo, imgRepo, strategy, checker, costRepo);
             ordersRepo = new OrdersRepository(conn);
+            foldersRepo = new FoldersRepository(conn);
         }
 
         [Fact]
@@ -684,7 +690,46 @@ namespace SmartRetail.App.Test
             var stocks = await stocksDs.GetStocks(2);
         }
 
+        [Fact]
+        public async void FillFoldersTable()
+        {
+            var filler = new CathegoryTreeFiller(conn);
+            var root = await filler.FillTreeByBusinessAsync(1);
+            var rootNodes = root.Nodes;
+            rootNodes[0].Parent = null;
+            var foldersTree = new Tree<Folders>
+            {
+                Value = new Folders {business_id = 1, folder = root.Value.folder}
+            };
+
+            var newTree = CastIntoDal(rootNodes, foldersTree);
+            var tree = newTree.Children[0];
+            tree.Parent = null;
+            tree.Value.folder = tree.Value.folder.Split('.')[1];
+            await foldersRepo.AddFolderSubTreeAsync(tree);
+        }
+
+        private Tree<Folders> CastIntoDal(List<CathegoryTree<ImgTwinModel>> categories, Tree<Folders> folders)
+        {
+            if (categories == null || !categories.Any())
+            {
+                return folders;
+            }
+            else
+            {
+                foreach (var cat in categories)
+                {
+                    var child = folders.AddChild(new Folders {business_id = 1, folder = cat.Value.folder});
+                    CastIntoDal(cat.Nodes, child);
+                }
+            }
+
+            return folders;
+        }
+
     }
+
+
 
     internal class ExpObject
     {
@@ -694,6 +739,5 @@ namespace SmartRetail.App.Test
 
         public decimal summ { get; set; }
         public DateTime reportDate { get; set; }
-
     }
 }

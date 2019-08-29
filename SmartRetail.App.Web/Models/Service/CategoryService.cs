@@ -111,25 +111,10 @@ namespace SmartRetail.App.Web.Models.Service
 
             if (pics.Any())
             {
-                var rnd = new Random();
                 prodGroup.Products = new List<ProductViewModel>();
                 foreach (var productViewModel in pics)
                 {
-                    var product = await productRepo.GetByIdAsync(productViewModel.Id);
-                    var img = await imgRepo.GetByIdAsync(product.id);
-                    prodGroup.Products.Add(new ProductViewModel
-                    {
-                        Id = product.id,
-                        ProdName = product.name,
-                        Stock = rnd.Next(1, 30),
-                        Cost = rnd.Next(1000, 10000),
-                        Price = rnd.Next(2000, 20000),
-                        VendorCode = product.attr1,
-                        ImgUrl = img?.img_url_temp,
-                        Color = product.attr10,
-                        Size = product.attr9,
-                        UnitId = product.unit_id.HasValue ? product.unit_id.Value : 0
-                    });
+                    prodGroup.Products.Add(await productService.GetProduct(user, productViewModel.Id));
                 }
             }
 

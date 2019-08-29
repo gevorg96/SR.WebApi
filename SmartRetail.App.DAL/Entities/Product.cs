@@ -29,6 +29,7 @@ namespace SmartRetail.App.DAL.Entities
         public string attr9 { get; set; }
         public string attr10 { get; set; }
         public int? unit_id { get; set; }
+        public int? folder_id { get; set; }
     
         public virtual ICollection<Cost> Cost { get; set; }
         public virtual ICollection<Orders> Orders { get; set; }

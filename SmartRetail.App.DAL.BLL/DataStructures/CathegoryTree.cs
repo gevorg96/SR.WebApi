@@ -102,7 +102,6 @@ namespace SmartRetail.App.DAL.BLL.DataStructures
                     treeCollection.AddRange(ToList(node));
                 }    
             }
-
             return treeCollection;
         }
 
