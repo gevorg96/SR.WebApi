@@ -34,7 +34,8 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProducts(int? page = null, int? limit = null, string name = null, string color = null, string size = null)
+        [ProducesResponseType(200, Type = typeof(List<ProductViewModel>))]
+        public async Task<ActionResult<List<ProductViewModel>>> GetProducts(int? page = null, int? limit = null, string name = null, string color = null, string size = null)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
             var products = await _service.GetProducts(user);
@@ -83,7 +84,9 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetProduct(int id)
+        [ProducesResponseType(200, Type = typeof(ProductViewModel))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<ProductViewModel>> GetProduct(int id)
         {
             if (id == 0)
             {
@@ -92,7 +95,7 @@ namespace SmartRetail.App.Web.Controllers
             var user = _userRepo.GetByLogin(User.Identity.Name);
             try
             {
-                var product = _service.GetProduct(user, id);
+                var product = await _service.GetProduct(user, id);
                 if (product != null)
                 {
                     return Ok(product);
@@ -109,7 +112,9 @@ namespace SmartRetail.App.Web.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromForm] ProductDetailViewModel product)
+        [ProducesResponseType(201, Type = typeof(ProductDetailViewModel))]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<ProductDetailViewModel>> AddProduct([FromForm] ProductDetailViewModel product)
         {
             var user = _userRepo.GetByLogin(User.Identity.Name);
             try
@@ -150,7 +155,10 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductDetailViewModel product)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<ProductViewModel>> UpdateProduct(int id, [FromForm] ProductDetailViewModel product)
         {
             product.Id = id;
             var user = _userRepo.GetByLogin(User.Identity.Name);

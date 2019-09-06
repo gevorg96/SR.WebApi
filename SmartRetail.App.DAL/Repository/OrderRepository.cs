@@ -32,8 +32,6 @@ namespace SmartRetail.App.DAL.Repository
             //}
         }
 
-
-
         public async Task<IEnumerable<Orders>> GetOrdersByProdId(int prodId)
         {
             var sql = "select * from Orders where prod_id = " + prodId;

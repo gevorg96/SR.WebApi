@@ -104,7 +104,9 @@ namespace SmartRetail.App.Web
                 new ExpensesTypeRepository(conn));
             services.AddTransient<IPictureWareHouse, DropBoxBase>(o =>
                 new DropBoxBase(apiKey, apiSecret));
-      
+            services.AddTransient<IFoldersRepository, FoldersRepository>(o =>
+                new FoldersRepository(conn));
+
             services.AddTransient<ImageDataService>();
             services.AddTransient<ISalesDataService, SalesDataService>();
             services.AddTransient<IExpensesDataService, ExpensesDataService>();
@@ -112,6 +114,8 @@ namespace SmartRetail.App.Web
             services.AddTransient<ShopsChecker>();
             services.AddTransient<IStrategy, FifoStrategy>();
             services.AddTransient<ITreeFiller, CathegoryTreeFiller>(o => new CathegoryTreeFiller(conn));
+            services.AddTransient<ICategoryTreeFiller, CategoryTreeFiller>();
+            services.AddTransient<IFoldersDataService,FoldersDataService>();
 
             services.AddTransient<IShopSerivce, ShopSerivce>();
             services.AddTransient<IInformationService, SummaryService>();

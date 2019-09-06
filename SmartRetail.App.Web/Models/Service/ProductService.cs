@@ -39,6 +39,8 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IOrdersRepository ordersRepo;
         private readonly IStrategy strategy;
         private readonly ShopsChecker checker;
+        private readonly IFoldersRepository foldersRepo;
+        private readonly IFoldersDataService foldersDataService;
         private const string dropboxBasePath = "/dropbox/dotnetapi/products";
 
         #endregion
@@ -46,7 +48,8 @@ namespace SmartRetail.App.Web.Models.Service
         #region Constructor
         public ProductService(IShopRepository _shopRepo, IBusinessRepository _businessRepo, IImageRepository _imgRepo, 
             IPictureWareHouse _dbBase, IProductRepository _prodRepo, IUnitRepository _unitRepo, IPriceRepository _priceRepo,
-            ShopsChecker _checker, ICostRepository _costRepo, IStockRepository _stockRepo, IOrdersRepository ordersRepository, IStrategy _strategy)
+            ShopsChecker _checker, ICostRepository _costRepo, IStockRepository _stockRepo, IOrdersRepository ordersRepository, 
+            IStrategy _strategy, IFoldersRepository _foldersRepo, IFoldersDataService _foldersDataService)
         {
             shopRepo = _shopRepo;
             businessRepo = _businessRepo;
@@ -60,6 +63,8 @@ namespace SmartRetail.App.Web.Models.Service
             strategy = _strategy;
             dbBase = _dbBase;
             checker = _checker;
+            foldersRepo = _foldersRepo;
+            foldersDataService = _foldersDataService;
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
         }
@@ -292,6 +297,8 @@ namespace SmartRetail.App.Web.Models.Service
 
             try
             {
+                //await foldersDataService.AddFoldersByPath(product.Category, business.id);
+                prod.folder_id = await foldersDataService.GetFolderIdByPath(product.Category, business.id);
                 //add with repo
                 pId = prodRepo.AddProduct(prod);
             }
@@ -310,7 +317,7 @@ namespace SmartRetail.App.Web.Models.Service
                         var memory = new MemoryStream(bytes);
                         var imgParts = product.ImgBase64.Split(".");
                         var imgUrl = await dbBase.Upload(memory,
-                            "/products/" + business.id + ". " + business.name + "/" +
+                            "/" + ". " + business.name + "/" +
                             pId + "." + product.ProdName + "." + imgParts[imgParts.Length - 1]);
                         var img = new Images
                         {
@@ -328,6 +335,9 @@ namespace SmartRetail.App.Web.Models.Service
                 {
                     throw new Exception("Не получилось добавить картинку товара. Попробуйте снова.");
                 }
+
+
+
             }
 
             var dt = DateTime.Now;
@@ -353,7 +363,6 @@ namespace SmartRetail.App.Web.Models.Service
                                     prod_id = pId,
                                     cost = product.Cost.Value,
                                     count = s.Stock
-
                                 }
                             }
                         };
@@ -442,11 +451,6 @@ namespace SmartRetail.App.Web.Models.Service
         {
             var business = await businessRepo.GetByIdAsync(user.business_id.Value);
 
-            if (string.IsNullOrEmpty(product.ProdName))
-            {
-                throw new Exception("Наименование товара не может быть пустым.");
-            }
-
             int prodId;
             try
             {
@@ -481,6 +485,12 @@ namespace SmartRetail.App.Web.Models.Service
                 attr9 = product.Size,
                 attr10 = product.Color
             };
+
+            if (!string.IsNullOrEmpty(product.Category))
+            {
+                prod.folder_id = await foldersDataService.GetFolderIdByPath(product.Category, business.id);
+            }
+
             try
             {
                 prodRepo.UpdateProduct(prod);
@@ -527,7 +537,7 @@ namespace SmartRetail.App.Web.Models.Service
                     var imgDal = await imgRepo.GetByIdAsync(prodId);
                     if (imgDal != null && !string.IsNullOrEmpty(imgDal.img_url))
                     {
-                        var isDeleted = await dbBase.Delete("/products/" + business.id + ". " + business.name + "/" +
+                        var isDeleted = await dbBase.Delete("/" + business.name + "/" +
                             imgDal.prod_id + "." + imgDal.img_name + "." + imgDal.img_type);
                         if (!isDeleted)
                         {
@@ -540,7 +550,7 @@ namespace SmartRetail.App.Web.Models.Service
                         var bytes = ReadToEnd(stream);
                         var memory = new MemoryStream(bytes);
                         var imgParts = product.ImgBase64.Split(".");
-                        var imgUrl = await dbBase.Upload(memory, "/products/" + business.id+ ". " + business.name + "/" +
+                        var imgUrl = await dbBase.Upload(memory, "/" + business.name + "/" +
                             prodId + "." + product.ProdName + "." + imgParts[imgParts.Length - 1]);
 
                         imgDal.img_type = imgParts[imgParts.Length - 1];
@@ -548,7 +558,10 @@ namespace SmartRetail.App.Web.Models.Service
                         imgDal.img_url_temp = ImageDataService.MakeTemporary(imgUrl);
                         imgDal.img_name = product.ProdName;
                         if (!string.IsNullOrEmpty(product.Category))
+                        {
                             imgDal.img_path = product.Category;
+                        }
+
                         await imgRepo.UpdateImage(imgDal);
                     }
                 }

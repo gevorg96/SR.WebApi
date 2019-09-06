@@ -47,7 +47,7 @@ namespace SmartRetail.App.Web.Controllers
         {
             var user = userRepo.GetByLogin(User.Identity.Name);
             var tree = await catService.GetFullFolderTree(user);
-            return Ok(tree.Nodes[0]);
+            return Ok(tree);
         }
     }
 }

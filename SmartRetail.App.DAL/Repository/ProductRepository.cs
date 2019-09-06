@@ -104,11 +104,12 @@ namespace SmartRetail.App.DAL.Repository
         {
             //shop_id,
             string prodSql = string.Format("INSERT INTO Product ( business_id, supplier_id, name, attr1, " +
-                                           "attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9, attr10, unit_id) Values ( {0}, {1}, {2}, " +
-                                           "{3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13});", isNotNull(entity.business_id),
+                                           "attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9, attr10, unit_id, folder_id) Values ( {0}, {1}, {2}, " +
+                                           "{3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14});", isNotNull(entity.business_id),
                 isNotNull(entity.supplier_id), isNotNull(entity.name), isNotNull(entity.attr1), isNotNull(entity.attr2),
                 isNotNull(entity.attr3), isNotNull(entity.attr4), isNotNull(entity.attr5), isNotNull(entity.attr6),
-                isNotNull(entity.attr7), isNotNull(entity.attr8), isNotNull(entity.attr9), isNotNull(entity.attr10), isNotNull(entity.unit_id));
+                isNotNull(entity.attr7), isNotNull(entity.attr8), isNotNull(entity.attr9), isNotNull(entity.attr10), isNotNull(entity.unit_id), 
+                isNotNull(entity.folder_id));
 
             string priceSql = "INSERT INTO Price (prod_id, price) VALUES (@prodId, @Price)";
 

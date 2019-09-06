@@ -84,7 +84,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
                 Parent = null
             };
 
-            if (imgPaths != null && imgPaths.Any())
+            if (imgPaths.Any())
             {
                 foreach (var path in imgPaths)
                 {

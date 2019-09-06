@@ -71,16 +71,18 @@ namespace SmartRetail.App.Test
             salesRepo = new SalesRepository(conn);
             billsRepo = new BillsRepository(conn);
             expRepo = new ExpensesRepository(conn);
+            foldersRepo = new FoldersRepository(conn);
             dbBase = new DropBoxBase("o9340xsv2mzn7ws", "xzky2fzfnmssik1");
             checker = new ShopsChecker(shopRepo,businessRepo);
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
-            prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, checker, costRepo, stockRepo,ordersRepo, strategy);
+            prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, checker, 
+                costRepo, stockRepo,ordersRepo, strategy, foldersRepo, new FoldersDataService(foldersRepo,prodRepo));
             orderStockRepo = new OrderStockRepository(conn);
             strategy = new FifoStrategy(prodRepo, orderStockRepo, stockRepo, costRepo);
             salesService = new SalesSerivce(userRepo, shopRepo, billsRepo, salesRepo, prodRepo, priceRepo, imgRepo, strategy, checker, costRepo);
             ordersRepo = new OrdersRepository(conn);
-            foldersRepo = new FoldersRepository(conn);
+            
         }
 
         [Fact]
@@ -727,7 +729,18 @@ namespace SmartRetail.App.Test
             return folders;
         }
 
+        [Fact]
+        public async void TestFillFoldersByPath()
+        {
+            var folderDs = new FoldersDataService(foldersRepo,prodRepo);
+            var t = await folderDs.GetFolderIdByPath("/Кайфы от Петерфельдо/Рыбалка/Что-то(2)/Что-то(3)", 1);
+            //await folderDs.AddFoldersByPath("/Кайфы от Петерфельдо/Рыбалка/Что-то(4)/Что-то(5)", 1);
+        }
+
     }
+
+
+
 
 
 

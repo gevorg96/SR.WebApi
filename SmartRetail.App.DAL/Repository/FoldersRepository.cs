@@ -63,7 +63,7 @@ namespace SmartRetail.App.DAL.Repository
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                await InsertChilds(null, foldersTree, db);
+                await InsertChilds(foldersTree.Parent?.Value?.id, foldersTree, db);
             }
         }
 
@@ -89,7 +89,7 @@ namespace SmartRetail.App.DAL.Repository
             {
                 await db.ExecuteAsync(insertSql, new {parent = parentId, folder = foldersTree.Value.folder});
                 var dal = await db.QueryFirstOrDefaultAsync<Folders>(selectSql,
-                    new {folder = foldersTree.Value.folder, parent = isNotNull(parentId)});
+                    new { foldersTree.Value.folder, parent = isNotNull(parentId) });
                 if (foldersTree.Children != null && foldersTree.Children.Any())
                 {
                     foreach (var child in foldersTree.Children)

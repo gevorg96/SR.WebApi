@@ -15,7 +15,7 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Create
 
-        public new void Add(UserProfile entity)
+        public void Add(UserProfile entity)
         {
             string sql = "INSERT INTO UserProfile (UserName, Email, Password, shop_id, business_id, access_grade) Values (@UserName, @Email, @Password, @ShopId, @BusinessId, @AccessGrade);";
 
@@ -29,7 +29,7 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Read
 
-        public new UserProfile GetById(int id)
+        public UserProfile GetById(int id)
         {
             string sql = "SELECT * FROM UserProfile WHERE UserId = @Id";
             using (var connection = new SqlConnection(connectionString))

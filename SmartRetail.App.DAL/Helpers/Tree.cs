@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace SmartRetail.App.DAL.Helpers
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class Tree<T>
     {
+        [JsonProperty]
         public T Value;
 
+        [JsonProperty("nodes")]
         public List<Tree<T>> Children;
 
         public Tree<T> Parent;
