@@ -27,7 +27,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet("/getdailysales")]
         public async Task<JsonResult> GetCurrentDailySales(int? whouse)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             var shops = shopService.GetStocks(user);
             int shopId = shops.FirstOrDefault().id;
 
@@ -47,7 +47,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet("/getmonthlysales")]
         public async Task<JsonResult> GetMonthlySales(int? whouse)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             var shops = shopService.GetStocks(user);
             int shopId = shops.FirstOrDefault().id;
 
@@ -67,7 +67,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet("/getstocks")]
         public async Task<JsonResult> GetStocks(int? whouse)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             var shops = shopService.GetStocks(user);
             int shopId = shops.FirstOrDefault().id;
 
@@ -87,7 +87,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet("/getexpenses")]
         public async Task<JsonResult> GetExpenses(int? whouse)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             var shops = shopService.GetStocks(user);
             int shopId = shops.FirstOrDefault().id;
 

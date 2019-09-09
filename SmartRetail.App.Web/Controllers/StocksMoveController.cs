@@ -31,7 +31,7 @@ namespace SmartRetail.App.Web.Controllers
         {
             if (shopFrom == 0)
                 return BadRequest("Необходимо выбрать склад.");
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             try
             {
                 var prods = await service.GetProducts(user, shopFrom, name);
@@ -46,7 +46,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveStocks([FromBody]StockMoveRequestViewModel model)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             if (model.shopFrom == 0 || model.shopTo == 0)
             {
                 return BadRequest("Необходимо указать склады.");

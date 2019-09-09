@@ -30,7 +30,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet]
         public async Task<IEnumerable<OrderViewModel>> GetCancellations(int? shopId, DateTime? from, DateTime? to, bool orderByDesc = true)
         {
-            var user = userRepository.GetByLogin(User.Identity.Name);
+            var user = await userRepository.GetByLogin(User.Identity.Name);
 
             if (shopId == null)
             {
@@ -54,7 +54,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 return new BadRequestObjectResult("Не выбрано списание.");
             }
-            var user = userRepository.GetByLogin(User.Identity.Name);
+            var user = await userRepository.GetByLogin(User.Identity.Name);
             try
             {
                 var cancel = await cancellationService.GetCancellation(user, id);
@@ -76,7 +76,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCancellation([FromBody]OrderCreateViewModel model)
         {
-            var user = userRepository.GetByLogin(User.Identity.Name);
+            var user = await userRepository.GetByLogin(User.Identity.Name);
             var shops = shopService.GetStocks(user).Select(p => p.id);
 
             if (shops.Contains(model.shopId))

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
 using SmartRetail.App.Web.Models;
 using SmartRetail.App.Web.Models.ViewModel;
@@ -30,11 +31,11 @@ namespace SmartRetail.App.Web.Controllers
         //};
  
         [HttpPost("/login")]
-        public ActionResult Token([FromBody]LoginViewModel model)
+        public async Task<ActionResult> Token([FromBody]LoginViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var identity = GetIdentity(model.username, model.password);
+            var identity = await GetIdentity(model.username, model.password);
             if (identity == null)
             {
                 return BadRequest("Invalid username or password.");
@@ -60,28 +61,28 @@ namespace SmartRetail.App.Web.Controllers
             return Ok(response);
         }
  
-        private ClaimsIdentity GetIdentity(string username, string password)
+        private async Task<ClaimsIdentity> GetIdentity(string username, string password)
         {
-            var user = _repo.GetByLogin(username);
-            var passwordValid = Crypto.VerifyHashedPassword(user.Password, password);
-            if (!passwordValid)
-            {
-                return null;
-            }
-
+            var user = await _repo.GetByLogin(username);
             if (user != null)
             {
+                var passwordValid = Crypto.VerifyHashedPassword(user.Password, password);
+                if (!passwordValid)
+                {
+                    return null;
+                }
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
                     new Claim(ClaimsIdentity.DefaultRoleClaimType, "user")
                 };
                 ClaimsIdentity claimsIdentity =
-                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-                    ClaimsIdentity.DefaultRoleClaimType);
+                    new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+                        ClaimsIdentity.DefaultRoleClaimType);
                 return claimsIdentity;
             }
- 
+
             // если пользователя не найдено
             return null;
         }

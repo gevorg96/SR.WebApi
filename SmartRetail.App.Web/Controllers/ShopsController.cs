@@ -6,6 +6,7 @@ using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SmartRetail.App.Web.Controllers
 {
@@ -24,9 +25,9 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ShopViewModel> GetStocks()
+        public async Task<IEnumerable<ShopViewModel>> GetStocks()
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             var stocks = shopSerivce.GetStocks(user).OrderBy(p => p.id);
             return stocks;
         }

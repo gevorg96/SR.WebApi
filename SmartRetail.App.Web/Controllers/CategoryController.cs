@@ -34,7 +34,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpPost]
         public async Task<ProductGroupViewModel> Search([FromBody] FolderRequestSearchVeiwModel model)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             if (string.IsNullOrEmpty(model.searchCriteria))
             {
                 return await catService.GetNexLevelGroup(user, model.path, model.needProducts);
@@ -45,7 +45,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTreeWithoutProducts()
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             var tree = await catService.GetFullFolderTree(user);
             return Ok(tree);
         }

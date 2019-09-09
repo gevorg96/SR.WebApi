@@ -36,7 +36,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet]
         public async Task<IEnumerable<SalesViewModel>> GetSales(int? shopId, DateTime? from, DateTime? to, bool orderByDesc = true)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
 
             if (shopId == null)
             {
@@ -60,7 +60,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 return new BadRequestObjectResult("Не выбрана продажа.");
             }
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             try
             {
                 var product = await service.GetBill(user, id);
@@ -82,7 +82,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddSale([FromBody] SalesCreateViewModel model)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             var shops = shopService.GetStocks(user).Select(p => p.id);
 
             if (shops.Contains(model.shopId))

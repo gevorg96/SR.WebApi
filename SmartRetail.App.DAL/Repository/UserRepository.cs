@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SmartRetail.App.DAL.Entities;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -38,12 +39,12 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public UserProfile GetByLogin(string login)
+        public async Task<UserProfile> GetByLogin(string login)
         {
             string sql = "SELECT * FROM UserProfile WHERE UserName = @Login";
             using (var connection = new SqlConnection(connectionString))
             {
-                return connection.QueryFirst<UserProfile>(sql, new { Login = login });
+                return await connection.QueryFirstOrDefaultAsync<UserProfile>(sql, new { Login = login });
             }
         }
 

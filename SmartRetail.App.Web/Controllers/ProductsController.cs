@@ -37,7 +37,7 @@ namespace SmartRetail.App.Web.Controllers
         [ProducesResponseType(200, Type = typeof(List<ProductViewModel>))]
         public async Task<ActionResult<List<ProductViewModel>>> GetProducts(int? page = null, int? limit = null, string name = null, string color = null, string size = null)
         {
-            var user = _userRepo.GetByLogin(User.Identity.Name);
+            var user = await _userRepo.GetByLogin(User.Identity.Name);
             var products = await _service.GetProducts(user);
 
             if (products == null || !products.Any())
@@ -92,7 +92,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 return new BadRequestObjectResult("Не выбран продукт.");
             }
-            var user = _userRepo.GetByLogin(User.Identity.Name);
+            var user = await _userRepo.GetByLogin(User.Identity.Name);
             try
             {
                 var product = await _service.GetProduct(user, id);
@@ -116,7 +116,7 @@ namespace SmartRetail.App.Web.Controllers
         [ProducesResponseType(400)]
         public async Task<ActionResult<ProductDetailViewModel>> AddProduct([FromForm] ProductDetailViewModel product)
         {
-            var user = _userRepo.GetByLogin(User.Identity.Name);
+            var user = await _userRepo.GetByLogin(User.Identity.Name);
             try
             {
                 var newFileName = string.Empty;
@@ -161,7 +161,7 @@ namespace SmartRetail.App.Web.Controllers
         public async Task<ActionResult<ProductViewModel>> UpdateProduct(int id, [FromForm] ProductDetailViewModel product)
         {
             product.Id = id;
-            var user = _userRepo.GetByLogin(User.Identity.Name);
+            var user = await _userRepo.GetByLogin(User.Identity.Name);
             try
             {
                 var newFileName = string.Empty;
@@ -200,7 +200,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpPost("/getproductgroups")]
         public async Task<ProductGroupViewModel> GetProductGroups([FromBody]FolderRequestViewModel folderPath)
         {
-            var user = _userRepo.GetByLogin(User.Identity.Name);
+            var user = await _userRepo.GetByLogin(User.Identity.Name);
 
             return await _service.GetNexLevelGroup(user, folderPath.path, folderPath.needProducts);
         }
@@ -208,7 +208,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpPost("/searchproductgroups")]
         public async Task<ProductGroupViewModel> SearchProductGroups([FromBody] FolderRequestSearchVeiwModel model)
         {
-            var user = _userRepo.GetByLogin(User.Identity.Name);
+            var user = await _userRepo.GetByLogin(User.Identity.Name);
             var result = await _service.Search(user, model.searchCriteria, 0, 1000, model.path);
             var page = 1;
             var limit = 5;

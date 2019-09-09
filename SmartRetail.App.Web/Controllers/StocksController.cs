@@ -30,7 +30,7 @@ namespace SmartRetail.App.Web.Controllers
         [HttpGet]
         public async Task<FilteredProductViewModel> GetProducts(int? page = 1, int? limit = 10, string name = null, string color = null, string size = null, int? shopId = null)
         {
-            var user = _userRepo.GetByLogin(User.Identity.Name);
+            var user = await _userRepo.GetByLogin(User.Identity.Name);
 
             if (shopId == null)
             {

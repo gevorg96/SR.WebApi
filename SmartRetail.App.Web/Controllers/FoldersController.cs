@@ -36,23 +36,23 @@ namespace SmartRetail.App.Web.Controllers
         [ProducesResponseType(200, Type = typeof(ProductGroupViewModel))]
         public async Task<ActionResult<ProductGroupViewModel>> GetFolders(string folder = null)
         {
-            var user = userRepo.GetByLogin(User.Identity.Name);
+            var user = await userRepo.GetByLogin(User.Identity.Name);
             return await categoryService.GetNexLevelGroup(user, folder, false);
         }
 
-        [HttpPost]
-        [ProducesResponseType(201)] //, Type = typeof(ProductDetailViewModel))]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> AddFolder([FromBody] FolderAddViewModel model)
-        {
-            var user = userRepo.GetByLogin(User.Identity.Name);
-            if (string.IsNullOrEmpty(model.folderName))
-            {
-                return BadRequest("Отсутствует название новой папки.");
-            }
-            await foldersDataService.AddFoldersByPath(model.pathToAdd + "/" + model.folderName, user.business_id.Value);
+        //[HttpPost]
+        //[ProducesResponseType(201)] //, Type = typeof(ProductDetailViewModel))]
+        //[ProducesResponseType(400)]
+        //public async Task<IActionResult> AddFolder([FromBody] FolderAddViewModel model)
+        //{
+        //    var user = userRepo.GetByLogin(User.Identity.Name);
+        //    if (string.IsNullOrEmpty(model.folderName))
+        //    {
+        //        return BadRequest("Отсутствует название новой папки.");
+        //    }
+        //    await foldersDataService.AddFoldersByPath(model.pathToAdd + "/" + model.folderName, user.business_id.Value);
 
-        }
+        //}
 
     }
 }

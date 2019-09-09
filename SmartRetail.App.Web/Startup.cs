@@ -153,7 +153,8 @@ namespace SmartRetail.App.Web
             app.UseDefaultFiles();
             app.UseAuthentication();
             app.UseStaticFiles();
-
+            app.UseConnections(o =>
+                )
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
