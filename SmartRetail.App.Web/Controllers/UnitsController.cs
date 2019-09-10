@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SmartRetail.App.Web.Controllers
 {
-    //[EnableCors("MyPolicy")]
+    [EnableCors("MyPolicy")]
     [Route("units")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class UnitsController : Controller
     {
