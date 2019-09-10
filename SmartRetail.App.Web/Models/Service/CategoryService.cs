@@ -57,7 +57,7 @@ namespace SmartRetail.App.Web.Models.Service
             }
             
             prodGroup.Folders = level.Where(p => p.isFolder)
-                .Select(p => new FolderViewModel { folder = p.folder, fullpath = p.fullpath }).ToList();
+                .Select(p => new FolderViewModel { id = p.id, folder = p.folder, fullpath = p.fullpath }).ToList();
 
             if (needProducts)
             {
@@ -102,11 +102,11 @@ namespace SmartRetail.App.Web.Models.Service
 
             //get folders from result
             prodGroup.Folders = result.Where(p => p.isFolder)
-                .Select(p => new FolderViewModel { folder = p.folder, fullpath = p.fullpath }).ToList();
+                .Select(p => new FolderViewModel { id = p.id, folder = p.folder, fullpath = p.fullpath }).ToList();
 
             //get products from result
             var pics = result.Where(p => p.isFile)
-                .Select(p => new ProductViewModel { Id = Convert.ToInt32(p.folder.Split('.')[0]) }).OrderBy(p => p.Id).ToList();
+                .Select(p => new ProductViewModel { Id = p.id }).OrderBy(p => p.Id).ToList();
 
             if (pics.Any())
             {

@@ -25,7 +25,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
             }
             _tree = new Tree<ImgTwinModel>
             {
-                Value = new ImgTwinModel {folder = root.folder, isFile = false, fullpath = "/" + root.folder},
+                Value = new ImgTwinModel {id = root.id, folder = root.folder, isFile = false, fullpath = "/" + root.folder},
                 Parent = null
             };
             FillNextLevel(folders, products, _tree, root.id);
@@ -41,7 +41,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
             }
             var tree = new Tree<ImgTwinModel>
             {
-                Value = new ImgTwinModel { folder = root.folder, isFile = false, fullpath = "/" + root.folder },
+                Value = new ImgTwinModel { id = root.id, folder = root.folder, isFile = false, fullpath = "/" + root.folder },
                 Parent = null
             };
             FillNextLevel(folders, null, tree, root.id);
@@ -54,7 +54,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
                 return null;
             
             return Tree<ImgTwinModel>.Search(_tree, new ImgTwinModel { fullpath = fullPath })
-                .Children.Select(p => new ImgTwinModel { folder = p.Value.folder, fullpath = p.Value.fullpath, isFile = isFile(p.Value.folder) }).ToList();
+                .Children.Select(p => new ImgTwinModel {id = p.Value.id, folder = p.Value.folder, fullpath = p.Value.fullpath, isFile = isFile(p.Value.folder) }).ToList();
         }
 
         public Tree<ImgTwinModel> SearchSubTree(string fullPath)
@@ -77,7 +77,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
                 }
             }
 
-            return result.Select(p => new ImgTwinModel { folder = p.folder, fullpath = p.fullpath, isFile = isFile(p.folder) }).ToList(); ;
+            return result.Select(p => new ImgTwinModel {id = p.id, folder = p.folder, fullpath = p.fullpath, isFile = isFile(p.folder) }).ToList(); ;
         }
 
         private static void FillNextLevel(IEnumerable<Folders> folders, IEnumerable<Product> products, Tree<ImgTwinModel> tree,
@@ -102,6 +102,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
                 {
                     var child = tree.AddChild(new ImgTwinModel
                     {
+                        id = folder.id,
                         folder = folder.folder,
                         isFile = false,
                         fullpath = tree.Value.fullpath + "/" + folder.folder
@@ -115,6 +116,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
                                   (product.Image != null ? product.Image.img_type : "");
                     tree.AddChild(new ImgTwinModel
                     {
+                        id = product.id,
                         folder = imgName,
                         isFile = true,
                         fullpath = tree.Value.fullpath + "/" + imgName

@@ -7,6 +7,9 @@ namespace SmartRetail.App.DAL.BLL.HelperClasses
     public class ImgTwinModel: IComparable, ICloneable
     {
         [JsonProperty]
+        public int id { get; set; }
+
+        [JsonProperty]
         public string folder { get; set; }
 
         [JsonProperty]

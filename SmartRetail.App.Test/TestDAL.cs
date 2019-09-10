@@ -737,6 +737,17 @@ namespace SmartRetail.App.Test
             //await folderDs.AddFoldersByPath("/Кайфы от Петерфельдо/Рыбалка/Что-то(4)/Что-то(5)", 1);
         }
 
+        [Fact]
+        public async void TestFillFoldersByRoot()
+        {
+            var t = await foldersRepo.GetSubTreeAsync(60);
+        }
+
+        [Fact]
+        public async void TestGetPathById()
+        {
+            var t = await foldersRepo.GetPathByChildId(91);
+        }
     }
 
 

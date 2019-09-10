@@ -90,6 +90,5 @@ namespace SmartRetail.App.DAL.Helpers
             }
             return treeCollection;
         }
-
     }
 }
