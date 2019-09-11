@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
 
-namespace SmartRetail.App.DAL.Repository
+namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface IUserRepository
     {

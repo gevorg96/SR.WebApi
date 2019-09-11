@@ -23,16 +23,6 @@ namespace SmartRetail.App.DAL.Repository
             qb = new QueryBuilder();
         }
 
-        public async Task<Folders> GetByIdAsync(int id)
-        {
-            var sql = "select * from Folders where id = " + id;
-
-            using (var db = new SqlConnection(conn))
-            {
-                db.Open();
-                return await db.QueryFirstOrDefaultAsync<Folders>(sql);
-            }
-        }
 
         public async Task<IEnumerable<Folders>> GetPathByChildId(int id)
         {
@@ -80,17 +70,6 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task AddFolderAsync(Folders folder)
-        {
-            var sql = "insert into Folders (business_id, parent_id, folder) values ("+ folder.business_id +", " + isNotNull( folder.parent_id) + ", N'" + folder.folder + ")";
-            using (var db = new SqlConnection(conn))
-            {
-                db.Open();
-                await db.ExecuteAsync(sql);
-            }
-
-        }
-
         public async Task AddFolderSubTreeAsync(Tree<Folders> foldersTree)
         { 
             using (var db = new SqlConnection(conn))
@@ -99,7 +78,6 @@ namespace SmartRetail.App.DAL.Repository
                 await InsertChildren(foldersTree.Parent?.Value?.id, foldersTree, db);
             }
         }
-
 
         public async Task UpdateFolderAsync(Folders folder)
         {
@@ -204,7 +182,6 @@ namespace SmartRetail.App.DAL.Repository
                 }
             }
         }
-
         private static bool isFile(string value)
         {
             var parts = value.Split('.');

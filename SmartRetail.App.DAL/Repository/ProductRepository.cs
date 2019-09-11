@@ -5,11 +5,11 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using System.Reflection;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
 using System.Threading.Tasks;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -25,27 +25,7 @@ namespace SmartRetail.App.DAL.Repository
         }
 
         #region Read
-
-        public IEnumerable<Product> GetWithFilter(string field, string value)
-        {
-            var sql = "SELECT * FROM Product WHERE " + field + " = " + value;
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Product>(sql).ToList();
-            }
-        }
-
-        public IEnumerable<Product> GetAll()
-        {
-            var sql = "SELECT * FROM Product";
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Product>(sql).ToList();
-            }
-        }
-
+        
         public async Task<Product> GetByIdAsync(int id)
         {
             var sql = "SELECT * FROM Product WHERE id = " + id;
@@ -147,25 +127,6 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Update
 
-        public void UpdateProduct(Product entity, string field)
-        {
-            var pi = entity.GetType().GetProperty(field);
-            var value = pi.GetValue(entity);
-            var sql = "update Product set " + field + " = " + QueryHelper.GetSqlString(pi,value);
-            using (var db = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    db.Execute(sql);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Что-то пошло не так: " + e.Message);
-                }
-                
-            }
-        }
-
         public void UpdateProduct(Product entity)
         {
             qb.Clear();
@@ -179,7 +140,7 @@ namespace SmartRetail.App.DAL.Repository
             {
                 db.Open();
                 var row = db.QueryFirstOrDefault<Product>(select.ToString());
-                for (var i = 1; i < 16; i++)
+                for (var i = 1; i < 17; i++)
                 {
                     var p = pi[i];
                     var pt = p.PropertyType.ToString();
@@ -216,20 +177,5 @@ namespace SmartRetail.App.DAL.Repository
 
 
         #endregion
-
-        #region Depricated
-
-        public IEnumerable<Product> GetProducts(int id)
-        {
-            var sql = "SELECT * FROM Product WHERE id > " + id;
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Product>(sql);
-            }
-        }
-
-        #endregion
-
     }
 }

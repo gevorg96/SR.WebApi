@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using SmartRetail.App.DAL.Entities;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository

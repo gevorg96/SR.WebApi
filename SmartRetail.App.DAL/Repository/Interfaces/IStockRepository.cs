@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
 
-namespace SmartRetail.App.DAL.Repository
+namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface IStockRepository
     {
@@ -10,7 +10,6 @@ namespace SmartRetail.App.DAL.Repository
         IEnumerable<Stock> GetStocksWithProductsByBusiness(int businessId);
         Stock GetStockByShopAndProdIds(int shopId, int prodId);
         Task AddAsync(Stock entity);
-        Task UpdateAsync(Stock entity);
         Task UpdateValueAsync(Stock entity);
 
     }

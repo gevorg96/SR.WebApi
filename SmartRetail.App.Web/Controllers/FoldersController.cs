@@ -9,9 +9,11 @@ using SmartRetail.App.DAL.BLL.DataServices;
 using SmartRetail.App.DAL.BLL.HelperClasses;
 using SmartRetail.App.DAL.Helpers;
 using SmartRetail.App.DAL.Repository;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.Web.Models.ViewModel.Folders;
+using SmartRetail.App.Web.Models.ViewModel.Products;
 
 namespace SmartRetail.App.Web.Controllers
 {

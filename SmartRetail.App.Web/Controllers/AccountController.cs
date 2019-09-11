@@ -11,6 +11,7 @@ using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models.Auth;
 using SmartRetail.App.DAL.Entities;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.Web.Controllers
 {

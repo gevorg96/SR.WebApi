@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using SmartRetail.App.DAL.Repository;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel;
+using SmartRetail.App.Web.Models.ViewModel.Products;
 using SmartRetail.App.Web.ViewModels;
 
 namespace SmartRetail.App.Web.Controllers

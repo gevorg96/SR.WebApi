@@ -2,6 +2,7 @@
 using SmartRetail.App.DAL.Entities;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -45,20 +46,6 @@ namespace SmartRetail.App.DAL.Repository
             using (var connection = new SqlConnection(connectionString))
             {
                 return await connection.QueryFirstOrDefaultAsync<UserProfile>(sql, new { Login = login });
-            }
-        }
-
-        #endregion
-
-        #region Update
-
-        public void Update(UserProfile entity, string field, string value)
-        {
-            string sql = string.Format("UPDATE UserProfile SET {0} = '{1}' WHERE UserId = {2};", field, value, entity.UserId);
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                connection.Execute(sql);
             }
         }
 

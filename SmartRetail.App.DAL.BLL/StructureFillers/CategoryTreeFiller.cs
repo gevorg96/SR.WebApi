@@ -3,32 +3,30 @@ using System.Linq;
 using SmartRetail.App.DAL.BLL.HelperClasses;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
-using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.BLL.StructureFillers
 {
     public class CategoryTreeFiller: ICategoryTreeFiller
     {
-        private readonly IFoldersRepository _foldersRepo;
         private Tree<ImgTwinModel> _tree;
 
-        public CategoryTreeFiller(IFoldersRepository foldersRepo)
-        {
-            _foldersRepo = foldersRepo;
-        }
         public Tree<ImgTwinModel> CreateTree(IEnumerable<Folders> folders, IEnumerable<Product> products)
         {
-            var root = folders.FirstOrDefault(p => p.parent_id == null);
-            if (root == null)
+            if (folders != null)
             {
-                return null;
+                var root = folders.FirstOrDefault(p => p.parent_id == null);
+                if (root == null)
+                {
+                    return null;
+                }
+                _tree = new Tree<ImgTwinModel>
+                {
+                    Value = new ImgTwinModel {id = root.id, folder = root.folder, isFile = false, fullpath = "/" + root.folder},
+                    Parent = null
+                };
+                FillNextLevel(folders, products, _tree, root.id);
             }
-            _tree = new Tree<ImgTwinModel>
-            {
-                Value = new ImgTwinModel {id = root.id, folder = root.folder, isFile = false, fullpath = "/" + root.folder},
-                Parent = null
-            };
-            FillNextLevel(folders, products, _tree, root.id);
+
             return _tree;
         }
 

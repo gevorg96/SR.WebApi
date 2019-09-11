@@ -6,7 +6,6 @@ using System.Data.SqlClient;
 using Dapper;
 using System.Threading.Tasks;
 using System.Linq;
-using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -166,18 +165,6 @@ namespace SmartRetail.App.DAL.Repository
             }
 
         }
-
-        //public async Task<Orders> GetLastOrderAsync(int shopId, DateTime from, DateTime to)
-        //{
-        //    var sql = "select * from Orders where shop_id = " + shopId + " and report_date between '" +
-        //       from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and count > 0";
-        //    using (var db = new SqlConnection(conn))
-        //    {
-        //        db.Open();
-        //        var res = await db.QueryAsync<Orders>(sql);
-        //        return res.AsList().Last();
-        //    }
-        //}
 
         public async Task<Orders> GetByShopIdOnDate(int shopId, DateTime reportDate, bool isOrder)
         {

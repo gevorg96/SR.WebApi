@@ -1,4 +1,4 @@
-﻿namespace SmartRetail.App.Web.Models
+﻿namespace SmartRetail.App.Web.Models.ViewModel.Products
 {
     public class ProductViewModel
     {
@@ -12,6 +12,7 @@
         public string Vendor { get; set; }
         public string Color { get; set; }
         public string Size { get; set; }
-        public int UnitId { get; set; }
+        public int? UnitId { get; set; }
+        public int? CategoryId { get; set; }
     }
 }

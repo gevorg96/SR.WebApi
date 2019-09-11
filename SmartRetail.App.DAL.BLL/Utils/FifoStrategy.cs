@@ -10,15 +10,13 @@ namespace SmartRetail.App.DAL.BLL.Utils
 {
     public class FifoStrategy : IStrategy
     {
-        private readonly IProductRepository prodRepo;
         private readonly IOrderStockRepository orderStockRepo;
         private readonly IStockRepository stockRepo;
         private readonly ICostRepository costRepo;
 
-        public FifoStrategy(IProductRepository productRepository, IOrderStockRepository orderStockRepository, 
+        public FifoStrategy(IOrderStockRepository orderStockRepository, 
             IStockRepository stockRepository, ICostRepository costRepository)
         {
-            prodRepo = productRepository;
             orderStockRepo = orderStockRepository;
             stockRepo = stockRepository;
             costRepo = costRepository;

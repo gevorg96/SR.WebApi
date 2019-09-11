@@ -7,7 +7,6 @@ using SmartRetail.App.DAL.BLL.HelperClasses;
 using SmartRetail.App.DAL.BLL.StructureFillers;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.BLL.DataServices
@@ -22,9 +21,9 @@ namespace SmartRetail.App.DAL.BLL.DataServices
 
         public FoldersDataService(IFoldersRepository foldersRepo, IProductRepository productRepo)
         {
-            this._foldersRepo = foldersRepo;
-            this._productRepo = productRepo;
-            _categoryFiller = new CategoryTreeFiller(foldersRepo);
+            _foldersRepo = foldersRepo;
+            _productRepo = productRepo;
+            _categoryFiller = new CategoryTreeFiller();
         }
 
         public async Task<Tree<ImgTwinModel>> GetTreeAsync(int businessId)

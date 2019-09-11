@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.BLL.HelperClasses;
 using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.BLL.DataServices
@@ -18,7 +17,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
 
         private IEnumerable<Bills> bills;
 
-        public SalesDataService(IProductRepository pRepo, ISalesRepository sRepo, IImageRepository iRepo,
+        public SalesDataService(IProductRepository pRepo, IImageRepository iRepo,
             IBillsRepository bRepo, IBusinessRepository businessRepo)
         {
             _imagesRepo = iRepo;

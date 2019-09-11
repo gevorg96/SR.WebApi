@@ -3,27 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Validation;
+using SmartRetail.App.Web.Models.ViewModel.Products;
 
 namespace SmartRetail.App.Web.Models.Service
 {
     public class StockService: IStockService
     {
-        private IShopRepository shopRepo;
-        private IBusinessRepository businessRepo;
         private IStockRepository stockRepo;
         private readonly IPriceRepository priceRepo;
         private readonly ICostRepository costRepo;
         private readonly ShopsChecker _shopsChecker;
 
-        public StockService(IShopRepository shopRepo, IBusinessRepository businessRepo, IStockRepository stockRepo, ShopsChecker shopsChecker,
+        public StockService(IStockRepository stockRepo, ShopsChecker shopsChecker,
             IPriceRepository _priceRepo, ICostRepository _costRepo)
         {
-            this.shopRepo = shopRepo;
-            this.businessRepo = businessRepo;
             this.stockRepo = stockRepo;
             _shopsChecker = shopsChecker;
             priceRepo = _priceRepo;

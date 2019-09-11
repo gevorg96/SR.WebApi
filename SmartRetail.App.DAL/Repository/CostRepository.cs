@@ -2,7 +2,6 @@
 using SmartRetail.App.DAL.Repository.Interfaces;
 using System.Data.SqlClient;
 using Dapper;
-using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static SmartRetail.App.DAL.Helpers.NullChecker;

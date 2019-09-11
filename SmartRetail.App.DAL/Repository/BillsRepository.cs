@@ -18,11 +18,6 @@ namespace SmartRetail.App.DAL.Repository
             conn = connection;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="bill"></param>
-        /// <returns></returns>
         public async Task<int> AddBillAsync(Bills bill)
         {
             if (bill.Sales == null || !bill.Sales.Any())

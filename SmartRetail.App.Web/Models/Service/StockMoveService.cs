@@ -2,7 +2,6 @@
 using SmartRetail.App.DAL.DropBox;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Validation;
@@ -18,39 +17,22 @@ namespace SmartRetail.App.Web.Models.Service
     {
         #region Private fields
 
-        private readonly IShopRepository shopRepo;
-        private readonly IBusinessRepository businessRepo;
-        private readonly IImageRepository imgRepo;
         private readonly IPictureWareHouse dbBase;
-        private readonly IProductRepository prodRepo;
-        private readonly IUnitRepository unitRepo;
-        private readonly IPriceRepository priceRepo;
         private readonly ICostRepository costRepo;
         private readonly IStockRepository stockRepo;
         private readonly IOrdersRepository ordersRepo;
         private readonly IStrategy strategy;
-        private readonly ShopsChecker checker;
-        private const string dropboxBasePath = "/dropbox/dotnetapi/products";
 
         #endregion
 
         #region Constructor
-        public StockMoveService(IShopRepository _shopRepo, IBusinessRepository _businessRepo, IImageRepository _imgRepo,
-            IPictureWareHouse _dbBase, IProductRepository _prodRepo, IUnitRepository _unitRepo, IPriceRepository _priceRepo,
-            ShopsChecker _checker, ICostRepository _costRepo, IStockRepository _stockRepo, IOrdersRepository ordersRepository, IStrategy _strategy)
+        public StockMoveService(IPictureWareHouse _dbBase, ICostRepository _costRepo, IStockRepository _stockRepo, IOrdersRepository ordersRepository, IStrategy _strategy)
         {
-            shopRepo = _shopRepo;
-            businessRepo = _businessRepo;
-            imgRepo = _imgRepo;
-            prodRepo = _prodRepo;
-            unitRepo = _unitRepo;
-            priceRepo = _priceRepo;
             costRepo = _costRepo;
             stockRepo = _stockRepo;
             ordersRepo = ordersRepository;
             strategy = _strategy;
             dbBase = _dbBase;
-            checker = _checker;
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
         }

@@ -1,6 +1,5 @@
 ﻿using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
-using SmartRetail.App.Web.Models.ViewModel.Expenses;
 using SmartRetail.App.Web.Models.ViewModel.ExpensesType;
 using System;
 using System.Collections.Generic;

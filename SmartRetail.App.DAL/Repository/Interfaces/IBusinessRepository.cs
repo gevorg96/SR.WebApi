@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
-using System.Threading.Tasks;
 
-namespace SmartRetail.App.DAL.Repository
+namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface IBusinessRepository
     {
-        IEnumerable<Business> GetAll();
-        IEnumerable<Business> GetWithFilter(string field, string value);
         void Add(Business b);
         Business GetById(int businessId);
         Task<Business> GetByIdAsync(int businessId);

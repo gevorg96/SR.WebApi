@@ -7,9 +7,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using SmartRetail.App.DAL.Repository;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel;
@@ -195,29 +194,6 @@ namespace SmartRetail.App.Web.Controllers
             {
                 return new BadRequestObjectResult(ex.Message);
             }
-        }
-
-        [HttpPost("/getproductgroups")]
-        public async Task<ProductGroupViewModel> GetProductGroups([FromBody]FolderRequestViewModel folderPath)
-        {
-            var user = await _userRepo.GetByLogin(User.Identity.Name);
-
-            return await _service.GetNexLevelGroup(user, folderPath.path, folderPath.needProducts);
-        }
-
-        [HttpPost("/searchproductgroups")]
-        public async Task<ProductGroupViewModel> SearchProductGroups([FromBody] FolderRequestSearchVeiwModel model)
-        {
-            var user = await _userRepo.GetByLogin(User.Identity.Name);
-            var result = await _service.Search(user, model.searchCriteria, 0, 1000, model.path);
-            var page = 1;
-            var limit = 5;
-            if (model.page != 0 && model.limit != 0)
-            {
-                page = model.page;
-                limit = model.limit;
-            }
-            return result;
         }
 
         private bool StartsWithAny(string prodName, string search)

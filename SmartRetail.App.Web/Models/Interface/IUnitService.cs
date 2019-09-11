@@ -1,5 +1,4 @@
-﻿using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.Web.Models.ViewModel.Units;
+﻿using SmartRetail.App.Web.Models.ViewModel.Units;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,4 +1,4 @@
-namespace SmartRetail.App.Web.Models.ViewModel
+namespace SmartRetail.App.Web.Models.ViewModel.Folders
 {
     public class FolderRequestViewModel
     {

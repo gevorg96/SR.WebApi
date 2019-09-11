@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.BLL.HelperClasses;
-using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
 
 namespace SmartRetail.App.DAL.BLL.DataServices

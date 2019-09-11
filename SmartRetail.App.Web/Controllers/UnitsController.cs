@@ -6,6 +6,7 @@ using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel.Units;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.Web.Controllers
 {

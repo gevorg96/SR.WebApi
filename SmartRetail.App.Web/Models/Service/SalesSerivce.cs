@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Validation;
@@ -18,7 +17,6 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IUserRepository userRepo;
         private readonly IShopRepository shopRepo;
         private readonly IBillsRepository billsRepo;
-        private readonly ISalesRepository salesRepo;
         private readonly IProductRepository productRepo;
         private readonly IPriceRepository priceRepo;
         private readonly ICostRepository costRepo;
@@ -26,14 +24,13 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IStrategy strategy;
         private ShopsChecker shopsChecker;
 
-        public SalesSerivce(IUserRepository userRepository, IShopRepository shopRepository, IBillsRepository billsRepository, ISalesRepository salesRepository, IProductRepository productRepository,
+        public SalesSerivce(IUserRepository userRepository, IShopRepository shopRepository, IBillsRepository billsRepository, IProductRepository productRepository,
             IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker, ICostRepository _costRepo)
         {
             imgRepo = imageRepository;
             userRepo = userRepository;
             shopRepo = shopRepository;
             billsRepo = billsRepository;
-            salesRepo = salesRepository;
             productRepo = productRepository;
             priceRepo = priceRepository;
             costRepo = _costRepo;

@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
 using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.DAL.Helpers;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository
@@ -37,31 +36,6 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public IEnumerable<Price> GetPricesByValue(string field, string value)
-        {
-
-            var sql = "SELECT * FROM Price WHERE " + field + " = " + value;
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Price>(sql).ToList();
-
-            }
-
-        }
-
-        public IEnumerable<Price> GetPricesByIds(IEnumerable<int> ids)
-        {
-
-            var sql = "SELECT * FROM Price WHERE prod_id in ( " + QueryHelper.GetIds(ids) + " )";
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Price>(sql).ToList();
-
-            }
-        }
-
         public Price GetPriceByProdId(int prodId)
         {
             var sql = "select * from Price where prod_id = " + prodId;
@@ -88,16 +62,6 @@ namespace SmartRetail.App.DAL.Repository
                 {
                     throw new Exception("Что-то пошло не так: " + ex.Message);
                 }
-            }
-        }
-
-        public Price GetPriceByProdAndShopIds(int prodId, int shopId)
-        {
-            var sql = "select * from Price where prod_id = " + prodId + " and shop_id = " + shopId;
-            using (var db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Price>(sql).FirstOrDefault();
             }
         }
     }

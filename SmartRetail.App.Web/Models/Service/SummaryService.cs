@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel.Summary;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Internal;
-using Newtonsoft.Json;
 using SmartRetail.App.DAL.BLL.DataServices;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
@@ -120,20 +117,6 @@ namespace SmartRetail.App.Web.Models.Service
             return json;
         }
 
-
-        #region Depricated
-
-        public JObject GetStocks(int whouse)
-        {
-            throw new NotImplementedException();
-        }
-
-        public JObject GetExpenses(int whouse)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
 
         private static JArray GetInfo(Dictionary<string, decimal> dict)

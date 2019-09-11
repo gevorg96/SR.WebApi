@@ -4,30 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.BLL;
 using SmartRetail.App.DAL.BLL.DataServices;
-using SmartRetail.App.DAL.BLL.DataStructures;
 using SmartRetail.App.DAL.BLL.HelperClasses;
-using SmartRetail.App.DAL.BLL.StructureFillers;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
-using SmartRetail.App.DAL.Repository;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.Web.Models.ViewModel.Folders;
+using SmartRetail.App.Web.Models.ViewModel.Products;
 
 namespace SmartRetail.App.Web.Models.Service
 {
     public class CategoryService : ICategoryService
     {
         private readonly IBusinessRepository businessRepo;
-        private readonly IProductRepository productRepo;
         private readonly IImageRepository imgRepo;
         private readonly IProductService productService;
         private readonly IFoldersDataService foldersDs;
-        public CategoryService( IBusinessRepository brepo, IProductRepository _productRepo, 
-            IImageRepository _imgRepo, IProductService _productService, IFoldersDataService _foldersDs)
+        public CategoryService( IBusinessRepository brepo, IImageRepository _imgRepo, IProductService _productService, IFoldersDataService _foldersDs)
         {
             businessRepo = brepo;
-            productRepo = _productRepo;
             imgRepo = _imgRepo;
             productService = _productService;
             foldersDs = _foldersDs;

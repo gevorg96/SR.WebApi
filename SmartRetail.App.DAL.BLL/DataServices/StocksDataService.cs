@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dropbox.Api.TeamLog;
 using SmartRetail.App.DAL.BLL.HelperClasses;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.BLL.DataServices

@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.DAL.Helpers;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -16,26 +15,6 @@ namespace SmartRetail.App.DAL.Repository
         public BusinessRepository(string conn)
         {
             _connectionString = conn;
-        }
-
-        public IEnumerable<Business> GetAll()
-        {
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Business>(QueryHelper.GetBasicQuery(null,"Business")).ToList();
-            }
-        }
-
-        public IEnumerable<Business> GetWithFilter(string field, string value)
-        {
-            var sql = "SELECT * FROM Business WHERE " + field + " = " + value; 
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                db.Open();
-                return db.Query<Business>(sql).ToList();
-
-            }
         }
 
         public void Add(Business b)

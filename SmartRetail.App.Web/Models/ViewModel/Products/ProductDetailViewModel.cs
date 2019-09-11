@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using SmartRetail.App.Web.Models.ViewModel.Products;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
-namespace SmartRetail.App.Web.Models.ViewModel
+namespace SmartRetail.App.Web.Models.ViewModel.Products
 {
     public class ProductDetailViewModel
     {

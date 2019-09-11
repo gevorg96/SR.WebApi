@@ -7,7 +7,7 @@ using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.Repository
 {
-    public class ExpensesTypeRepository: EntityRepository<ExpensesType>, IExpensesTypeRepository
+    public class ExpensesTypeRepository: IExpensesTypeRepository
     {
         private readonly string conn;
         

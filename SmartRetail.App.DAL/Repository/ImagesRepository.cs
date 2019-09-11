@@ -3,10 +3,10 @@ using SmartRetail.App.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using SmartRetail.App.DAL.Helpers;
 using System.Threading.Tasks;
 using System.Text;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -39,15 +39,6 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public void UpdateImage(int prodId, string field, string value)
-        {
-            string sql = "UPDATE Images SET " + field + " = " +  value + " WHERE prod_id = " + prodId;
-            using (var conn = new SqlConnection(connectionString))
-            {
-                var affectedRows = conn.Execute(sql);
-            }
-        }
-
         public async Task UpdateImage(Images img)
         {
             var sql = "select * from Images where prod_id = " + img.prod_id;
@@ -76,28 +67,6 @@ namespace SmartRetail.App.DAL.Repository
                 sb.Remove(sb.Length - 2, 2);
                 sb.Append(" where prod_id = " + img.prod_id);
                 await db.ExecuteAsync(sb.ToString());
-            }
-        }
-
-        public IEnumerable<Images> GetAllImages()
-        {
-            string sql = "SELECT * FROM Images";
-            using (var conn = new SqlConnection(connectionString))
-            {
-                return conn.Query<Images>(sql);
-            }
-        }
-
-        public async Task<IEnumerable<Images>> GetAllImagesInBusinessAsync(int businessId)
-        {
-            string prods = "select id from Product where business_id = " + businessId;
-
-            using (var db = new SqlConnection(connectionString))
-            {
-                db.Open();
-                var prodIds = await db.QueryAsync<int>(prods);
-                string imgs = "select * from Images where prod_id in (" + QueryHelper.GetIds(prodIds) + ")";
-                return await db.QueryAsync<Images>(imgs);
             }
         }
     }

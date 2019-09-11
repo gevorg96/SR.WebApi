@@ -11,6 +11,7 @@ using SmartRetail.App.Web.Models.ViewModel.Sales;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Net.Http;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Service;
 
 namespace SmartRetail.App.Web.Controllers

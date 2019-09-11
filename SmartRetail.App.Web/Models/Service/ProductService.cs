@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.BLL.DataServices;
 using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.DropBox;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Validation;
@@ -68,132 +66,6 @@ namespace SmartRetail.App.Web.Models.Service
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
         }
-        #endregion
-
-        #region Folders
-
-        public void ChangeShop(UserProfile user, ChangeDestinationViewModel model)
-        {
-            var products = prodRepo.GetProductsByIds(model.productsCount.Select(p => p.prodId));
-            //products = products.Where(p => p.shop_id == shopId).ToList();
-
-        }
-
-        public void ChangePath(UserProfile user, int prodId, string newPath)
-        {
-            
-        }
-
-        #region Get Next Level Folders & Files
-
-        /// <summary>
-        /// Get next level of product's hierarchy
-        /// </summary>
-        /// <param name="user">user info</param>
-        /// <param name="fullpath">path of folder which subfolders we need to return</param>
-        /// <param name="needProducts">flag that on/off ProductViewModel in response</param>
-        /// <returns></returns>
-        public async Task<ProductGroupViewModel> GetNexLevelGroup(UserProfile user, string fullpath = null, bool needProducts = true)
-        {
-            var prodGroup = new ProductGroupViewModel();
-
-            var path = GetPath(fullpath, user);
-            
-            var items = await dbBase.GetAllFolders(path, false);
-            prodGroup.Folders = items.Entries.Where(p => p.IsFolder)
-                .Select(p => new FolderViewModel {folder = p.Name, fullpath = p.PathLower}).ToList();
-
-            if (needProducts)
-            {
-                var pics = items.Entries.Where(p => p.IsFile)
-                    .Select(p => new ProductViewModel { Id = Convert.ToInt32(p.Name.Split('.')[0]) }).OrderBy(p => p.Id).ToList();
-
-                if (pics.Any())
-                {
-                    var rnd = new Random();
-                    prodGroup.Products = new List<ProductViewModel>();
-                    foreach (var productViewModel in pics)
-                    {
-                        var product = await prodRepo.GetByIdAsync(productViewModel.Id);
-                        var img = await imgRepo.GetByIdAsync(product.id);
-                        prodGroup.Products.Add(new ProductViewModel
-                        {
-                            Id = product.id,
-                            ProdName = product.name,
-                            Stock = rnd.Next(1, 30),
-                            Cost = rnd.Next(1000, 10000),
-                            Price = rnd.Next(2000, 20000),
-                            VendorCode = product.attr1,
-                            ImgUrl = img?.img_url_temp,
-                            Color = product.attr10,
-                            Size = product.attr9
-                        });
-                    }
-                }
-            }
-            
-            return prodGroup;
-        }
-
-        #endregion
-
-        #region Search Files and Folders
-  
-        /// <summary>
-        /// Search folders and products
-        /// </summary>
-        /// <param name="user">user info</param>
-        /// <param name="name">pattern for searching</param>
-        /// <param name="start"></param>
-        /// <param name="limit"></param>
-        /// <param name="path">path for searching in</param>
-        /// <returns></returns>
-        public async Task<ProductGroupViewModel> Search(UserProfile user, string name, ulong start, ulong limit, string path = null)
-        {
-            var prodGroup = new ProductGroupViewModel();
-
-            //validate path
-            path = GetPath(path, user);
-
-            //dropbox.search
-            var items = await dbBase.SearchFolder(path, name, start, limit);
-
-            //get folders from result
-            prodGroup.Folders = items.Matches.Where(p => p.Metadata.IsFolder)
-                .Select(p => new FolderViewModel { folder = p.Metadata.Name, fullpath = p.Metadata.PathLower }).ToList();
-
-            //get products from result
-            var pics = items.Matches.Where(p => p.Metadata.IsFile)
-                .Select(p => new ProductViewModel { Id = Convert.ToInt32(p.Metadata.Name.Split('.')[0]) }).OrderBy(p => p.Id).ToList();
-
-            if (pics.Any())
-            {
-                var rnd = new Random();
-                prodGroup.Products = new List<ProductViewModel>();
-                foreach (var productViewModel in pics)
-                {
-                    var product = await prodRepo.GetByIdAsync(productViewModel.Id);
-                    var img = await imgRepo.GetByIdAsync(product.id);
-                    prodGroup.Products.Add(new ProductViewModel
-                    {
-                        Id = product.id,
-                        ProdName = product.name,
-                        Stock = rnd.Next(1, 30),
-                        Cost = rnd.Next(1000, 10000),
-                        Price = rnd.Next(2000, 20000),
-                        VendorCode = product.attr1,
-                        ImgUrl = img?.img_url_temp,
-                        Color = product.attr10,
-                        Size = product.attr9
-                    });
-                }
-            }
-
-            return prodGroup;
-        }
-
-        #endregion
-
         #endregion
 
         #region Products
@@ -256,11 +128,12 @@ namespace SmartRetail.App.Web.Models.Service
                 ProdName = product.name,
                 Size = product.attr9,
                 Color = product.attr10,
-                UnitId = product.unit_id.HasValue ? product.unit_id.Value : 0,
+                UnitId = product.unit_id,
                 ImgUrl = img != null && !string.IsNullOrEmpty(img.img_url_temp) ? img.img_url_temp : "",
                 Cost = cost != null && cost.value.HasValue ? cost.value.Value : 0,
                 Price =  price != null && price.price.HasValue ? price.price.Value : 0,
-                Stock = stocks.Any() && stocks.Sum(p => p.count).HasValue ? stocks.Sum(p => p.count).Value : 0
+                Stock = stocks.Any() && stocks.Sum(p => p.count).HasValue ? stocks.Sum(p => p.count).Value : 0,
+                CategoryId = product.folder_id
             };
 
             return prodVm;
@@ -325,7 +198,7 @@ namespace SmartRetail.App.Web.Models.Service
                             prod_id = pId,
                             img_name = product.ProdName,
                             img_type = imgParts[imgParts.Length - 1],
-                            img_url_temp = ImageDataService.MakeTemporary(imgUrl),
+                            img_url_temp = MakeTemporary(imgUrl),
                             img_path = product.Category
                         };
                         imgRepo.Add(img);
@@ -335,9 +208,6 @@ namespace SmartRetail.App.Web.Models.Service
                 {
                     throw new Exception("Не получилось добавить картинку товара. Попробуйте снова.");
                 }
-
-
-
             }
 
             var dt = DateTime.Now;
@@ -555,7 +425,7 @@ namespace SmartRetail.App.Web.Models.Service
 
                         imgDal.img_type = imgParts[imgParts.Length - 1];
                         imgDal.img_url = imgUrl;
-                        imgDal.img_url_temp = ImageDataService.MakeTemporary(imgUrl);
+                        imgDal.img_url_temp = MakeTemporary(imgUrl);
                         imgDal.img_name = product.ProdName;
                         if (!string.IsNullOrEmpty(product.Category))
                         {

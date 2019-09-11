@@ -128,35 +128,6 @@ namespace SmartRetail.App.DAL.DropBox
         }
 
         
-
-        /// <summary>  
-        /// Method is to check that whether folder exists on Dropbox or not.  
-        /// </summary>  
-        /// <param name="path"> Path of the folder we want to check for existance.</param>  
-        /// <returns></returns>  
-        public bool FolderExists(string path)
-        {
-            try
-            {
-                if (AccessTocken == null)
-                {
-                    throw new Exception("AccessToken not generated !");
-                }
-                if (AuthenticationURL == null)
-                {
-                    throw new Exception("AuthenticationURI not generated !");
-                }
-
-                var folders = DBClient.Files.ListFolderAsync(path);
-                var result = folders.Result;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Что-то не так: " + ex.Message);
-            }
-        }
-
         /// <summary>  
         /// Method to delete file/folder from Dropbox  
         /// </summary>  
@@ -183,6 +154,7 @@ namespace SmartRetail.App.DAL.DropBox
                 throw new Exception("Что-то не так: " + ex.Message);
             }
         }
+
         /// <summary>  
         /// Method to upload files on Dropbox  
         /// </summary>  
@@ -205,7 +177,6 @@ namespace SmartRetail.App.DAL.DropBox
             {
                 throw new Exception("Что-то пошло не так..." + ex.Message);
             }
-
         }
 
         public async Task<string> Upload(MemoryStream content, string path)
@@ -215,20 +186,6 @@ namespace SmartRetail.App.DAL.DropBox
             var result = await DBClient.Sharing.CreateSharedLinkWithSettingsAsync(path);
             return result.Url;
         }
-
-        public async Task<string> GetTempLink(string filePath)
-        {
-            try
-            {
-                var t = await DBClient.Files.GetTemporaryLinkAsync(filePath);
-                return t.Link;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
 
         public async Task<string> GetFileWithSharedLink(string sharedLink)
         {
@@ -243,46 +200,6 @@ namespace SmartRetail.App.DAL.DropBox
             }
         }
 
-        public async Task<string> GetFilePath(string sharedLink)
-        {
-            try
-            {
-                var file = await DBClient.Sharing.GetSharedLinkFileAsync(sharedLink);
-                var filemetadata = await DBClient.Sharing.GetFileMetadataAsync(file.Response.Id);
-                return filemetadata.PathDisplay;
-            }
-            catch (Exception)
-            {
-                throw new Exception("Нет такого файла!");
-            }
-        }
-        
-        /// <summary>  
-        /// Method to Download files from Dropbox  
-        /// </summary>  
-        /// <param name="DropboxFolderPath">Dropbox folder path which we want to download</param>  
-        /// <param name="DropboxFileName"> Dropbox File name availalbe in DropboxFolderPath to download</param>  
-        /// <param name="DownloadFolderPath"> Local folder path where we want to download file</param>  
-        /// <param name="DownloadFileName">File name to download Dropbox files in local drive</param>  
-        /// <returns></returns>  
-        public bool Download(string DropboxFolderPath, string DropboxFileName, string DownloadFolderPath, string DownloadFileName)
-        {
-            try
-            {
-                //var response = DBClient.Files.DownloadAsync(DropboxFolderPath + "/" + DropboxFileName);
-                //var result = response.Result.GetContentAsByteArrayAsync(); //Added to wait for the result from Async method  
-                //var getSharedLinkMetadataArg = new GetSharedLinkMetadataArg(DropboxFolderPath +"/" + DropboxFileName, "/" + DropboxFileName);
-                var t = DBClient.Files.GetTemporaryLinkAsync(DropboxFolderPath + "/" + DropboxFileName);
-                Thread.Sleep(2000);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Что-то не так: " + ex.Message);
-            }
-
-        }
 
         #endregion
         
@@ -312,64 +229,6 @@ namespace SmartRetail.App.DAL.DropBox
             }
 
         }
-        #endregion
-
-        #region Folders
-
-
-        public async Task<string> MoveFile(string from, string to)
-        {
-            try
-            {
-                var result = await DBClient.Files.MoveV2Async(from, to);
-                return result.Metadata.PathDisplay;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Нет такого файла!");
-            }
-        }
-
-        public async Task<ListFolderResult> GetAllFolders(string path, bool recursive = true)
-        {
-            var result = await DBClient.Files.ListFolderAsync(path, recursive, true, false, false, false);
-            return result;
-        }
-
-        public async Task<SearchResult> SearchFolder(string path, string query, ulong start, ulong limit)
-        {
-            return await DBClient.Files.SearchAsync(path, query, start, limit, SearchMode.Filename.Instance);
-        }
-
-        /// <summary>  
-        /// Method to create new folder on Dropbox  
-        /// </summary>  
-        /// <param name="path"> path of the folder we want to create on Dropbox</param>  
-        /// <returns></returns>  
-        public async Task<bool> CreateFolder(string path)
-        {
-            try
-            {
-                if (AccessTocken == null)
-                {
-                    throw new Exception("AccessToken not generated !");
-                }
-                if (AuthenticationURL == null)
-                {
-                    throw new Exception("AuthenticationURI not generated !");
-                }
-
-                var folderArg = new CreateFolderArg(path);
-                await DBClient.Files.CreateFolderAsync(folderArg);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-        }
-
         #endregion
     }
 }

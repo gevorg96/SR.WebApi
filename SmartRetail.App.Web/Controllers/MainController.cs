@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartRetail.App.Web.Models.Interface;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.Repository;
+using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.Web.Controllers
 {

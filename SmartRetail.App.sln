@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2047
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.DAL", "SmartRetail.App.DAL\SmartRetail.App.DAL.csproj", "{1D20BB89-6D56-426E-9021-FB56282DCD16}"
 EndProject
@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.Web", "Smar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.Test", "SmartRetail.App.Test\SmartRetail.App.Test.csproj", "{E2D74AC4-75D0-413C-84AD-567581932ADC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartRetail.App.DAL.DropBox", "SmartRetail.App.DAL.DropBox\SmartRetail.App.DAL.DropBox.csproj", "{3C33A8E1-7E7E-4A66-99DB-BAE5C090578F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.DAL.DropBox", "SmartRetail.App.DAL.DropBox\SmartRetail.App.DAL.DropBox.csproj", "{3C33A8E1-7E7E-4A66-99DB-BAE5C090578F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartRetail.App.DAL.BLL", "SmartRetail.App.DAL.BLL\SmartRetail.App.DAL.BLL.csproj", "{732C0624-A554-4831-A6CB-CB832F6D2642}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.DAL.BLL", "SmartRetail.App.DAL.BLL\SmartRetail.App.DAL.BLL.csproj", "{732C0624-A554-4831-A6CB-CB832F6D2642}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

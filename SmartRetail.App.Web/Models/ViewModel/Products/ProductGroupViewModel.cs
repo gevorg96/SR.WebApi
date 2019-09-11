@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using SmartRetail.App.Web.Models.ViewModel.Folders;
 
-namespace SmartRetail.App.Web.Models.ViewModel
+namespace SmartRetail.App.Web.Models.ViewModel.Products
 {
     public class ProductGroupViewModel
     {

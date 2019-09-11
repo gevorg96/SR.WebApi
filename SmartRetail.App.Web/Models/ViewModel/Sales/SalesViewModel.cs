@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SmartRetail.App.Web.Models.ViewModel
+namespace SmartRetail.App.Web.Models.ViewModel.Sales
 {
     public class SalesViewModel
     {

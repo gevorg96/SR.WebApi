@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using SmartRetail.App.DAL.Entities;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository
@@ -100,11 +101,6 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Update
 
-        public Task UpdateAsync(Stock entity)
-        {
-            return null;
-        }
-
         public async Task UpdateValueAsync(Stock entity)
         {
             var sql = "update Stock set count = " + entity.count + " where id = " + entity.id;
@@ -114,7 +110,6 @@ namespace SmartRetail.App.DAL.Repository
                 await conn.ExecuteAsync(sql);
             }
         }
-
 
         #endregion
     }

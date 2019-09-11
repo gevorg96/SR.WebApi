@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 
 namespace SmartRetail.App.DAL.BLL.DataServices
@@ -12,13 +10,11 @@ namespace SmartRetail.App.DAL.BLL.DataServices
     {
         private readonly IExpensesRepository expRepo;
         private readonly IExpensesTypeRepository expTypeRepo;
-        private readonly IShopRepository shopRepo;
 
-        public ExpensesDataService(IExpensesRepository _expRepo, IExpensesTypeRepository _expTypeRepo, IShopRepository _shopRepo)
+        public ExpensesDataService(IExpensesRepository _expRepo, IExpensesTypeRepository _expTypeRepo)
         {
             expRepo = _expRepo;
             expTypeRepo = _expTypeRepo;
-            shopRepo = _shopRepo;
         }
 
         public async Task<Dictionary<string, decimal>> GetMonthExpensesAsync(int shopId, UserProfile user)

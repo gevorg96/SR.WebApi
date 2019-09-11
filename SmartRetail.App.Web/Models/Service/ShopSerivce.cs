@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using SmartRetail.App.DAL.Entities;
-using SmartRetail.App.DAL.Repository;
+using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel;
 
