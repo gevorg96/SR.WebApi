@@ -64,7 +64,7 @@ namespace SmartRetail.App.Test
             expRepo = new ExpensesRepository(conn);
             foldersRepo = new FoldersRepository(conn);
             dbBase = new DropBoxBase("o9340xsv2mzn7ws", "xzky2fzfnmssik1");
-            checker = new ShopsChecker(shopRepo,businessRepo);
+            checker = new ShopsChecker(shopRepo);
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
             prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, checker, 
@@ -283,7 +283,7 @@ namespace SmartRetail.App.Test
         [Fact]
         public void TestExpensesService()
         {
-            var expService = new ExpensesService(new ExpensesRepository(conn), new ShopsChecker(new ShopRepository(conn), new BusinessRepository(conn)));
+            var expService = new ExpensesService(new ExpensesRepository(conn), new ShopsChecker(new ShopRepository(conn)));
             var exps = expService.GetExpenses(new UserRepository(conn).GetById(10), null, new DateTime(2019, 3, 1),
                 new DateTime(2019, 8, 1));
         }

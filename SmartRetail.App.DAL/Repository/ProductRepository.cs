@@ -10,6 +10,7 @@ using SmartRetail.App.DAL.Helpers;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
 using System.Threading.Tasks;
 using SmartRetail.App.DAL.Repository.Interfaces;
+using SmartRetail.App.DAL.UnitOfWork;
 
 namespace SmartRetail.App.DAL.Repository
 {
@@ -17,6 +18,14 @@ namespace SmartRetail.App.DAL.Repository
     {
         private readonly string _connectionString;
         private QueryBuilder qb;
+        private IUnitOfWork _unitOfWork;
+
+        public ProductRepository(string conn, IUnitOfWork unitOfWork)
+        {
+            _connectionString = conn;
+            qb = new QueryBuilder();
+            _unitOfWork = unitOfWork;
+        }
 
         public ProductRepository(string conn)
         {
@@ -25,7 +34,7 @@ namespace SmartRetail.App.DAL.Repository
         }
 
         #region Read
-        
+
         public async Task<Product> GetByIdAsync(int id)
         {
             var sql = "SELECT * FROM Product WHERE id = " + id;
