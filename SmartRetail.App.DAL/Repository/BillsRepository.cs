@@ -18,7 +18,7 @@ namespace SmartRetail.App.DAL.Repository
             conn = connection;
         }
 
-        public async Task<int> AddBillAsync(Bills bill)
+        public async Task<int> AddBillAsync(Bill bill)
         {
             if (bill.Sales == null || !bill.Sales.Any())
                 return -1;
@@ -49,18 +49,18 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task<Bills> GetBillByNumber(int billNumber, DateTime reportDate)
+        public async Task<Bill> GetBillByNumber(int billNumber, DateTime reportDate)
         {
             var sql = "select * from bills where bill_number = " + billNumber + " and report_date = '" +
                 reportDate.ToString("MM.dd.yyyy HH:mm:ss") + "'";
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                return await db.QueryFirstOrDefaultAsync<Bills>(sql);
+                return await db.QueryFirstOrDefaultAsync<Bill>(sql);
             }
         }
 
-        public async Task<IEnumerable<Bills>> GetBillsWithSales(int shopId, DateTime from, DateTime to)
+        public async Task<IEnumerable<Bill>> GetBillsWithSales(int shopId, DateTime from, DateTime to)
         {
             var join = "select * from Bills as b join Sales as s on b.id = s.bill_id where b.shop_id = " + 
                 shopId + " and b.report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" 
@@ -71,16 +71,16 @@ namespace SmartRetail.App.DAL.Repository
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                var billDict = new Dictionary<int, Bills>();
+                var billDict = new Dictionary<int, Bill>();
 
-                var bills = (await db.QueryAsync<Bills, Sales, Bills>(join, 
+                var bills = (await db.QueryAsync<Bill, Sale, Bill>(join, 
                     (bill, sales) =>
                     {
-                        Bills billEntry;
+                        Bill billEntry;
                         if (!billDict.TryGetValue(bill.id, out billEntry))
                         {
                             billEntry = bill;
-                            billEntry.Sales = new List<Sales>();
+                            billEntry.Sales = new List<Sale>();
                             billDict.Add(billEntry.id, billEntry);
                         }
 
@@ -102,13 +102,13 @@ namespace SmartRetail.App.DAL.Repository
 
         }
 
-        public async Task<Bills> GetByIdAsync(int id)
+        public async Task<Bill> GetByIdAsync(int id)
         {
             var sql = "select * from Bills where id = " + id;
             using(var db = new SqlConnection(conn))
             {
                 db.Open();
-                return await db.QueryFirstOrDefaultAsync<Bills>(sql);
+                return await db.QueryFirstOrDefaultAsync<Bill>(sql);
             }
         }
 

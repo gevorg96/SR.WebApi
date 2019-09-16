@@ -14,7 +14,6 @@ using SmartRetail.App.Web.Models.Service;
 using SmartRetail.App.Web.Models.Validation;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.DAL.BLL.StructureFillers;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using SmartRetail.App.DAL.BLL.Utils;
 
 namespace SmartRetail.App.Web

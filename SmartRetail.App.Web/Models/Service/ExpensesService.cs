@@ -24,7 +24,7 @@ namespace SmartRetail.App.Web.Models.Service
         public async Task<IEnumerable<ExpensesViewModel>> GetExpenses(UserProfile user, int? shopId, DateTime from, DateTime to)
         {
             var list = new List<ExpensesViewModel>();
-            IEnumerable<Expenses> expenses = null;
+            IEnumerable<Expense> expenses = null;
             
             var avl = _shopsChecker.CheckAvailability(user, shopId);
             if(!avl.isCorrectShop)
@@ -71,14 +71,14 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<ExpensesViewModel> AddExpenses(UserProfile user, ExpensesRequestViewModel model)
         {
-            var expenses = new Expenses
+            var expenses = new Expense
             {
                 business_id = user.business_id.Value,
                 shop_id = model.shopId,
                 sum = model.totalSum,
                 report_date = model.reportDate
             };
-            expenses.ExpensesDetails = (await Task.WhenAll(model.expenses.Select(async p => new ExpensesDetails
+            expenses.ExpensesDetails = (await Task.WhenAll(model.expenses.Select(async p => new ExpensesDetail
             {
                 expenses_type_id = Convert.ToInt32(p.id),
                 sum = p.value

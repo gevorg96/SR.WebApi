@@ -96,9 +96,9 @@ namespace SmartRetail.App.DAL.BLL.DataServices
         public async Task AddFoldersByPath(string path, int businessId)
         {
             var (index, parent, pathParts) = await ComplexSearchByPath(path, businessId);
-            var tree = new Tree<Folders>
+            var tree = new Tree<Folder>
             {
-                Value = new Folders
+                Value = new Folder
                 {
                     business_id = businessId,
                     folder = pathParts.ElementAt(index)
@@ -107,7 +107,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             };
 
             FillTreeByPath(pathParts, index+1, tree);
-            tree.Parent = new Tree<Folders> { Value = parent };
+            tree.Parent = new Tree<Folder> { Value = parent };
             await _foldersRepo.AddFolderSubTreeAsync(tree);
         }
 
@@ -146,7 +146,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             else
             {
                 var subTree = await _foldersRepo.GetSubTreeAsync(parent.id);
-                subTree.Parent = new Tree<Folders>{Value = newParent};
+                subTree.Parent = new Tree<Folder>{Value = newParent};
                 subTree.Value.id = 0;
                 subTree.Value.parent_id = 0;
                 NullifyIds(subTree);
@@ -160,14 +160,14 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             await _foldersRepo.DeleteFoldersAsync(subTree);
         }
 
-        private (int, Folders) GetParentFolder(IEnumerable<string> pathParts, IEnumerable<Folders> folders)
+        private (int, Folder) GetParentFolder(IEnumerable<string> pathParts, IEnumerable<Folder> folders)
         {
             if (pathParts == null || folders == null)
             {
                 return (0, null);
             }
 
-            var memory = new List<Folders> {folders.FirstOrDefault(p => p.folder == pathParts.FirstOrDefault())};
+            var memory = new List<Folder> {folders.FirstOrDefault(p => p.folder == pathParts.FirstOrDefault())};
             int index;
 
             for (index = 1; index < pathParts.Count(); index++)
@@ -186,14 +186,14 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             return (index, memory.LastOrDefault());
         }
 
-        private void FillTreeByPath(IEnumerable<string> pathParts, int index, Tree<Folders> tree)
+        private void FillTreeByPath(IEnumerable<string> pathParts, int index, Tree<Folder> tree)
         {
             if (index >= pathParts.Count())
             {
                 return;
             }
 
-            var child = tree.AddChild(new Folders
+            var child = tree.AddChild(new Folder
             {
                 folder = pathParts.ElementAt(index),
                 business_id = tree.Value.business_id
@@ -201,7 +201,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             FillTreeByPath(pathParts, index + 1, child);
         }
 
-        private async Task<(int, Folders, IEnumerable<string>)> ComplexSearchByPath(string path, int businessId)
+        private async Task<(int, Folder, IEnumerable<string>)> ComplexSearchByPath(string path, int businessId)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -214,7 +214,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             return (index, parent, pathParts);
         }
 
-        private void NullifyIds(Tree<Folders> tree)
+        private void NullifyIds(Tree<Folder> tree)
         {
             foreach (var child in tree.Children)
             {

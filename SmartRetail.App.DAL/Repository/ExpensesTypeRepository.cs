@@ -18,7 +18,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public new IEnumerable<ExpensesType> GetAll()
         {
-            var sql = "SELECT * FROM ExpensesType";
+            var sql = "SELECT * FROM ExpensesTypes";
             using (var connection = new SqlConnection(conn))
             {
                 return connection.Query<ExpensesType>(sql);
@@ -27,7 +27,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<ExpensesType>> GetAllAsync()
         {
-            var sql = "SELECT * FROM ExpensesType";
+            var sql = "SELECT * FROM ExpensesTypes";
             using (var connection = new SqlConnection(conn))
             {
                 return await connection.QueryAsync<ExpensesType>(sql);

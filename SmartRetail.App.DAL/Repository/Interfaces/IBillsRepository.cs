@@ -7,9 +7,9 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface IBillsRepository
     {
-        Task<Bills> GetByIdAsync(int id);
-        Task<IEnumerable<Bills>> GetBillsWithSales(int shopId, DateTime from, DateTime to);
-        Task<int> AddBillAsync(Bills bill);
-        Task<Bills> GetBillByNumber(int billNumber, DateTime reportDate); 
+        Task<Bill> GetByIdAsync(int id);
+        Task<IEnumerable<Bill>> GetBillsWithSales(int shopId, DateTime from, DateTime to);
+        Task<int> AddBillAsync(Bill bill);
+        Task<Bill> GetBillByNumber(int billNumber, DateTime reportDate); 
     }
 }

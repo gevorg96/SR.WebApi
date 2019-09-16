@@ -1,4 +1,6 @@
-﻿namespace SmartRetail.App.DAL.Entities
+﻿using Dapper.Contrib.Extensions;
+
+namespace SmartRetail.App.DAL.Entities
 {
     public class OrderStock : IEntity
     {
@@ -7,6 +9,9 @@
         public int? prod_id { get; set; }
         public decimal? curr_stocks { get; set; }
         public int shop_id { get; set; }
-        public virtual OrderDetails OrderDetail {get; set;}
+
+        [Write(false)]
+        [Computed]
+        public virtual OrderDetail OrderDetail {get; set;}
     }
 }

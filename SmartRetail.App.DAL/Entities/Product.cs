@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using Dapper.Contrib.Extensions;
 
 namespace SmartRetail.App.DAL.Entities
 {
@@ -7,14 +9,14 @@ namespace SmartRetail.App.DAL.Entities
         public Product()
         {
             this.Cost = new HashSet<Cost>();
-            this.Orders = new HashSet<Orders>();
+            this.Orders = new HashSet<Order>();
             this.Prices = new HashSet<Price>();
-            this.Sales = new HashSet<Sales>();
+            this.Sales = new HashSet<Sale>();
             this.Stock = new HashSet<Stock>();
         }
     
+        [Key]
         public int id { get; set; }
-        public int? shop_id { get; set; }
         public int? business_id { get; set; }
         public int? supplier_id { get; set; }
         public string name { get; set; }
@@ -31,16 +33,56 @@ namespace SmartRetail.App.DAL.Entities
         public int? unit_id { get; set; }
         public int? folder_id { get; set; }
     
+        [Write(false)]
+        [Computed]
         public virtual ICollection<Cost> Cost { get; set; }
-        public virtual ICollection<Orders> Orders { get; set; }
+
+        [Write(false)]
+        [Computed]
+        public virtual ICollection<Order> Orders { get; set; }
+
+        [Write(false)]
+        [Computed]
         public virtual ICollection<Price> Prices { get; set; }
-        //public virtual Shop Shop { get; set; }
+
+        [Write(false)]
+        [Computed]
         public virtual Business Business { get; set; }
+
+        [Write(false)]
+        [Computed]
         public virtual Supplier Supplier { get; set; }
-        public virtual ICollection<Sales> Sales { get; set; }
+
+        [Write(false)]
+        [Computed]
+        public virtual ICollection<Sale> Sales { get; set; }
+
+        [Write(false)]
+        [Computed]
         public virtual ICollection<Stock> Stock { get; set; }
+
+        [Write(false)]
+        [Computed]
         public virtual Price Price { get; set; }
-        public virtual Images Image { get; set; }
-        public virtual Units Unit { get; set; }
+
+        [Write(false)]
+        [Computed]
+        public virtual Image Image { get; set; }
+
+        [Write(false)]
+        [Computed]
+        public virtual Unit Unit { get; set; }
+        [Write(false)]
+        [Computed]
+        public virtual string ImgBase64 { get; set; }
+
+        [Write(false)]
+        [Computed]
+        public virtual MemoryStream ImgMemoryStream { get; set; }
+
+        [Write(false)]
+        [Computed]
+        public virtual string Category { get; set; }
+        
     }
 }

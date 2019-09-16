@@ -143,7 +143,7 @@ namespace SmartRetail.App.Web.Controllers
                         product.ImgBase64 = newFileName;
                     }
                 }
-                var prod = await _service.AddProduct(user, product);
+                var prod = await _service.AddProductTransaction(user, product);
                 return Ok(prod);
 
             }

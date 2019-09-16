@@ -7,12 +7,16 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface IOrdersRepository
     {
-        Task<Orders> GetByIdAsync(int orderId);
-        Task<Orders> GetByIdWithMultiAsync(int orderId);
-        Task<int> AddOrderAsync(Orders order);
-        Task<int> AddCancellationAsync(Orders order);
-        Task<IEnumerable<Orders>> GetOrdersByShopIdInDateRange(int shopId, DateTime from, DateTime to);
-        Task<IEnumerable<Orders>> GetCancellationsByShopIdInDateRange(int shopId, DateTime from, DateTime to);
-        Task<Orders> GetByShopIdOnDate(int shopId, DateTime reportDate, bool isOrder);
+        Task<int> InsertUow(Order order);
+        Task<Order> GetByIdWithMultiUow(int orderId);
+
+
+        Task<Order> GetByIdAsync(int orderId);
+        Task<Order> GetByIdWithMultiAsync(int orderId);
+        Task<int> AddOrderAsync(Order order);
+        Task<int> AddCancellationAsync(Order order);
+        Task<IEnumerable<Order>> GetOrdersByShopIdInDateRange(int shopId, DateTime from, DateTime to);
+        Task<IEnumerable<Order>> GetCancellationsByShopIdInDateRange(int shopId, DateTime from, DateTime to);
+        Task<Order> GetByShopIdOnDate(int shopId, DateTime reportDate, bool isOrder);
     }
 }

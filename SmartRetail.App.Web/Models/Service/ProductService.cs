@@ -11,7 +11,6 @@ using SmartRetail.App.DAL.Helpers;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.Validation;
-using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.Web.Models.ViewModel.Products;
 using SmartRetail.App.Web.Models.ViewModel.Units;
 
@@ -40,6 +39,7 @@ namespace SmartRetail.App.Web.Models.Service
         private readonly IFoldersRepository foldersRepo;
         private readonly IFoldersDataService foldersDataService;
         private const string dropboxBasePath = "/dropbox/dotnetapi/products";
+        private ProductDataService productDataService;
 
         #endregion
 
@@ -65,6 +65,7 @@ namespace SmartRetail.App.Web.Models.Service
             foldersDataService = _foldersDataService;
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
+            productDataService = new ProductDataService(dbBase);
         }
         #endregion
 
@@ -139,6 +140,86 @@ namespace SmartRetail.App.Web.Models.Service
             return prodVm;
         }
 
+        public async Task<ProductDetailViewModel> AddProductTransaction(UserProfile user,
+            ProductDetailViewModel product)
+        {
+            if (string.IsNullOrEmpty(product.ProdName))
+            {
+                throw new Exception("Наименование товара не может быть пустым.");
+            }
+
+            var business = await businessRepo.GetByIdAsync(user.business_id.Value);
+
+            var prod = new Product
+            {
+                name = product.ProdName,
+                business_id = business.id,
+                unit_id = product.UnitId,
+                attr1 = product.VendorCode,
+                attr9 = product.Size,
+                attr10 = product.Color
+            };
+            prod.Price = new Price {price = product.Price};
+
+            //await foldersDataService.AddFoldersByPath(product.Category, business.id);
+            prod.folder_id = await foldersDataService.GetFolderIdByPath(product.Category, business.id);
+
+            if (!string.IsNullOrEmpty(product.ImgBase64))
+            {
+                using (var stream = product.img.OpenReadStream())
+                {
+                    var bytes = ReadToEnd(stream);
+                    prod.ImgMemoryStream = new MemoryStream(bytes);
+                    prod.ImgBase64 = product.ImgBase64;
+                    prod.Category = product.Category;
+                }
+            }
+
+            var dt = DateTime.Now;
+            if (product.Cost.HasValue && product.Cost < 0)
+            {
+                throw new Exception("Себестоимость должна быть > 0.");
+            }
+
+            if (product.Cost.HasValue && product.Cost >= 0)
+            {
+                if (product.Stocks != null && product.Stocks.Any())
+                {
+                    foreach (var s in product.Stocks)
+                    {
+                        var order = new Order
+                        {
+                            isOrder = true,
+                            report_date = dt,
+                            shop_id = s.ShopId,
+                            OrderDetails = new List<OrderDetail>
+                            {
+                                new OrderDetail
+                                {
+                                    //prod_id = pId,
+                                    cost = product.Cost.Value,
+                                    count = s.Stock
+                                }
+                            }
+                        };
+
+                        prod.Orders.Add(order);
+                    }
+                }
+                else
+                {
+                    var cost = new Cost
+                    {
+                        value = product.Cost
+                    };
+                    prod.Cost.Add(cost);
+                }
+            }
+
+            product.Id = await productDataService.Insert(prod);
+            return product;
+        }
+
         /// <summary>
         /// Inserting product
         /// </summary>
@@ -192,7 +273,7 @@ namespace SmartRetail.App.Web.Models.Service
                         var imgUrl = await dbBase.Upload(memory,
                             "/" + ". " + business.name + "/" +
                             pId + "." + product.ProdName + "." + imgParts[imgParts.Length - 1]);
-                        var img = new Images
+                        var img = new Image
                         {
                             img_url = imgUrl,
                             prod_id = pId,
@@ -221,14 +302,14 @@ namespace SmartRetail.App.Web.Models.Service
                 {
                     foreach (var s in product.Stocks)
                     {
-                        var order = new Orders
+                        var order = new Order
                         {
                             isOrder = true,
                             report_date = dt,
                             shop_id = s.ShopId,
-                            OrderDetails = new List<OrderDetails>
+                            OrderDetails = new List<OrderDetail>
                             {
-                                new OrderDetails
+                                new OrderDetail
                                 {
                                     prod_id = pId,
                                     cost = product.Cost.Value,

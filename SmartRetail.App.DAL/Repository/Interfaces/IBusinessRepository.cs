@@ -8,5 +8,7 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
         void Add(Business b);
         Business GetById(int businessId);
         Task<Business> GetByIdAsync(int businessId);
+
+        Task<Business> GetByIdUow(int businessId);
     }
 }

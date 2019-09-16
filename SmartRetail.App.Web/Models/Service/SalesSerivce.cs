@@ -40,7 +40,7 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<int> AddSale(SalesCreateViewModel model)
         {
-            var bill = new Bills
+            var bill = new Bill
             {
                 shop_id = model.shopId,
                 sum = model.totalSum,
@@ -49,7 +49,7 @@ namespace SmartRetail.App.Web.Models.Service
 
             try
             {
-                bill.Sales = (await Task.WhenAll(model.products.Select(async p => new Sales
+                bill.Sales = (await Task.WhenAll(model.products.Select(async p => new Sale
                 {
                     prod_id = p.prodId,
                     count = p.count,

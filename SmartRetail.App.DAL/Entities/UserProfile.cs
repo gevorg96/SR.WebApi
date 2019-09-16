@@ -1,4 +1,6 @@
-﻿namespace SmartRetail.App.DAL.Entities
+﻿using Dapper.Contrib.Extensions;
+
+namespace SmartRetail.App.DAL.Entities
 {
     public sealed class UserProfile : IEntity
     {
@@ -9,6 +11,9 @@
         public int? shop_id { get; set; }
         public int? business_id { get; set; }
         public int? access_grade { get; set; }
+
+        [Write(false)]
+        [Computed]
         public Business Business { get; set; }
     }
 }

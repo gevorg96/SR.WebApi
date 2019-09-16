@@ -13,13 +13,10 @@ using System.Threading.Tasks;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel.Products;
-using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.Web.Models.ViewModel.Sales;
 using System.IO;
 using SmartRetail.App.DAL.BLL.DataServices;
-using SmartRetail.App.DAL.BLL.HelperClasses;
-using SmartRetail.App.DAL.Helpers;
 
 namespace SmartRetail.App.Test
 {
@@ -48,6 +45,7 @@ namespace SmartRetail.App.Test
         private readonly ISalesService salesService;
         private readonly IStrategy strategy;
         private readonly IFoldersRepository foldersRepo;
+        private readonly ProductDataService productDataService;
 
         public TestDAL()
         {
@@ -73,7 +71,7 @@ namespace SmartRetail.App.Test
             strategy = new FifoStrategy(orderStockRepo, stockRepo, costRepo);
             salesService = new SalesSerivce(userRepo, shopRepo, billsRepo, prodRepo, priceRepo, imgRepo, strategy, checker, costRepo);
             ordersRepo = new OrdersRepository(conn);
-            
+            productDataService = new ProductDataService(dbBase);
         }
 
         [Fact]
@@ -160,28 +158,28 @@ namespace SmartRetail.App.Test
             {
                 new Product
                 {
-                    shop_id = 11,
+                    //shop_id = 11,
                     business_id = 16,
                     name = "����������� �����",
                     attr1 = "����� (���������)"
                 },
                 new Product
                 {
-                    shop_id = 11,
+                    //shop_id = 11,
                     business_id = 16,
                     name = "����� �������",
                     attr1 = "����� (����������� ������������)"
                 },
                 new Product
                 {
-                    shop_id = 11,
+                    //shop_id = 11,
                     business_id = 16,
                     name = "������ �����",
                     attr1 = "����� ����������"
                 },
                 new Product
                 {
-                    shop_id = 11,
+                    //shop_id = 11,
                     business_id = 16,
                     name = "��������� ��������",
                     attr1 = "����� (����������� ������������)"
@@ -214,7 +212,7 @@ namespace SmartRetail.App.Test
             var repo = new ProductRepository(conn);
             var prod = new Product
             {
-                shop_id = 1,
+                //shop_id = 1,
                 business_id = 1,
                 name = "rewrew",
                 unit_id = 1,
@@ -244,7 +242,7 @@ namespace SmartRetail.App.Test
             var product = new Product
             {
                 business_id = 2,
-                shop_id = 4,
+                //shop_id = 4,
                 attr1 = "пиво"
             };
             for (int i = 0; i < 1000; i++)
@@ -363,6 +361,38 @@ namespace SmartRetail.App.Test
         }
 
         [Fact]
+        public async void TestAddProductAsyncV2()
+        {
+            var product = new Product
+            {
+                business_id = 1,
+                unit_id = 1,
+                name = "Тестовый товар",
+                attr1 = "Атрибут1",
+                attr9 = "43",
+                attr10 = "синий"
+            };
+            var res = await productDataService.Insert(product);
+
+        }
+
+        [Fact]
+        public async void TestUpdateProduct()
+        {
+            var product = new Product
+            {
+                id = 1273,
+                business_id = 1,
+                unit_id = 1,
+                name = "Тестовый товар (изменённый)",
+                attr1 = "Атрибут1",
+                attr9 = "45",
+                attr10 = "синий"
+            };
+            var res = await productDataService.Update(product);
+        }
+
+        [Fact]
         public async void TestPureOrderStocks()
         {
             var result = await orderStockRepo.GetPureOrderStocksByProdId(1158);
@@ -442,7 +472,7 @@ namespace SmartRetail.App.Test
                     var iigroup = ig.GroupBy(p => p.reportDate);
                     foreach (var iig in iigroup)
                     {
-                        var expenses = new Expenses
+                        var expenses = new Expense
                         {
                             business_id = item.Key,
                             shop_id = ig.Key,
@@ -452,7 +482,7 @@ namespace SmartRetail.App.Test
                         var iigList = iig.ToList();
                         foreach (var i in iigList)
                         {
-                            expenses.ExpensesDetails.Add(new ExpensesDetails
+                            expenses.ExpensesDetails.Add(new ExpensesDetail
                             {
                                 expenses_type_id = i.expType,
                                 sum = i.summ

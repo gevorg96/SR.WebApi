@@ -2,7 +2,7 @@
 
 namespace SmartRetail.App.DAL.Entities
 {
-    public class Images:IEntity
+    public class Image:IEntity
     {
         public Guid ROWGUID { get; set; }
 

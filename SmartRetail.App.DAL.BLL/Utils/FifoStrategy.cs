@@ -5,39 +5,43 @@ using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
+using SmartRetail.App.DAL.UnitOfWork;
 
 namespace SmartRetail.App.DAL.BLL.Utils
 {
     public class FifoStrategy : IStrategy
     {
-        private readonly IOrderStockRepository orderStockRepo;
-        private readonly IStockRepository stockRepo;
-        private readonly ICostRepository costRepo;
+        private IOrderStockRepository _orderStockRepo;
+        private IStockRepository _stockRepo;
+        private ICostRepository _costRepo;
 
         public FifoStrategy(IOrderStockRepository orderStockRepository, 
             IStockRepository stockRepository, ICostRepository costRepository)
         {
-            orderStockRepo = orderStockRepository;
-            stockRepo = stockRepository;
-            costRepo = costRepository;
+            _orderStockRepo = orderStockRepository;
+            _stockRepo = stockRepository;
+            _costRepo = costRepository;
         }
+
+        public FifoStrategy()
+        { }
 
         public async Task UpdateAverageCost(Direction direction, IEntity entity)
         {
             switch (direction)
             {
                 case Direction.Sale:
-                    var sale = entity as Bills;
+                    var sale = entity as Bill;
                     if (sale != null)
                         await SaleStrategy(sale);
                     break;
                 case Direction.Order:
-                    var order = entity as Orders;
+                    var order = entity as Order;
                     if (order != null)
                         await OrderStrategy(order);
                     break;
                 case Direction.Cancellation:
-                    var cancel = entity as Orders;
+                    var cancel = entity as Order;
                     if (cancel != null)
                         await CancellationStrategy(cancel);
                     break;
@@ -46,7 +50,26 @@ namespace SmartRetail.App.DAL.BLL.Utils
             }
         }
 
-        private async Task OrderStrategy(Orders order)
+        public async Task UpdateAverageCostUow(Direction direction, IEntity entity, IUnitOfWork uow)
+        {
+            switch (direction)
+            {
+                case Direction.Sale:
+                    if (entity is Bill sale)
+                        await SaleStrategy(sale);
+                    break;
+                case Direction.Order:
+                    if (entity is Order order)
+                        await OrderStrategyUow(order, uow);
+                    break;
+                case Direction.Cancellation:
+                    if (entity is Order cancel)
+                        await CancellationStrategy(cancel);
+                    break;
+            }
+        }
+
+        private async Task OrderStrategy(Order order)
         {
             foreach (var orderDetail in order.OrderDetails)
             {
@@ -57,12 +80,30 @@ namespace SmartRetail.App.DAL.BLL.Utils
                     curr_stocks = orderDetail.count,
                     shop_id = order.shop_id
                 };
-                await orderStockRepo.AddOrderStockAsync(orderStock);
+                await _orderStockRepo.AddOrderStockAsync(orderStock);
                 await UpdateCostAndStocks(orderDetail.prod_id, order.shop_id);
             }
         }
 
-        private async Task SaleStrategy(Bills sale)
+        private async Task OrderStrategyUow(Order order, IUnitOfWork uow)
+        {
+            _orderStockRepo = new OrderStockRepository(uow);
+
+            foreach (var orderDetail in order.OrderDetails)
+            {
+                var orderStock = new OrderStock
+                {
+                    order_id = orderDetail.id,
+                    prod_id = orderDetail.prod_id,
+                    curr_stocks = orderDetail.count,
+                    shop_id = order.shop_id
+                };
+                await _orderStockRepo.InsertUow(orderStock);
+                await UpdateCostAndStocksUow(orderDetail.prod_id, order.shop_id, uow);
+            }
+        }
+
+        private async Task SaleStrategy(Bill sale)
         {
             foreach (var item in sale.Sales)
             {
@@ -72,7 +113,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
             
         }
 
-        private async Task CancellationStrategy(Orders cancel)
+        private async Task CancellationStrategy(Order cancel)
         {
             foreach (var item in cancel.OrderDetails)
             {
@@ -84,7 +125,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
 
         private async Task<decimal?> UpdateOrderStockBySales(decimal? salesCount, int prodId, int shopId)
         {
-            var pureOrderStocks = await orderStockRepo.GetPureOrderStocksByProdAndShopIds(prodId, shopId);
+            var pureOrderStocks = await _orderStockRepo.GetPureOrderStocksByProdAndShopIds(prodId, shopId);
             if (pureOrderStocks.Any())
             {
                 var item = pureOrderStocks.FirstOrDefault();
@@ -94,13 +135,13 @@ namespace SmartRetail.App.DAL.BLL.Utils
                     if (temporary <= 0)
                     {
                         item.curr_stocks -= salesCount;
-                        await orderStockRepo.UpdateOrderStockAsync(item);
+                        await _orderStockRepo.UpdateOrderStockAsync(item);
                         return temporary;
                     }
                     else
                     {
                         item.curr_stocks = 0;
-                        await orderStockRepo.UpdateOrderStockAsync(item);
+                        await _orderStockRepo.UpdateOrderStockAsync(item);
                         return await UpdateOrderStockBySales(temporary, prodId, shopId);
                     }
                 }
@@ -110,14 +151,14 @@ namespace SmartRetail.App.DAL.BLL.Utils
 
         private async Task UpdateCostAndStocks(int productId, int shopId)
         {
-            var pureOrderStocks = await orderStockRepo.GetPureOrderStocksByProdId(productId);
+            var pureOrderStocks = await _orderStockRepo.GetPureOrderStocksByProdId(productId);
 
             decimal? multipleSum = 0;
             decimal? count = 0;
 
             foreach (var item in pureOrderStocks)
             {
-                multipleSum += item.curr_stocks * (item.OrderDetail != null ? item.OrderDetail.cost : 0);
+                multipleSum += item.curr_stocks * (item.OrderDetail?.cost ?? 0);
                 count += item.curr_stocks;
             }
             decimal? averageCost = 0;
@@ -127,11 +168,11 @@ namespace SmartRetail.App.DAL.BLL.Utils
 
             }
 
-            var cost = costRepo.GetByProdId(productId).FirstOrDefault();
+            var cost = _costRepo.GetByProdId(productId).FirstOrDefault();
             if (cost != null)
             {
                 cost.value = averageCost;
-                await costRepo.UpdateCostValueAsync(cost);
+                await _costRepo.UpdateCostValueAsync(cost);
             }
             else
             {
@@ -140,15 +181,15 @@ namespace SmartRetail.App.DAL.BLL.Utils
                     prod_id = productId,
                     value = averageCost
                 };
-                await costRepo.AddCostAsync(c);
+                await _costRepo.AddCostAsync(c);
             }
             
-            var stockDal = stockRepo.GetStockByShopAndProdIds(shopId, productId);
-            var orderStockShop = await orderStockRepo.GetPureOrderStocksByProdAndShopIds(productId, shopId);
+            var stockDal = _stockRepo.GetStockByShopAndProdIds(shopId, productId);
+            var orderStockShop = await _orderStockRepo.GetPureOrderStocksByProdAndShopIds(productId, shopId);
             if (stockDal != null)
             {
                 stockDal.count = orderStockShop.Sum(p => p.curr_stocks);
-                await stockRepo.UpdateValueAsync(stockDal);
+                await _stockRepo.UpdateValueAsync(stockDal);
             }
             else
             {
@@ -158,7 +199,63 @@ namespace SmartRetail.App.DAL.BLL.Utils
                     shop_id = shopId,
                     count = count
                 };
-                await stockRepo.AddAsync(stock);
+                await _stockRepo.AddAsync(stock);
+            }
+        }
+
+        private async Task UpdateCostAndStocksUow(int productId, int shopId, IUnitOfWork uow)
+        {
+            _costRepo = new CostRepository(uow);
+            _stockRepo = new StockRepository(uow);
+            var pureOrderStocks = await _orderStockRepo.GetPureOrderStocksByProdIdUow(productId);
+
+            decimal? multipleSum = 0;
+            decimal? count = 0;
+
+            foreach (var item in pureOrderStocks)
+            {
+                multipleSum += item.curr_stocks * (item.OrderDetail?.cost ?? 0);
+                count += item.curr_stocks;
+            }
+            decimal? averageCost = 0;
+            if (count != 0)
+            {
+                averageCost = multipleSum / count;
+
+            }
+
+            var cost = (await _costRepo.GetByProdIdUow(productId)).FirstOrDefault();
+            if (cost != null)
+            {
+                cost.value = averageCost;
+                await _costRepo.UpdateUow(cost);
+            }
+            else
+            {
+                var c = new Cost
+                {
+                    prod_id = productId,
+                    value = averageCost
+                };
+                await _costRepo.InsertUow(c);
+            }
+
+            var stockDal = await _stockRepo.GetStockByShopAndProdIdsUow(shopId, productId);
+            var orderStockShop = await _orderStockRepo.GetPureOrderStocksByProdAndShopIdsUow(productId, shopId);
+            if (stockDal != null)
+            {
+                stockDal.count = orderStockShop.Sum(p => p.curr_stocks);
+                await _stockRepo.UpdateUow(stockDal);
+            }
+            else
+            {
+                var stock = new Stock
+                {
+                    prod_id = productId,
+                    shop_id = shopId,
+                    count = count
+                };
+                await _stockRepo.InsertUow(stock);
             }
         }
     }

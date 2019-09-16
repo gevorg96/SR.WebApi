@@ -7,9 +7,9 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface IExpensesRepository
     {
-        Task<IEnumerable<Expenses>> GetExpensesAsync(int businessId, int? shopId, DateTime from, DateTime to);
-        Task<int> AddExpenses(Expenses exp);
-        Task<Expenses> GetByDateAndShopBusiness(int businessId, DateTime reportDate, int? shopid = null);
-        Task<Expenses> GetByIdAsync(int id);
+        Task<IEnumerable<Expense>> GetExpensesAsync(int businessId, int? shopId, DateTime from, DateTime to);
+        Task<int> AddExpenses(Expense exp);
+        Task<Expense> GetByDateAndShopBusiness(int businessId, DateTime reportDate, int? shopid = null);
+        Task<Expense> GetByIdAsync(int id);
     }
 }

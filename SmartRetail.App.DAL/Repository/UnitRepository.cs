@@ -17,12 +17,12 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Read
 
-        public async Task<IEnumerable<Units>> GetAllUnitsAsync()
+        public async Task<IEnumerable<Unit>> GetAllUnitsAsync()
         {
             var sql = "select * from Units";
             using (var conn = new SqlConnection(connection))
             {
-                return await conn.QueryAsync<Units>(sql);
+                return await conn.QueryAsync<Unit>(sql);
             }
         }
         

@@ -27,7 +27,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public IEnumerable<Shop> GetShopsByBusiness(int businessId)
         {
-            string sql = "select * from Shop where business_id = @BusinessId";
+            string sql = "select * from Shops where business_id = @BusinessId";
             using (var connection = new SqlConnection(_connectionString))
             {
                 return connection.Query<Shop>(sql, new {BusinessId = businessId});
@@ -36,7 +36,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public Shop GetById(int shopId)
         {
-            var sql = "SELECT * FROM Shop WHERE id = @ShopId";
+            var sql = "SELECT * FROM Shops WHERE id = @ShopId";
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 db.Open();
@@ -50,7 +50,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task AddAsync(Shop entity)
         {
-            var sql = "insert into Shop (business_id, shop_address, name) values (" + isNotNull(entity.business_id) + 
+            var sql = "insert into Shops (business_id, shop_address, name) values (" + isNotNull(entity.business_id) + 
                 ", " + isNotNull(entity.shop_address) + ", " + isNotNull(entity.name) + ");";
             using(var db = new SqlConnection(_connectionString))
             {
@@ -66,9 +66,9 @@ namespace SmartRetail.App.DAL.Repository
         public async Task UpdateAsync(Shop entity)
         {
             qb.Clear();
-            var select = qb.Select("*").From("Shop").Where("id").Op(Ops.Equals, entity.id.ToString());
+            var select = qb.Select("*").From("Shops").Where("id").Op(Ops.Equals, entity.id.ToString());
             var sb = new StringBuilder();
-            sb.Append("update Shop set ");
+            sb.Append("update Shops set ");
 
             var pi = entity.GetType().GetProperties();
 

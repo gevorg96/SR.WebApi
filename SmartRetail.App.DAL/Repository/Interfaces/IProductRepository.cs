@@ -6,6 +6,12 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface IProductRepository
     {
+
+        Task<Product> GetByIdUow(int id);
+        Task<int> InsertUow(Product product);
+        Task<bool> UpdateUow(Product product);
+
+
         int AddProduct(Product entity);
         Task<Product> GetByIdAsync(int id);
         void UpdateProduct(Product entity);

@@ -20,7 +20,7 @@ namespace SmartRetail.App.DAL.Repository
             _connectionString = conn;
         }
 
-        public async Task<IEnumerable<Expenses>> GetExpensesAsync(int businessId, int? shopId, DateTime from, DateTime to)
+        public async Task<IEnumerable<Expense>> GetExpensesAsync(int businessId, int? shopId, DateTime from, DateTime to)
         {
             var sql = "";
             if (shopId.HasValue)
@@ -41,16 +41,16 @@ namespace SmartRetail.App.DAL.Repository
             using (var db = new SqlConnection(_connectionString))
             {
                 db.Open();
-                var expDict = new Dictionary<int, Expenses>();
+                var expDict = new Dictionary<int, Expense>();
 
-                var exps = (await db.QueryAsync<Expenses, ExpensesDetails, Expenses>(sql,
+                var exps = (await db.QueryAsync<Expense, ExpensesDetail, Expense>(sql,
                     (expenses, expDetail) =>
                     {
-                        Expenses expEntry;
+                        Expense expEntry;
                         if (!expDict.TryGetValue(expenses.id, out expEntry))
                         {
                             expEntry = expenses;
-                            expEntry.ExpensesDetails = new List<ExpensesDetails>();
+                            expEntry.ExpensesDetails = new List<ExpensesDetail>();
                             expDict.Add(expEntry.id, expEntry);
                         }
 
@@ -70,7 +70,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task<int> AddExpenses(Expenses exp)
+        public async Task<int> AddExpenses(Expense exp)
         {
             if (exp.ExpensesDetails == null || !exp.ExpensesDetails.Any())
             {
@@ -93,7 +93,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task<Expenses> GetByDateAndShopBusiness(int businessId, DateTime reportDate, int? shopid = null)
+        public async Task<Expense> GetByDateAndShopBusiness(int businessId, DateTime reportDate, int? shopid = null)
         {
             var sql = new StringBuilder().Append("select * from Expenses where business_id = " + businessId + " and report_date = '" + reportDate.ToString("MM.dd.yyyy HH:mm:ss") + "'");
             if (shopid.HasValue)
@@ -104,11 +104,11 @@ namespace SmartRetail.App.DAL.Repository
             using (var db = new SqlConnection(_connectionString))
             {
                 db.Open();
-                return (await db.QueryAsync<Expenses>(sql.ToString())).Last();
+                return (await db.QueryAsync<Expense>(sql.ToString())).Last();
             }
         }
 
-        public async Task<Expenses> GetByIdAsync(int id)
+        public async Task<Expense> GetByIdAsync(int id)
         {
             var sql = "select * from Expenses as e join ExpensesDetails as ed on e.id = ed.expenses_id WHERE e.id = " + id;
             var subSql = "select * from ExpensesType where id = @TypeId";
@@ -116,16 +116,16 @@ namespace SmartRetail.App.DAL.Repository
             using (var db = new SqlConnection(_connectionString))
             {
                 db.Open();
-                var expDict = new Dictionary<int, Expenses>();
+                var expDict = new Dictionary<int, Expense>();
 
-                var exps = (await db.QueryAsync<Expenses, ExpensesDetails, Expenses>(sql,
+                var exps = (await db.QueryAsync<Expense, ExpensesDetail, Expense>(sql,
                     (expenses, expDetail) =>
                     {
-                        Expenses expEntry;
+                        Expense expEntry;
                         if (!expDict.TryGetValue(expenses.id, out expEntry))
                         {
                             expEntry = expenses;
-                            expEntry.ExpensesDetails = new List<ExpensesDetails>();
+                            expEntry.ExpensesDetails = new List<ExpensesDetail>();
                             expDict.Add(expEntry.id, expEntry);
                         }
 

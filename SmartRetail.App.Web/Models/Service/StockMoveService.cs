@@ -83,14 +83,14 @@ namespace SmartRetail.App.Web.Models.Service
         public async Task MoveStocks(UserProfile user, StockMoveRequestViewModel model)
         {
             var dtNow = DateTime.Now;
-            var order = new Orders
+            var order = new Order
             {
                 isOrder = false,
                 report_date = dtNow,
                 shop_id = model.shopFrom
             };
 
-            order.OrderDetails = model.products.Select(p => new OrderDetails
+            order.OrderDetails = model.products.Select(p => new OrderDetail
             {
                 prod_id = p.id,
                 cost = 0,

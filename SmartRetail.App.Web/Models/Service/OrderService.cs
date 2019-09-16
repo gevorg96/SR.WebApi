@@ -34,14 +34,14 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<OrderCreateViewModel> AddOrder(OrderCreateViewModel model)
         {
-            var order = new Orders
+            var order = new Order
             {
                 isOrder = true,
                 report_date = model.reportDate,
                 shop_id = model.shopId
             };
 
-            order.OrderDetails = model.products.Select(p => new OrderDetails
+            order.OrderDetails = model.products.Select(p => new OrderDetail
             {
                 prod_id = p.id,
                 cost = p.price.Value,
@@ -100,7 +100,7 @@ namespace SmartRetail.App.Web.Models.Service
         {
             IEnumerable<Shop> shops = new List<Shop>();
             var orders = new List<OrderViewModel>();
-            var ordersDal = new List<Orders>();
+            var ordersDal = new List<Order>();
 
             var avl = shopsChecker.CheckAvailability(user, shopId);
             if (!avl.isCorrectShop)

@@ -2,7 +2,7 @@
 
 namespace SmartRetail.App.DAL.Entities
 {
-    public class Folders: IEntity
+    public class Folder: IEntity
     {
         public int id { get; set; }
         public int business_id { get; set; }
@@ -11,7 +11,7 @@ namespace SmartRetail.App.DAL.Entities
 
         public override bool Equals(object obj)
         {
-            var folder = obj as Folders;
+            var folder = obj as Folder;
             if (folder != null)
             {
                 return id.Equals(folder.id);

@@ -3,18 +3,18 @@ using Dapper.Contrib.Extensions;
 
 namespace SmartRetail.App.DAL.Entities
 {   
-    public class ExpensesType : IEntity
+    public class Unit : IEntity
     {
-        public ExpensesType()
+        public Unit()
         {
-            this.Expenses = new HashSet<Expense>();
+            this.Sales = new HashSet<Sale>();
         }
     
         public int id { get; set; }
-        public string type { get; set; }
+        public string value { get; set; }
 
         [Write(false)]
         [Computed]
-        public virtual ICollection<Expense> Expenses { get; set; }
+        public virtual ICollection<Sale> Sales { get; set; }
     }
 }

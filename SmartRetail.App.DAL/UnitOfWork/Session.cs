@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace SmartRetail.App.DAL.UnitOfWork
 {
@@ -10,9 +11,9 @@ namespace SmartRetail.App.DAL.UnitOfWork
 
         public UnitOfWork UnitOfWork { get; }
 
-        public Session(string conn)
+        public Session()
         {
-            _connection = new SqlConnection(conn);
+            _connection = new SqlConnection(@"Data Source=SQL6007.site4now.net;Initial Catalog=DB_A4C0E8_srbackend;User Id=DB_A4C0E8_srbackend_admin;Password=1234QWer");
             _connection.Open();
             UnitOfWork = new UnitOfWork(_connection);
         }

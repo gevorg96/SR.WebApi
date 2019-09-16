@@ -15,7 +15,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
         private readonly IBusinessRepository _businessRepo;
         public DateTime From { get; set; }
 
-        private IEnumerable<Bills> bills;
+        private IEnumerable<Bill> bills;
 
         public SalesDataService(IProductRepository pRepo, IImageRepository iRepo,
             IBillsRepository bRepo, IBusinessRepository businessRepo)
@@ -42,7 +42,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
                 };
             }
 
-            var sales = new List<Sales>();
+            var sales = new List<Sale>();
             foreach (var bill in bills)
             {
                 sales.AddRange(bill.Sales);
@@ -63,7 +63,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
                 return new List<SalesShares> {new SalesShares {category = "Нет продаж", part = 1}};
             }
 
-            var sales = new List<Sales>();
+            var sales = new List<Sale>();
             foreach (var bill in bills)
             {
                 sales.AddRange(bill.Sales);
@@ -110,7 +110,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             {
                 return (0, 0);
             }
-            var sales = new List<Sales>();
+            var sales = new List<Sale>();
             foreach (var bill in bills)
             {
                 sales.AddRange(bill.Sales);

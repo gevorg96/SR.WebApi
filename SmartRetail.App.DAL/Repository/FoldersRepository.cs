@@ -24,20 +24,20 @@ namespace SmartRetail.App.DAL.Repository
         }
 
 
-        public async Task<IEnumerable<Folders>> GetPathByChildId(int id)
+        public async Task<IEnumerable<Folder>> GetPathByChildId(int id)
         {
             var sql = "select * from Folders where id = @Id";
-            var folders = new List<Folders>();
+            var folders = new List<Folder>();
 
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                var folder = await db.QueryFirstOrDefaultAsync<Folders>(sql, new {Id = id});
+                var folder = await db.QueryFirstOrDefaultAsync<Folder>(sql, new {Id = id});
                 folders.Add(folder);
 
                 while (folder.parent_id.HasValue)
                 {
-                    folder = await db.QueryFirstOrDefaultAsync<Folders>(sql, new {Id = folder.parent_id.Value});
+                    folder = await db.QueryFirstOrDefaultAsync<Folder>(sql, new {Id = folder.parent_id.Value});
                     folders.Add(folder);
                 }
 
@@ -46,31 +46,31 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task<IEnumerable<Folders>> GetByBusinessAsync(int businessId)
+        public async Task<IEnumerable<Folder>> GetByBusinessAsync(int businessId)
         {
             var sql = "select * from Folders where business_id = " + businessId;
 
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                return await db.QueryAsync<Folders>(sql);
+                return await db.QueryAsync<Folder>(sql);
             }
         }
 
-        public async Task<Tree<Folders>> GetSubTreeAsync(int rootId)
+        public async Task<Tree<Folder>> GetSubTreeAsync(int rootId)
         {
-            var tree = new Tree<Folders>();
+            var tree = new Tree<Folder>();
             var select = "select * from Folders where id = " + rootId;
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                tree.Value = await db.QueryFirstOrDefaultAsync<Folders>(select);
+                tree.Value = await db.QueryFirstOrDefaultAsync<Folder>(select);
                 await FillTree(tree.Value.id, tree, db);
                 return tree;
             }
         }
 
-        public async Task AddFolderSubTreeAsync(Tree<Folders> foldersTree)
+        public async Task AddFolderSubTreeAsync(Tree<Folder> foldersTree)
         { 
             using (var db = new SqlConnection(conn))
             {
@@ -79,7 +79,7 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task UpdateFolderAsync(Folders folder)
+        public async Task UpdateFolderAsync(Folder folder)
         {
             qb.Clear();
             var select = qb.Select("*").From("Folders").Where("id").Op(Ops.Equals, folder.id.ToString());
@@ -90,7 +90,7 @@ namespace SmartRetail.App.DAL.Repository
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                var dal = await db.QueryFirstOrDefaultAsync<Folders>(select.ToString());
+                var dal = await db.QueryFirstOrDefaultAsync<Folder>(select.ToString());
                 for (var i = 1; i < 4; i++)
                 {
                     var p = pi[i];
@@ -110,11 +110,11 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task DeleteFoldersAsync(Tree<Folders> tree)
+        public async Task DeleteFoldersAsync(Tree<Folder> tree)
         {
             var delete = "delete from Folders where id = @Id";
             var update = "update Product set folder_id = NULL where folder_id = @folderId";
-            var list = Tree<Folders>.ToList(tree).OrderByDescending(p => p.parent_id);
+            var list = Tree<Folder>.ToList(tree).OrderByDescending(p => p.parent_id);
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
@@ -140,17 +140,17 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Additional Methods
 
-        private async Task FillTree(int parentId, Tree<Folders> tree, SqlConnection db)
+        private async Task FillTree(int parentId, Tree<Folder> tree, SqlConnection db)
         {
             var sql = "select * from Folders where parent_id = " + parentId;
-            var children = await db.QueryAsync<Folders>(sql);
+            var children = await db.QueryAsync<Folder>(sql);
             foreach (var child in children)
             {
                 var ch = tree.AddChild(child);
                 await FillTree(child.id, ch, db);
             }
         }
-        private async Task InsertChildren(int? parentId, Tree<Folders> foldersTree, SqlConnection db)
+        private async Task InsertChildren(int? parentId, Tree<Folder> foldersTree, SqlConnection db)
         {
             if (isFile(foldersTree.Value.folder))
             {
@@ -171,7 +171,7 @@ namespace SmartRetail.App.DAL.Repository
             if (foldersTree != null)
             {
                 await db.ExecuteAsync(insertSql, new { parent = parentId, folder = foldersTree.Value.folder });
-                var dal = await db.QueryFirstOrDefaultAsync<Folders>(selectSql,
+                var dal = await db.QueryFirstOrDefaultAsync<Folder>(selectSql,
                     new { foldersTree.Value.folder, parent = isNotNull(parentId) });
                 if (foldersTree.Children != null && foldersTree.Children.Any())
                 {

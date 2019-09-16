@@ -10,7 +10,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
     {
         private Tree<ImgTwinModel> _tree;
 
-        public Tree<ImgTwinModel> CreateTree(IEnumerable<Folders> folders, IEnumerable<Product> products)
+        public Tree<ImgTwinModel> CreateTree(IEnumerable<Folder> folders, IEnumerable<Product> products)
         {
             if (folders != null)
             {
@@ -30,7 +30,7 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
             return _tree;
         }
 
-        public Tree<ImgTwinModel> CreateTreeFolders(IEnumerable<Folders> folders)
+        public Tree<ImgTwinModel> CreateTreeFolders(IEnumerable<Folder> folders)
         {
             var root = folders.FirstOrDefault(p => p.parent_id == null);
             if (root == null)
@@ -78,11 +78,11 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
             return result.Select(p => new ImgTwinModel {id = p.id, folder = p.folder, fullpath = p.fullpath, isFile = isFile(p.folder) }).ToList(); ;
         }
 
-        private static void FillNextLevel(IEnumerable<Folders> folders, IEnumerable<Product> products, Tree<ImgTwinModel> tree,
+        private static void FillNextLevel(IEnumerable<Folder> folders, IEnumerable<Product> products, Tree<ImgTwinModel> tree,
             int? parentId)
         {
 
-            var targetFolders = new List<Folders>();
+            var targetFolders = new List<Folder>();
             var targetProducts = new List<Product>();
             if (folders != null && folders.Any())
             {

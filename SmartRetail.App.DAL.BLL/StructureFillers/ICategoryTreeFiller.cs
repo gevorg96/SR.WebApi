@@ -7,9 +7,9 @@ namespace SmartRetail.App.DAL.BLL.StructureFillers
 {
     public interface ICategoryTreeFiller
     {
-        Tree<ImgTwinModel> CreateTree(IEnumerable<Folders> folders, IEnumerable<Product> products);
+        Tree<ImgTwinModel> CreateTree(IEnumerable<Folder> folders, IEnumerable<Product> products);
         IEnumerable<ImgTwinModel> GetLevel(string fullPath);
         Tree<ImgTwinModel> SearchSubTree(string fullPath);
-        Tree<ImgTwinModel> CreateTreeFolders(IEnumerable<Folders> folders);
+        Tree<ImgTwinModel> CreateTreeFolders(IEnumerable<Folder> folders);
     }
 }

@@ -33,7 +33,7 @@ namespace SmartRetail.App.Test
             var token = dbBase.GenerateAccessToken();
             var image = await dbBase.Upload("/Dropbox/DotNetApi/products", "туфли.png",
                 @"D:\Projects\prom\SmartRetail.Mvc\SmartRetail.App.Web\pic\туфли.jpg");
-            var img = new Images
+            var img = new Image
             {
                 prod_id = 1,
                 img_name = "shoes",

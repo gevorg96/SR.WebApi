@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Dapper.Contrib.Extensions;
 
 namespace SmartRetail.App.DAL.Entities
 {
-    public class OrderDetails:IEntity
+    public class OrderDetail:IEntity
     {
         public int id { get; set; }
         public int order_id { get; set; }
@@ -12,7 +13,12 @@ namespace SmartRetail.App.DAL.Entities
         public decimal cost { get; set; }
         public decimal count { get; set; }
 
+        [Write(false)]
+        [Computed]
         public virtual Product Product { get; set; }
-        public virtual Orders Order { get; set; }
+
+        [Write(false)]
+        [Computed]
+        public virtual Order Order { get; set; }
     }
 }

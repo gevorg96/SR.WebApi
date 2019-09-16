@@ -6,6 +6,6 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface IUnitRepository
     {
-        Task<IEnumerable<Units>> GetAllUnitsAsync();
+        Task<IEnumerable<Unit>> GetAllUnitsAsync();
     }
 }

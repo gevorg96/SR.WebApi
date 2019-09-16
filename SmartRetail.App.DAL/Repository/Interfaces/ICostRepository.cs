@@ -6,6 +6,10 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
 {
     public interface ICostRepository
     {
+        Task<bool> UpdateUow(Cost cost);
+        Task<int> InsertUow(Cost cost);
+        Task<IEnumerable<Cost>> GetByProdIdUow(int prodId);
+
         IEnumerable<Cost> GetByProdId(int prodId);
         Cost GetByProdAndShopIds(int prodId, int shopId);
         Task UpdateCostValueAsync(Cost entity);

@@ -1,8 +1,9 @@
 using System;
+using Dapper.Contrib.Extensions;
 
 namespace SmartRetail.App.DAL.Entities
 {  
-    public class Sales : IEntity
+    public class Sale : IEntity
     {
         public int id { get; set; }
         public int prod_id { get; set; }
@@ -14,7 +15,12 @@ namespace SmartRetail.App.DAL.Entities
         public decimal profit { get; set; }
         public decimal price { get; set; }
 
+        [Write(false)]
+        [Computed]
         public virtual Product Product { get; set; }
-        public virtual Units Units { get; set; }
+
+        [Write(false)]
+        [Computed]
+        public virtual Unit Units { get; set; }
     }
 }
