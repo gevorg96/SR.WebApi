@@ -24,48 +24,43 @@ namespace SmartRetail.App.Web.Models.Service
     {
         #region Private fields
 
-        private readonly IShopRepository shopRepo;
-        private readonly IBusinessRepository businessRepo;
-        private readonly IImageRepository imgRepo;
-        private readonly IPictureWareHouse dbBase;
-        private readonly IProductRepository prodRepo;
-        private readonly IUnitRepository unitRepo;
-        private readonly IPriceRepository priceRepo;
-        private readonly ICostRepository costRepo;
-        private readonly IStockRepository stockRepo;
-        private readonly IOrdersRepository ordersRepo;
-        private readonly IStrategy strategy;
-        private readonly ShopsChecker checker;
-        private readonly IFoldersRepository foldersRepo;
-        private readonly IFoldersDataService foldersDataService;
-        private const string dropboxBasePath = "/dropbox/dotnetapi/products";
-        private ProductDataService productDataService;
+        private readonly IShopRepository _shopRepo;
+        private readonly IBusinessRepository _businessRepo;
+        private readonly IImageRepository _imgRepo;
+        private readonly IPictureWareHouse _dbBase;
+        private readonly IProductRepository _prodRepo;
+        private readonly IUnitRepository _unitRepo;
+        private readonly IPriceRepository _priceRepo;
+        private readonly ICostRepository _costRepo;
+        private readonly IStockRepository _stockRepo;
+        private readonly IOrdersRepository _ordersRepo;
+        private readonly IStrategy _strategy;
+        private readonly IFoldersDataService _foldersDataService;
+        private readonly ProductDataService _productDataService;
 
         #endregion
 
         #region Constructor
         public ProductService(IShopRepository _shopRepo, IBusinessRepository _businessRepo, IImageRepository _imgRepo, 
             IPictureWareHouse _dbBase, IProductRepository _prodRepo, IUnitRepository _unitRepo, IPriceRepository _priceRepo,
-            ShopsChecker _checker, ICostRepository _costRepo, IStockRepository _stockRepo, IOrdersRepository ordersRepository, 
-            IStrategy _strategy, IFoldersRepository _foldersRepo, IFoldersDataService _foldersDataService)
+            ICostRepository _costRepo, IStockRepository _stockRepo, IOrdersRepository ordersRepository, 
+            IStrategy _strategy,  IFoldersDataService _foldersDataService)
         {
-            shopRepo = _shopRepo;
-            businessRepo = _businessRepo;
-            imgRepo = _imgRepo;
-            prodRepo = _prodRepo;
-            unitRepo = _unitRepo;
-            priceRepo = _priceRepo;
-            costRepo = _costRepo;
-            stockRepo = _stockRepo;
-            ordersRepo = ordersRepository;
-            strategy = _strategy;
-            dbBase = _dbBase;
-            checker = _checker;
-            foldersRepo = _foldersRepo;
-            foldersDataService = _foldersDataService;
-            dbBase.GeneratedAuthenticationURL();
-            dbBase.GenerateAccessToken();
-            productDataService = new ProductDataService(dbBase);
+            this._shopRepo = _shopRepo;
+            this._businessRepo = _businessRepo;
+            this._imgRepo = _imgRepo;
+            this._prodRepo = _prodRepo;
+            this._unitRepo = _unitRepo;
+            this._priceRepo = _priceRepo;
+            this._costRepo = _costRepo;
+            this._stockRepo = _stockRepo;
+            _ordersRepo = ordersRepository;
+            this._strategy = _strategy;
+            this._dbBase = _dbBase;
+            this._foldersDataService = _foldersDataService;
+            this._dbBase.GeneratedAuthenticationURL();
+            this._dbBase.GenerateAccessToken();
+            _productDataService = new ProductDataService(this._dbBase);
         }
         #endregion
 
@@ -81,15 +76,15 @@ namespace SmartRetail.App.Web.Models.Service
             var list = new List<ProductViewModel>();
             IEnumerable<Shop> shops;
 
-            var prods = await prodRepo.GetProductsByBusinessAsync(user.business_id.Value);
+            var prods = await _prodRepo.GetProductsByBusinessAsync(user.business_id.Value);
 
             //create ViemModels
             foreach (var product in prods)
             {
-                var cost = costRepo.GetByProdId(product.id).FirstOrDefault();
-                var price = priceRepo.GetPriceByProdId(product.id);
-                shops = user.shop_id == null ? shopRepo.GetShopsByBusiness(user.business_id.Value) : new List<Shop> { shopRepo.GetById(user.shop_id.Value) };
-                var stocks = shops.Select(p => stockRepo.GetStockByShopAndProdIds(p.id, product.id));
+                var cost = _costRepo.GetByProdId(product.id).FirstOrDefault();
+                var price = _priceRepo.GetPriceByProdId(product.id);
+                shops = user.shop_id == null ? _shopRepo.GetShopsByBusiness(user.business_id.Value) : new List<Shop> { _shopRepo.GetById(user.shop_id.Value) };
+                var stocks = shops.Select(p => _stockRepo.GetStockByShopAndProdIds(p.id, product.id));
 
                 list.Add(new ProductViewModel
                 {
@@ -111,16 +106,16 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<ProductViewModel> GetProduct(UserProfile user, int id)
         {
-            var product = await prodRepo.GetByIdAsync(id);
+            var product = await _prodRepo.GetByIdAsync(id);
             if (product == null)
             {
                 return new ProductViewModel();
             }
-            var img = await imgRepo.GetByIdAsync(id);
-            var price = priceRepo.GetPriceByProdId(id);
-            var cost = costRepo.GetByProdId(id).FirstOrDefault();
-            var shops = user.shop_id == null ? shopRepo.GetShopsByBusiness(user.business_id.Value) : new List<Shop> { shopRepo.GetById(user.shop_id.Value) };
-            var stocks = shops.Select(p => stockRepo.GetStockByShopAndProdIds(p.id, id)).Where(p => p != null).ToList();
+            var img = await _imgRepo.GetByIdAsync(id);
+            var price = _priceRepo.GetPriceByProdId(id);
+            var cost = _costRepo.GetByProdId(id).FirstOrDefault();
+            var shops = user.shop_id == null ? _shopRepo.GetShopsByBusiness(user.business_id.Value) : new List<Shop> { _shopRepo.GetById(user.shop_id.Value) };
+            var stocks = shops.Select(p => _stockRepo.GetStockByShopAndProdIds(p.id, id)).Where(p => p != null).ToList();
 
             var prodVm = new ProductViewModel
             {
@@ -148,7 +143,7 @@ namespace SmartRetail.App.Web.Models.Service
                 throw new Exception("Наименование товара не может быть пустым.");
             }
 
-            var business = await businessRepo.GetByIdAsync(user.business_id.Value);
+            var business = await _businessRepo.GetByIdAsync(user.business_id.Value);
 
             var prod = new Product
             {
@@ -162,7 +157,7 @@ namespace SmartRetail.App.Web.Models.Service
             prod.Price = new Price {price = product.Price};
 
             //await foldersDataService.AddFoldersByPath(product.Category, business.id);
-            prod.folder_id = await foldersDataService.GetFolderIdByPath(product.Category, business.id);
+            prod.folder_id = await _foldersDataService.GetFolderIdByPath(product.Category, business.id);
 
             if (!string.IsNullOrEmpty(product.ImgBase64))
             {
@@ -216,18 +211,18 @@ namespace SmartRetail.App.Web.Models.Service
                 }
             }
 
-            product.Id = await productDataService.Insert(prod);
+            product.Id = await _productDataService.Insert(prod);
             return product;
         }
 
         public async Task<ProductViewModel> UpdateProductTransaction(UserProfile user, ProductDetailViewModel product)
         {
-            var business = await businessRepo.GetByIdAsync(user.business_id.Value);
+            var business = await _businessRepo.GetByIdAsync(user.business_id.Value);
 
             int prodId;
             try
             {
-                var pr = await prodRepo.GetByIdAsync(product.Id.Value, user.business_id.Value);
+                var pr = await _prodRepo.GetByIdAsync(product.Id.Value, user.business_id.Value);
                 if (pr != null)
                 {
                     prodId = pr.id;
@@ -261,10 +256,10 @@ namespace SmartRetail.App.Web.Models.Service
 
             if (!string.IsNullOrEmpty(product.Category))
             {
-                prod.folder_id = await foldersDataService.GetFolderIdByPath(product.Category, business.id);
+                prod.folder_id = await _foldersDataService.GetFolderIdByPath(product.Category, business.id);
             }
 
-            var candidatePrice = priceRepo.GetPriceByProdId(prodId);
+            var candidatePrice = _priceRepo.GetPriceByProdId(prodId);
             candidatePrice.price = product.Price;
             prod.Price = candidatePrice;
 
@@ -272,16 +267,16 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 try
                 {
-                    var imgDal = await imgRepo.GetByIdAsync(prodId);
+                    var imgDal = await _imgRepo.GetByIdAsync(prodId);
                     if (imgDal != null && !string.IsNullOrEmpty(imgDal.img_url))
                     {
-                        var isDeleted = await dbBase.Delete("/products/"+business.id + ". " + business.name + "/" +
+                        var isDeleted = await _dbBase.Delete("/products/"+business.id + ". " + business.name + "/" +
                             imgDal.prod_id + "." + imgDal.img_name + "." + imgDal.img_type);
                         if (isDeleted)
                         {
                             imgDal.img_url = null;
                             imgDal.img_url_temp = null;
-                            await imgRepo.UpdateImage(imgDal);
+                            await _imgRepo.UpdateImage(imgDal);
                         }
                     }
 
@@ -294,13 +289,13 @@ namespace SmartRetail.App.Web.Models.Service
                         prod.Image = imgDal;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw new Exception("Невозможно удалить предыдущую картинку товара.");
                 }
             }
 
-            await productDataService.Update(prod);
+            await _productDataService.Update(prod);
 
             return await GetProduct(user, prodId);
         }
@@ -316,7 +311,7 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 throw new Exception("Наименование товара не может быть пустым.");
             }
-            var business = await businessRepo.GetByIdAsync(user.business_id.Value);
+            var business = await _businessRepo.GetByIdAsync(user.business_id.Value);
          
             //create product model
             var prod = new Product
@@ -337,9 +332,9 @@ namespace SmartRetail.App.Web.Models.Service
             try
             {
                 //await foldersDataService.AddFoldersByPath(product.Category, business.id);
-                prod.folder_id = await foldersDataService.GetFolderIdByPath(product.Category, business.id);
+                prod.folder_id = await _foldersDataService.GetFolderIdByPath(product.Category, business.id);
                 //add with repo
-                pId = prodRepo.AddProduct(prod);
+                pId = _prodRepo.AddProduct(prod);
             }
             catch (Exception)
             {
@@ -355,7 +350,7 @@ namespace SmartRetail.App.Web.Models.Service
                         var bytes = ReadToEnd(stream);
                         var memory = new MemoryStream(bytes);
                         var imgParts = product.ImgBase64.Split(".");
-                        var imgUrl = await dbBase.Upload(memory,
+                        var imgUrl = await _dbBase.Upload(memory,
                             "/" + ". " + business.name + "/" +
                             pId + "." + product.ProdName + "." + imgParts[imgParts.Length - 1]);
                         var img = new Image
@@ -367,7 +362,7 @@ namespace SmartRetail.App.Web.Models.Service
                             img_url_temp = MakeTemporary(imgUrl),
                             img_path = product.Category
                         };
-                        imgRepo.Add(img);
+                        _imgRepo.Add(img);
                     }
                 }
                 catch (Exception)
@@ -405,11 +400,11 @@ namespace SmartRetail.App.Web.Models.Service
 
                         try
                         {
-                            var orderId = await ordersRepo.AddOrderAsync(order);
-                            var orderDal = await ordersRepo.GetByIdWithMultiAsync(orderId);
-                            await strategy.UpdateAverageCost(Direction.Order, orderDal);
+                            var orderId = await _ordersRepo.AddOrderAsync(order);
+                            var orderDal = await _ordersRepo.GetByIdWithMultiAsync(orderId);
+                            await _strategy.UpdateAverageCost(Direction.Order, orderDal);
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             throw new Exception("Не удалось добавить остаток на склад.");
                         }
@@ -422,7 +417,7 @@ namespace SmartRetail.App.Web.Models.Service
                         prod_id = pId,
                         value = product.Cost
                     };
-                    await costRepo.AddCostAsync(cost);
+                    await _costRepo.AddCostAsync(cost);
                 }
 
             }
@@ -485,12 +480,12 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<ProductViewModel> UpdateProduct(UserProfile user, ProductDetailViewModel product)
         {
-            var business = await businessRepo.GetByIdAsync(user.business_id.Value);
+            var business = await _businessRepo.GetByIdAsync(user.business_id.Value);
 
             int prodId;
             try
             {
-                var pr = await prodRepo.GetByIdAsync(product.Id.Value, user.business_id.Value);
+                var pr = await _prodRepo.GetByIdAsync(product.Id.Value, user.business_id.Value);
                 if (pr != null)
                 {
                     prodId = pr.id;
@@ -524,19 +519,19 @@ namespace SmartRetail.App.Web.Models.Service
 
             if (!string.IsNullOrEmpty(product.Category))
             {
-                prod.folder_id = await foldersDataService.GetFolderIdByPath(product.Category, business.id);
+                prod.folder_id = await _foldersDataService.GetFolderIdByPath(product.Category, business.id);
             }
 
             try
             {
-                prodRepo.UpdateProduct(prod);
+                _prodRepo.UpdateProduct(prod);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Товар не был изменён.");
             }
 
-            var candidatePrice = priceRepo.GetPriceByProdId(prodId);
+            var candidatePrice = _priceRepo.GetPriceByProdId(prodId);
             if (candidatePrice != null)
             {
                 if (candidatePrice.price != product.Price)
@@ -545,7 +540,7 @@ namespace SmartRetail.App.Web.Models.Service
 
                     try
                     {
-                        priceRepo.Update(price);
+                        _priceRepo.Update(price);
                     }
                     catch (Exception)
                     {
@@ -558,7 +553,7 @@ namespace SmartRetail.App.Web.Models.Service
                 price.price = product.Price;
                 try
                 {
-                    priceRepo.Add(price);
+                    _priceRepo.Add(price);
                 }
                 catch (Exception)
                 {
@@ -570,10 +565,10 @@ namespace SmartRetail.App.Web.Models.Service
             {
                 try
                 {
-                    var imgDal = await imgRepo.GetByIdAsync(prodId);
+                    var imgDal = await _imgRepo.GetByIdAsync(prodId);
                     if (imgDal != null && !string.IsNullOrEmpty(imgDal.img_url))
                     {
-                        var isDeleted = await dbBase.Delete("/" + business.name + "/" +
+                        var isDeleted = await _dbBase.Delete("/" + business.name + "/" +
                             imgDal.prod_id + "." + imgDal.img_name + "." + imgDal.img_type);
                         if (!isDeleted)
                         {
@@ -586,7 +581,7 @@ namespace SmartRetail.App.Web.Models.Service
                         var bytes = ReadToEnd(stream);
                         var memory = new MemoryStream(bytes);
                         var imgParts = product.ImgBase64.Split(".");
-                        var imgUrl = await dbBase.Upload(memory, "/" + business.name + "/" +
+                        var imgUrl = await _dbBase.Upload(memory, "/" + business.name + "/" +
                             prodId + "." + product.ProdName + "." + imgParts[imgParts.Length - 1]);
 
                         imgDal.img_type = imgParts[imgParts.Length - 1];
@@ -598,10 +593,10 @@ namespace SmartRetail.App.Web.Models.Service
                             imgDal.img_path = product.Category;
                         }
 
-                        await imgRepo.UpdateImage(imgDal);
+                        await _imgRepo.UpdateImage(imgDal);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw new Exception("Невозможно изменить картинку товара.");
                 }
@@ -612,10 +607,10 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<ProductDetailRequestViewModel> GetChoiceForUserAsync(UserProfile user)
         {
-            var shopService = new ShopSerivce(shopRepo);
+            var shopService = new ShopSerivce(_shopRepo);
             var prdVm = new ProductDetailRequestViewModel();
             prdVm.Shops = shopService.GetStocks(user);
-            var units = await unitRepo.GetAllUnitsAsync();
+            var units = await _unitRepo.GetAllUnitsAsync();
             prdVm.Units = units.Select(p => new UnitViewModel {id = p.id, name = p.value}).ToList();
             return prdVm;
         }
@@ -638,15 +633,15 @@ namespace SmartRetail.App.Web.Models.Service
         private string GetPath(string fullpath, UserProfile user)
         {
             //get business
-            var business = businessRepo.GetById(user.business_id.Value);
+            var business = _businessRepo.GetById(user.business_id.Value);
             Shop shop = null;
 
             //get shop
             if (user.shop_id != null && user.shop_id.Value != 0)
-                shop = shopRepo.GetById(user.shop_id.Value);
+                shop = _shopRepo.GetById(user.shop_id.Value);
 
             //make path in dropbox
-            var path = dropboxBasePath + "/" + business.id + ". " + business.name;
+            var path =  "/products/" + business.id + ". " + business.name;
 
             if (string.IsNullOrEmpty(fullpath))
             {

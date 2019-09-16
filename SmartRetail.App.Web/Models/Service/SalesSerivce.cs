@@ -14,28 +14,28 @@ namespace SmartRetail.App.Web.Models.Service
 {
     public class SalesSerivce: ISalesService
     {
-        private readonly IUserRepository userRepo;
-        private readonly IShopRepository shopRepo;
-        private readonly IBillsRepository billsRepo;
-        private readonly IProductRepository productRepo;
-        private readonly IPriceRepository priceRepo;
-        private readonly ICostRepository costRepo;
-        private readonly IImageRepository imgRepo;
-        private readonly IStrategy strategy;
-        private ShopsChecker shopsChecker;
+        private readonly IUserRepository _userRepo;
+        private readonly IShopRepository _shopRepo;
+        private readonly IBillsRepository _billsRepo;
+        private readonly IProductRepository _productRepo;
+        private readonly IPriceRepository _priceRepo;
+        private readonly ICostRepository _costRepo;
+        private readonly IImageRepository _imgRepo;
+        private readonly IStrategy _strategy;
+        private readonly ShopsChecker _shopsChecker;
 
         public SalesSerivce(IUserRepository userRepository, IShopRepository shopRepository, IBillsRepository billsRepository, IProductRepository productRepository,
-            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy _strategy, ShopsChecker _shopsChecker, ICostRepository _costRepo)
+            IPriceRepository priceRepository, IImageRepository imageRepository, IStrategy strategy, ShopsChecker shopsChecker, ICostRepository costRepo)
         {
-            imgRepo = imageRepository;
-            userRepo = userRepository;
-            shopRepo = shopRepository;
-            billsRepo = billsRepository;
-            productRepo = productRepository;
-            priceRepo = priceRepository;
-            costRepo = _costRepo;
-            shopsChecker = _shopsChecker;
-            strategy = _strategy;
+            _imgRepo = imageRepository;
+            _userRepo = userRepository;
+            _shopRepo = shopRepository;
+            _billsRepo = billsRepository;
+            _productRepo = productRepository;
+            _priceRepo = priceRepository;
+            _costRepo = costRepo;
+            _shopsChecker = shopsChecker;
+            _strategy = strategy;
         }
 
         public async Task<int> AddSale(SalesCreateViewModel model)
@@ -54,14 +54,14 @@ namespace SmartRetail.App.Web.Models.Service
                     prod_id = p.prodId,
                     count = p.count,
                     sum = p.summ,
-                    unit_id = (await productRepo.GetByIdAsync(p.prodId))?.unit_id,
-                    cost = costRepo.GetByProdId(p.prodId).FirstOrDefault() != null && costRepo.GetByProdId(p.prodId).FirstOrDefault().value.HasValue ?
-                    costRepo.GetByProdId(p.prodId).FirstOrDefault().value.Value : 0,
-                    profit = p.summ - costRepo.GetByProdId(p.prodId).FirstOrDefault().value.Value*p.count,
-                    price = priceRepo.GetPriceByProdId(p.prodId) != null && priceRepo.GetPriceByProdId(p.prodId).price.HasValue ? priceRepo.GetPriceByProdId(p.prodId).price.Value : 0
+                    unit_id = (await _productRepo.GetByIdAsync(p.prodId))?.unit_id,
+                    cost = _costRepo.GetByProdId(p.prodId).FirstOrDefault() != null && _costRepo.GetByProdId(p.prodId).FirstOrDefault().value.HasValue ?
+                    _costRepo.GetByProdId(p.prodId).FirstOrDefault().value.Value : 0,
+                    profit = p.summ - _costRepo.GetByProdId(p.prodId).FirstOrDefault().value.Value*p.count,
+                    price = _priceRepo.GetPriceByProdId(p.prodId) != null && _priceRepo.GetPriceByProdId(p.prodId).price.HasValue ? _priceRepo.GetPriceByProdId(p.prodId).price.Value : 0
                 }))).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Не сделан ни один приход по одному из товаров чека.");
             }
@@ -69,10 +69,10 @@ namespace SmartRetail.App.Web.Models.Service
             var billId = 0;
             try
             {
-                billId = await billsRepo.AddBillAsync(bill);
-                await strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, bill);
+                billId = await _billsRepo.AddBillAsync(bill);
+                await _strategy.UpdateAverageCost(DAL.Helpers.Direction.Sale, bill);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Случилась ошибка при добавлении продажи.");
             }
@@ -82,7 +82,7 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<SalesViewModel> GetBill(UserProfile user, int billId)
         {
-            var bill = await billsRepo.GetByIdAsync(billId);
+            var bill = await _billsRepo.GetByIdAsync(billId);
             if (bill == null)
             {
                 return new SalesViewModel();
@@ -96,14 +96,14 @@ namespace SmartRetail.App.Web.Models.Service
             IEnumerable<Shop> shops = new List<Shop>();
             var salesVm = new List<SalesViewModel>();
 
-            var user = userRepo.GetById(userId);
+            var user = _userRepo.GetById(userId);
 
-            var avl = shopsChecker.CheckAvailability(user, shopId);
+            var avl = _shopsChecker.CheckAvailability(user, shopId);
             if (!avl.isCorrectShop)
                 return new List<SalesViewModel>();
             if (!avl.hasShop && avl.isAdmin)
             {
-                shops = shopRepo.GetShopsByBusiness(user.business_id.Value);
+                shops = _shopRepo.GetShopsByBusiness(user.business_id.Value);
             }
             else if (!avl.hasShop && !avl.isAdmin)
             {
@@ -111,7 +111,7 @@ namespace SmartRetail.App.Web.Models.Service
             }
             else if (avl.hasShop)
             {
-                shops = new List<Shop> { shopRepo.GetById(shopId) };
+                shops = new List<Shop> { _shopRepo.GetById(shopId) };
             }
 
             if (shops == null || !shops.Any())
@@ -120,7 +120,7 @@ namespace SmartRetail.App.Web.Models.Service
 
             foreach (var shop in shops)
             {
-                shop.Bills = (await billsRepo.GetBillsWithSales(shop.id, from, to)).ToList();
+                shop.Bills = (await _billsRepo.GetBillsWithSales(shop.id, from, to)).ToList();
             }
 
             foreach (var shop in shops)
@@ -140,7 +140,7 @@ namespace SmartRetail.App.Web.Models.Service
                     {
                         productsVm.Add(new SalesProductViewModel
                         {
-                            imageUrl = (await imgRepo.GetByIdAsync(sale.prod_id))?.img_url_temp,
+                            imageUrl = (await _imgRepo.GetByIdAsync(sale.prod_id))?.img_url_temp,
                             ProdName = sale.Product.name,
                             VendorCode = "",
                             Summ = sale.sum,

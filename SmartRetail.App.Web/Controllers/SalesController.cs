@@ -25,7 +25,6 @@ namespace SmartRetail.App.Web.Controllers
         private readonly ISalesService service;
         private readonly IShopSerivce shopService;
         private readonly IUserRepository userRepo;
-        private HttpClient client;
 
         public SalesController(ISalesService _service, IUserRepository _userRepo, IShopSerivce _shopService)
         {

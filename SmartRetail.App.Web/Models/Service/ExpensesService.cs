@@ -76,13 +76,13 @@ namespace SmartRetail.App.Web.Models.Service
                 business_id = user.business_id.Value,
                 shop_id = model.shopId,
                 sum = model.totalSum,
-                report_date = model.reportDate
+                report_date = model.reportDate,
+                ExpensesDetails = model.expenses.Select(p => new ExpensesDetail
+                {
+                    expenses_type_id = Convert.ToInt32(p.id), sum = p.value
+                }).ToList()
             };
-            expenses.ExpensesDetails = (await Task.WhenAll(model.expenses.Select(async p => new ExpensesDetail
-            {
-                expenses_type_id = Convert.ToInt32(p.id),
-                sum = p.value
-            }))).ToList();
+
 
             var exId = 0;
             try
@@ -103,8 +103,8 @@ namespace SmartRetail.App.Web.Models.Service
                 shopId = expensesDal.shop_id,
                 reportDate = expensesDal.report_date,
                 totalSum = expensesDal.sum,
+                expenses = new List<ExpensesValueViewModel>(),
             };
-            expensesVm.expenses = new List<ExpensesValueViewModel>();
             foreach (var expD in expensesDal.ExpensesDetails)
             {
                 expensesVm.expenses.Add(new ExpensesValueViewModel

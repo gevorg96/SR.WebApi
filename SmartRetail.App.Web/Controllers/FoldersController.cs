@@ -39,7 +39,7 @@ namespace SmartRetail.App.Web.Controllers
         public async Task<ActionResult<ProductGroupViewModel>> GetFolders(string folder = null)
         {
             var user = await userRepo.GetByLogin(User.Identity.Name);
-            var grouplevel = new ProductGroupViewModel();
+            ProductGroupViewModel grouplevel;
 
             if (user == null)
             {
@@ -50,7 +50,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 grouplevel = await categoryService.GetNexLevelGroup(user, folder, false);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ConflictObjectResult("Что-то пошло не так...");
             }
@@ -74,7 +74,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 folder = await foldersDataService.GetById(id, user.business_id.Value);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new ConflictObjectResult("Что-то пошло не так...");
             }
@@ -110,7 +110,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 await foldersDataService.AddFoldersByPath(model.pathToAdd + "/" + model.folderName, user.business_id.Value);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new ConflictObjectResult("Что-то пошло не так...");
             }
@@ -138,7 +138,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 await foldersDataService.RenameFolderByPath(model.PathToFolder, model.NewFolderName, user.business_id.Value);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new ConflictObjectResult("Что-то пошло не так...");
             }
@@ -165,7 +165,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 await foldersDataService.ReplaceFolderByPath(model.pathToFolder, model.newPath, user.business_id.Value, model.Copy);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new ConflictObjectResult("Что-то пошло не так...");
             }
@@ -188,7 +188,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 await foldersDataService.DeleteFolderById(id);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new ConflictObjectResult("Что-то пошло не так...");
             }

@@ -65,8 +65,8 @@ namespace SmartRetail.App.Test
             checker = new ShopsChecker(shopRepo);
             dbBase.GeneratedAuthenticationURL();
             dbBase.GenerateAccessToken();
-            prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, checker, 
-                costRepo, stockRepo,ordersRepo, strategy, foldersRepo, new FoldersDataService(foldersRepo,prodRepo));
+            prodService = new ProductService(shopRepo, businessRepo, imgRepo, dbBase, prodRepo, unitRepo, priceRepo, 
+                costRepo, stockRepo,ordersRepo, strategy, new FoldersDataService(foldersRepo,prodRepo));
             orderStockRepo = new OrderStockRepository(conn);
             strategy = new FifoStrategy(orderStockRepo, stockRepo, costRepo);
             salesService = new SalesSerivce(userRepo, shopRepo, billsRepo, prodRepo, priceRepo, imgRepo, strategy, checker, costRepo);

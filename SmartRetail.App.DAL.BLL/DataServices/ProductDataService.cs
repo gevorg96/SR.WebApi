@@ -15,7 +15,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
     {
         private IProductRepository _productRepository;
         private IPriceRepository _priceRepository;
-        private IPictureWareHouse _dbBase;
+        private readonly IPictureWareHouse _dbBase;
         private IBusinessRepository _businessRepository;
         private IImageRepository _imageRepository;
         private IStrategy _strategy;
