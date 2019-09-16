@@ -220,6 +220,91 @@ namespace SmartRetail.App.Web.Models.Service
             return product;
         }
 
+        public async Task<ProductViewModel> UpdateProductTransaction(UserProfile user, ProductDetailViewModel product)
+        {
+            var business = await businessRepo.GetByIdAsync(user.business_id.Value);
+
+            int prodId;
+            try
+            {
+                var pr = await prodRepo.GetByIdAsync(product.Id.Value, user.business_id.Value);
+                if (pr != null)
+                {
+                    prodId = pr.id;
+                }
+                else
+                {
+                    throw new Exception("Не указан идентификатор товара / неверный идентификатор.");
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Не указан идентификатор товара / неверный идентификатор.");
+            }
+
+
+            var price = new Price
+            {
+                prod_id = prodId,
+            };
+
+            var prod = new Product
+            {
+                id = prodId,
+                name = product.ProdName,
+                business_id = user.business_id,
+                unit_id = product.UnitId,
+                attr1 = product.VendorCode,
+                attr9 = product.Size,
+                attr10 = product.Color
+            };
+
+            if (!string.IsNullOrEmpty(product.Category))
+            {
+                prod.folder_id = await foldersDataService.GetFolderIdByPath(product.Category, business.id);
+            }
+
+            var candidatePrice = priceRepo.GetPriceByProdId(prodId);
+            candidatePrice.price = product.Price;
+            prod.Price = candidatePrice;
+
+            if (product.img != null)
+            {
+                try
+                {
+                    var imgDal = await imgRepo.GetByIdAsync(prodId);
+                    if (imgDal != null && !string.IsNullOrEmpty(imgDal.img_url))
+                    {
+                        var isDeleted = await dbBase.Delete("/products/"+business.id + ". " + business.name + "/" +
+                            imgDal.prod_id + "." + imgDal.img_name + "." + imgDal.img_type);
+                        if (isDeleted)
+                        {
+                            imgDal.img_url = null;
+                            imgDal.img_url_temp = null;
+                            await imgRepo.UpdateImage(imgDal);
+                        }
+                    }
+
+                    using (var stream = product.img.OpenReadStream())
+                    {
+                        var bytes = ReadToEnd(stream);
+                        prod.ImgMemoryStream = new MemoryStream(bytes);
+                        prod.ImgBase64 = product.ImgBase64;
+                        prod.Category = product.Category;
+                        prod.Image = imgDal;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Невозможно удалить предыдущую картинку товара.");
+                }
+            }
+
+            await productDataService.Update(prod);
+
+            return await GetProduct(user, prodId);
+        }
+
         /// <summary>
         /// Inserting product
         /// </summary>

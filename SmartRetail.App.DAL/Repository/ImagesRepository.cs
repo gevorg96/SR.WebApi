@@ -33,6 +33,11 @@ namespace SmartRetail.App.DAL.Repository
             return await _unitOfWork.Connection.InsertAsync(img, _unitOfWork.Transaction);
         }
 
+        public async Task<bool> UpdateUow(Image img)
+        {
+            return await _unitOfWork.Connection.UpdateAsync(img, _unitOfWork.Transaction);
+        }
+
         public void Add(Image entity)
         {
             string sql = "INSERT INTO Images (ROWGUID, prod_id, img_type, img_name, img_url, img_url_temp, img_path) Values (@ROWGUID, @prod_id, @img_type, @img_name, @img_url, @img_url_temp, @img_path);";
@@ -74,6 +79,10 @@ namespace SmartRetail.App.DAL.Repository
                     if (newValue != null && (oldValue == null || newValue.ToString() != oldValue.ToString()))
                     {
                         sb.Append(p.Name + " = " + QueryHelper.GetSqlString(p, p.GetValue(img)) + ", ");
+                    }
+                    else if(newValue == null && oldValue != null)
+                    {
+                        sb.Append(p.Name + " = null, ");
                     }
                 }
                 if (sb.Length < 20) return;

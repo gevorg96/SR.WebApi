@@ -187,7 +187,7 @@ namespace SmartRetail.App.Web.Controllers
                         product.ImgBase64 = newFileName;
                     }
                 }
-                var p = await _service.UpdateProduct(user, product);
+                var p = await _service.UpdateProductTransaction(user, product);
                 return Ok(p);
             }
             catch (Exception ex)

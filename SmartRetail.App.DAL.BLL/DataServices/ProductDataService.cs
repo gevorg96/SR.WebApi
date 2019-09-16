@@ -89,7 +89,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
                             img_url = imgUrl,
                             prod_id = productId,
                             img_name = product.name,
-                            img_type = imgParts[imgParts.Length - 1],
+                            img_type = imgParts.LastOrDefault(),
                             img_url_temp = MakeTemporary(imgUrl),
                             img_path = product.Category
                         };
@@ -148,17 +148,61 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             {
                 var uow = session.UnitOfWork;
                 _productRepository = new ProductRepository(uow);
+                _priceRepository = new PriceRepository(uow);
+                _businessRepository = new BusinessRepository(uow);
+                _imageRepository = new ImagesRepository(uow);
+                _strategy = new FifoStrategy();
+                _ordersRepository = new OrdersRepository(uow);
+                _orderDetailRepository = new OrderDetailRepository(uow);
+                _costRepository = new CostRepository(uow);
+                var imgPath = string.Empty;
 
                 uow.Begin();
                 try
                 {
                     var res = await _productRepository.UpdateUow(product);
+                    if (product.Price != null && product.Price.price.HasValue)
+                    {
+                        await _priceRepository.UpdateUow(product.Price);
+                    }
+                    if (!string.IsNullOrEmpty(product.ImgBase64) && product.ImgMemoryStream != null)
+                    {
+                        var business = await _businessRepository.GetByIdUow(product.business_id.Value);
+                        var imgParts = product.ImgBase64.Split('.');
+                        imgPath = "/products/" + business.id + ". " + business.name + "/" +
+                                  product.id + "." + product.name + "." + imgParts.Last();
+                        var imgUrl = await _dbBase.Upload(product.ImgMemoryStream, imgPath);
+                        Image img = new Image();
+
+                        img.prod_id = product.id;
+                        img.img_url = imgUrl;
+                        img.img_name = product.name;
+                        img.img_type = imgParts.LastOrDefault();
+                        img.img_url_temp = MakeTemporary(imgUrl);
+                        img.img_path = product.Category;
+                        if (product.Image != null)
+                        {
+                            img.ROWGUID = product.Image.ROWGUID;
+                            await _imageRepository.UpdateUow(img);
+                        }
+                        else
+                        {
+                            await _imageRepository.InsertUow(img);
+                        }
+                    }
+
+
                     uow.Commit();
                     return res;
                 }
                 catch (Exception e)
                 {
                     uow.RollBack();
+                    if (!string.IsNullOrEmpty(imgPath))
+                    {
+                        await _dbBase.Delete(imgPath);
+                    }
+
                     throw e;
                 }
             }

@@ -32,6 +32,11 @@ namespace SmartRetail.App.DAL.Repository
             return await _unitOfWork.Connection.InsertAsync(price, _unitOfWork.Transaction);
         }
 
+        public async Task<bool> UpdateUow(Price price)
+        {
+            return await _unitOfWork.Connection.UpdateAsync(price, transaction: _unitOfWork.Transaction);
+        }
+
         #region Without Transactions
 
         public void Add(Price entity)

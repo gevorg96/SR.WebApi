@@ -1,9 +1,11 @@
 ﻿using System;
+using Dapper.Contrib.Extensions;
 
 namespace SmartRetail.App.DAL.Entities
 {
     public class Image:IEntity
     {
+        [ExplicitKey]
         public Guid ROWGUID { get; set; }
 
         public int prod_id { get; set; }

@@ -14,5 +14,6 @@ namespace SmartRetail.App.Web.Models.Interface
         Task<ProductViewModel> GetProduct(UserProfile user, int id);
 
         Task<ProductDetailViewModel> AddProductTransaction(UserProfile user, ProductDetailViewModel product);
+        Task<ProductViewModel> UpdateProductTransaction(UserProfile user, ProductDetailViewModel product);
     }
 }

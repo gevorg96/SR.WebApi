@@ -6,6 +6,7 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
     public interface IImageRepository
     {
         Task<int> InsertUow(Image img);
+        Task<bool> UpdateUow(Image img);
 
         void Add(Image entity);
         Task<Image> GetByIdAsync(int id);
