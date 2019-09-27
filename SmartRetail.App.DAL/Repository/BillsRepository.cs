@@ -6,6 +6,8 @@ using System.Data.SqlClient;
 using Dapper;
 using System.Threading.Tasks;
 using System.Linq;
+using Dapper.Contrib.Extensions;
+using SmartRetail.App.DAL.UnitOfWork;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
 
 namespace SmartRetail.App.DAL.Repository
@@ -13,9 +15,58 @@ namespace SmartRetail.App.DAL.Repository
     public class BillsRepository : IBillsRepository
     {
         private readonly string conn;
+        private IUnitOfWork _unitOfWork;
         public BillsRepository(string connection)
         {
             conn = connection;
+        }
+
+        public BillsRepository(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<int> InsertUow(Bill entity)
+        {
+            if (entity.Sales == null || !entity.Sales.Any())
+                return -1;
+
+            entity.bill_number = await GetMaxBillNumberInDay(entity.shop_id, entity.report_date);
+
+            var billId = await _unitOfWork.Connection.InsertAsync(entity, _unitOfWork.Transaction);
+            foreach (var sale in entity.Sales)
+            {
+                sale.bill_id = billId;
+                await _unitOfWork.Connection.InsertAsync(sale, _unitOfWork.Transaction);
+            }
+
+            return billId;
+        }
+
+        public async Task<Bill> GetByIdsWithSalesUow(int billId, int shopId)
+        {
+            var sql = "select * from Bills as b join Sales as s on b.id = s.bill_id where b.id = "+ billId +" and b.shop_id = " + shopId;
+
+            var biilsDictionary = new Dictionary<int, Bill>();
+
+            var billsStocks = await _unitOfWork.Connection.QueryAsync<Bill, Sale, Bill>(sql,
+                (bill, sale) =>
+                {
+                    Bill billEntry;
+                    if (!biilsDictionary.TryGetValue(bill.id, out billEntry))
+                    {
+                        billEntry = bill;
+                        billEntry.Sales = new List<Sale>();
+                        biilsDictionary.Add(billEntry.id, billEntry);
+                    }
+
+                    billEntry.Sales.Add(sale);
+                    return billEntry;
+
+                }, splitOn: "id", transaction: _unitOfWork.Transaction);
+
+            return billsStocks.Distinct().FirstOrDefault();
+        
         }
 
         public async Task<int> AddBillAsync(Bill bill)
@@ -101,7 +152,7 @@ namespace SmartRetail.App.DAL.Repository
             }
 
         }
-
+        
         public async Task<Bill> GetByIdAsync(int id)
         {
             var sql = "select * from Bills where id = " + id;

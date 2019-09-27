@@ -89,7 +89,7 @@ namespace SmartRetail.App.Web.Controllers
             {
                 try
                 {
-                    var billId = await service.AddSale(model);
+                    var billId = await service.AddSaleTransaction(model);
                     model.id = billId;
                     return Ok(model);
                 }

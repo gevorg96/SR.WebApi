@@ -7,6 +7,7 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
     public interface IOrderStockRepository
     {
         Task<int> InsertUow(OrderStock orderStock);
+        Task<bool> UpdateUow(OrderStock orderStock);
         Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdIdUow(int prodId);
         Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdAndShopIdsUow(int prodId, int shopId);
 

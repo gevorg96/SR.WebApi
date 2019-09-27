@@ -30,6 +30,12 @@ namespace SmartRetail.App.DAL.Repository
             return await _unitOfWork.Connection.InsertAsync(orderStock, transaction: _unitOfWork.Transaction);
         }
 
+        public async Task<bool> UpdateUow(OrderStock orderStock)
+        {
+            return await _unitOfWork.Connection.UpdateAsync(orderStock, transaction: _unitOfWork.Transaction);
+        }
+
+
         public async Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdAndShopIdsUow(int prodId, int shopId)
         {
             var sql = "select * from OrderStocks as OS join OrderDetails as O ON OS.order_id = O.id where OS.prod_id = "

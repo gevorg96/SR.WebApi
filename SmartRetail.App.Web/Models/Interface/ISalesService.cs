@@ -12,5 +12,6 @@ namespace SmartRetail.App.Web.Models.Interface
         Task<IEnumerable<SalesViewModel>> GetSales(int userId, int shopId, DateTime from, DateTime to);
         Task<int> AddSale(SalesCreateViewModel model);
         Task<SalesViewModel> GetBill(UserProfile user, int billId);
+        Task<int> AddSaleTransaction(SalesCreateViewModel model);
     }
 }
