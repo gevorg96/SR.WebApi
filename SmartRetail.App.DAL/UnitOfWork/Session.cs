@@ -13,7 +13,7 @@ namespace SmartRetail.App.DAL.UnitOfWork
 
         public Session()
         {
-            _connection = new SqlConnection(@"Data Source=SQL6007.site4now.net;Initial Catalog=DB_A4C0E8_srbackend;User Id=DB_A4C0E8_srbackend_admin;Password=1234QWer");
+            _connection = new SqlConnection(@"Data Source=SQL6007.site4now.net;Initial Catalog=DB_A4E50E_smartretail;User Id=DB_A4E50E_smartretail_admin;Password=1234QWer;");
             _connection.Open();
             UnitOfWork = new UnitOfWork(_connection);
         }

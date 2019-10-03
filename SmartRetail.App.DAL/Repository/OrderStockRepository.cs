@@ -40,7 +40,7 @@ namespace SmartRetail.App.DAL.Repository
         {
             var sql = "select * from OrderStocks as OS join OrderDetails as O ON OS.order_id = O.id where OS.prod_id = "
                       + prodId + " and OS.curr_stocks != 0 and OS.shop_id = " + shopId + " order by OS.order_id";
-
+            
             var orderStocks = await _unitOfWork.Connection.QueryAsync<OrderStock, OrderDetail, OrderStock>(sql,
                     (orderStock, orderDetail) =>
                     {
@@ -93,7 +93,7 @@ namespace SmartRetail.App.DAL.Repository
                     {
                         orderStock.OrderDetail = orderDetail;
                         return orderStock;
-                    }, splitOn: "id", transaction:_unitOfWork.Transaction);
+                    }, splitOn: "id");
                 return orderStocks.AsList();
             }
         }

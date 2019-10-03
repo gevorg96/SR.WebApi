@@ -63,10 +63,13 @@ namespace SmartRetail.App.DAL.Repository
         public async Task<Order> GetByIdAsync(int orderId)
         {
             var sql = "select * from Orders where id = " + orderId;
+            var detailSql = "select * from OrderDetails where order_id = " + orderId;
             using (var db = new SqlConnection(conn))
             {
                 db.Open();
-                return await db.QueryFirstOrDefaultAsync<Order>(sql);
+                var order =  await db.QueryFirstOrDefaultAsync<Order>(sql);
+                order.OrderDetails = (await db.QueryAsync<OrderDetail>(detailSql)).ToList();
+                return order;
             }
         }
 

@@ -163,23 +163,22 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task<int> GetMaxBillNumberInDay(int shopId, DateTime day)
+        private async Task<int> GetMaxBillNumberInDay(int shopId, DateTime day)
         {
             var from = new DateTime(day.Year, day.Month, day.Day);
             var to = new DateTime(day.Year, day.Month, day.Day + 1).AddSeconds(-1);
-            var sql = "select bill_number from Bills where shop_id = " + shopId + " and report_date between '" + 
-                from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '"
-                + to.ToString("MM.dd.yyyy HH:mm:ss") + "'";
-            using (var db = new SqlConnection(conn))
+            var sql = "select bill_number from Bills where shop_id = " + shopId + " and report_date between '" +
+                      from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '"
+                      + to.ToString("MM.dd.yyyy HH:mm:ss") + "'";
+
+            var bills = await _unitOfWork.Connection.QueryAsync<int>(sql, transaction:_unitOfWork.Transaction);
+            if (bills == null || !bills.Any())
             {
-                db.Open();
-                var bills = await db.QueryAsync<int>(sql);
-                if (bills == null || !bills.Any())
-                {
-                    return 1;
-                }
-                return bills.Max() + 1;
+                return 1;
             }
+
+            return bills.Max() + 1;
+
         }
     }
 }

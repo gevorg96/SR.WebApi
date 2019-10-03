@@ -113,7 +113,8 @@ namespace SmartRetail.App.DAL.Repository
         public async Task DeleteFoldersAsync(Tree<Folder> tree)
         {
             var delete = "delete from Folders where id = @Id";
-            var update = "update Product set folder_id = NULL where folder_id = @folderId";
+            var update = "update Products set folder_id = NULL where folder_id = @folderId";
+            
             var list = Tree<Folder>.ToList(tree).OrderByDescending(p => p.parent_id);
             using (var db = new SqlConnection(conn))
             {
@@ -124,9 +125,10 @@ namespace SmartRetail.App.DAL.Repository
                     {
                         foreach (var folder in list)
                         {
-                            await db.ExecuteAsync(delete, new { Id = folder.id }, transaction);
-                            await db.ExecuteAsync(update, new { folderId = folder.id }, transaction);
+                            await db.ExecuteAsync(delete, new {Id = folder.id}, transaction);
+                            await db.ExecuteAsync(update, new {folderId = folder.id}, transaction);
                         }
+
                         transaction.Commit();
                     }
                     catch (Exception e)
@@ -158,7 +160,7 @@ namespace SmartRetail.App.DAL.Repository
                 if (!string.IsNullOrEmpty(prodIdStr))
                 {
                     var prodId = Int32.Parse(prodIdStr);
-                    var sql = "update Product set folder_id = " + isNotNull(parentId) + " where id = " + prodId;
+                    var sql = "update Products set folder_id = " + isNotNull(parentId) + " where id = " + prodId;
                     await db.ExecuteAsync(sql);
                     return;
                 }
