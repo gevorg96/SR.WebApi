@@ -8,6 +8,8 @@ namespace SmartRetail.App.Web.Models.Interface
 {
     public interface ICancellationService
     {
+        Task<OrderCreateViewModel> AddCancellationsTransaction(OrderCreateViewModel model);
+
         Task<IEnumerable<OrderViewModel>> GetCancellations(UserProfile user, DateTime from, DateTime to, int shopId);
         Task<OrderCreateViewModel> AddCancellations(OrderCreateViewModel model);
         Task<OrderViewModel> GetCancellation(UserProfile user, int id);
