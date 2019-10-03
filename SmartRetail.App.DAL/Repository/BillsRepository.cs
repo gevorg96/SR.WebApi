@@ -116,8 +116,8 @@ namespace SmartRetail.App.DAL.Repository
             var join = "select * from Bills as b join Sales as s on b.id = s.bill_id where b.shop_id = " + 
                 shopId + " and b.report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" 
                 + to.ToString("MM.dd.yyyy HH:mm:ss") + "'";
-            var prodSql = "select * from Product where id = @ProdId";
-            var priceSelect = "select * from Price where prod_id = @ProdId";
+            var prodSql = "select * from Products where id = @ProdId";
+            var priceSelect = "select * from Prices where prod_id = @ProdId";
 
             using (var db = new SqlConnection(conn))
             {
