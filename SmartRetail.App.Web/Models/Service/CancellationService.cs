@@ -36,7 +36,6 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<OrderCreateViewModel> AddCancellations(OrderCreateViewModel model)
         {
-           
             var order = new Order
             {
                 isOrder = false,
@@ -99,6 +98,40 @@ namespace SmartRetail.App.Web.Models.Service
             }
 
             return vm;
+        }
+
+        public async Task<OrderCreateViewModel> AddCancellationsTransaction(OrderCreateViewModel model)
+        {
+            var order = new Order
+            {
+                isOrder = false,
+                report_date = model.reportDate,
+                shop_id = model.shopId
+            };
+
+            order.OrderDetails = model.products.Select(p => new OrderDetail
+            {
+                prod_id = p.id,
+                cost = costRepo.GetByProdId(p.id).FirstOrDefault() != null && costRepo.GetByProdId(p.id).FirstOrDefault().value.HasValue ?
+                    costRepo.GetByProdId(p.id).FirstOrDefault().value.Value : 0,
+                count = p.count
+            }).ToList();
+
+            var id = 0;
+            try
+            {
+                id = await ordersRepo.AddCancellationAsync(order);
+                var orderDal = (await ordersRepo.GetCancellationsByShopIdInDateRange(order.shop_id, model.reportDate.AddSeconds(-1), model.reportDate)).Last(p => p.id == id);
+                await strategy.UpdateAverageCost(Direction.Cancellation, orderDal);
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("Добавление списания не удалось.");
+            }
+
+            model.id = id;
+            return model;
         }
 
         public async Task<IEnumerable<OrderViewModel>> GetCancellations(UserProfile user, DateTime from, DateTime to, int shopId)
