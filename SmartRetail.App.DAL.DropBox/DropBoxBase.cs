@@ -12,7 +12,7 @@ namespace SmartRetail.App.DAL.DropBox
     {
         #region Variables
         private DropboxClient DBClient;
-        private ListFolderArg DBFolders;
+        //private ListFolderArg DBFolders;
         private string oauth2State;
         private const string RedirectUri = "https://localhost/authorize"; // Same as we have configured Under [Application] -> settings -> redirect URIs.  
         #endregion

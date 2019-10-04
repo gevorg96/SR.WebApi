@@ -16,7 +16,7 @@ namespace SmartRetail.App.DAL.Repository
             conn = connection;
         }
 
-        public new IEnumerable<ExpensesType> GetAll()
+        public IEnumerable<ExpensesType> GetAll()
         {
             var sql = "SELECT * FROM ExpensesTypes";
             using (var connection = new SqlConnection(conn))

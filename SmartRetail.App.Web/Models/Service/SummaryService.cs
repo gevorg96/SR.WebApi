@@ -44,7 +44,7 @@ namespace SmartRetail.App.Web.Models.Service
 
             var dailyData = await salesDataService.GeTotalInfoAsync(whouse);
             var shares = await salesDataService.GetSharesAsync(whouse);
-            var pair = await salesDataService.GetTop2ProductsAsync(whouse);
+            var pair = salesDataService.GetTop2ProductsAsync(whouse);
 
             if (pair.Item1 != 0)
             {

@@ -104,7 +104,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
             return dict.Select(p => new SalesShares {category = p.Key, part = p.Value / all});
         }
 
-        public async Task<(int, int)> GetTop2ProductsAsync(int shopId)
+        public (int, int) GetTop2ProductsAsync(int shopId)
         {
             if (bills == null || !bills.Any())
             {

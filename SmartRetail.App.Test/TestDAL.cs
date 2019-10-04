@@ -501,7 +501,7 @@ namespace SmartRetail.App.Test
             var salesDs = new SalesDataService(prodRepo, imgRepo, billsRepo, businessRepo);
             var dailyData = await salesDs.GeTotalInfoAsync(1);
             var shares = await salesDs.GetSharesAsync(1);
-            var pair = await salesDs.GetTop2ProductsAsync(1);
+            var pair = salesDs.GetTop2ProductsAsync(1);
         }
 
         [Fact]
