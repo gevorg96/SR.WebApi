@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SmartRetail.App.Web.ViewModels;
 
 namespace SmartRetail.App.Web.Models.ViewModel.Products
 {

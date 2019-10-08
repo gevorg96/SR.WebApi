@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
-using SmartRetail.App.Web.Models;
-using SmartRetail.App.Web.Models.ViewModel;
-using SmartRetail.App.DAL.Repository;
-using SmartRetail.App.Web.Models.Auth;
-using SmartRetail.App.DAL.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SmartRetail.App.DAL.Repository.Interfaces;
+using SmartRetail.App.Web.Models;
+using SmartRetail.App.Web.Models.Auth;
+using SmartRetail.App.Web.Models.ViewModel;
 
-namespace SmartRetail.App.Web.Controllers
+namespace SmartRetail.App.Web.Controllers.ApiControllers
 {
     [EnableCors("MyPolicy")]
     public class AccountController : ControllerBase
@@ -62,7 +60,7 @@ namespace SmartRetail.App.Web.Controllers
             return Ok(response);
         }
  
-        private async Task<ClaimsIdentity> GetIdentity(string username, string password)
+        public async Task<ClaimsIdentity> GetIdentity(string username, string password)
         {
             var user = await _repo.GetByLogin(username);
             if (user != null)

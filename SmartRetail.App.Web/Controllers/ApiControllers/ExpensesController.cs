@@ -5,14 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
-using SmartRetail.App.Web.Models.ViewModel;
 using SmartRetail.App.Web.Models.ViewModel.Expenses;
-using SmartRetail.App.Web.ViewModels;
 
-namespace SmartRetail.App.Web.Controllers
+namespace SmartRetail.App.Web.Controllers.ApiControllers
 {
     [EnableCors("MyPolicy")]
     [Route("expenses")]
@@ -58,7 +55,7 @@ namespace SmartRetail.App.Web.Controllers
                 }
             }
 
-            return BadRequest("Не выбран магазин/склад, либо выбран не тот.");
+            return BadRequest("РќРµ РІС‹Р±СЂР°РЅ РјР°РіР°Р·РёРЅ/СЃРєР»Р°Рґ, Р»РёР±Рѕ РІС‹Р±СЂР°РЅ РЅРµ С‚РѕС‚.");
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace SmartRetail.App.Web.ViewModels
+namespace SmartRetail.App.Web.Models.ViewModel
 {
     public class AuthData
     {

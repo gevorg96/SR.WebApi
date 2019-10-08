@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
 using SmartRetail.App.Web.Models.ViewModel.Orders;
 
-namespace SmartRetail.App.Web.Controllers
+namespace SmartRetail.App.Web.Controllers.ApiControllers
 {
     [EnableCors("MyPolicy")]
     [Route("cancellations")]
