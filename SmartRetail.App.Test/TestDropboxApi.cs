@@ -10,7 +10,7 @@ namespace SmartRetail.App.Test
     public class TestDropboxApi
     {
         private const string conn =
-            "Data Source=SQL6001.site4now.net;Initial Catalog=DB_A497DE_retailsys;User Id=DB_A497DE_retailsys_admin;Password=1234QWer;";
+            "Data Source=SQL6007.site4now.net;Initial Catalog=DB_A4E50E_smartretail;User Id=DB_A4E50E_smartretail_admin;Password=1234QWer;";
 
         private const string basePath = "/dropbox/dotnetapi/products";
         private DropBoxBase dbBase;

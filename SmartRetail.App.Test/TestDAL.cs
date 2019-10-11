@@ -23,7 +23,7 @@ namespace SmartRetail.App.Test
     public class TestDAL
     {
         private const string conn =
-            "Data Source=SQL6007.site4now.net;Initial Catalog=DB_A4C0E8_srbackend;User Id=DB_A4C0E8_srbackend_admin;Password=1234QWer;";
+            "Data Source=SQL6007.site4now.net;Initial Catalog=DB_A4E50E_smartretail;User Id=DB_A4E50E_smartretail_admin;Password=1234QWer;";
         private const string dropboxBasePath = "/products";
 
         private readonly IShopRepository shopRepo;

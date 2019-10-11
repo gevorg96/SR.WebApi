@@ -179,6 +179,40 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
+
+        public async Task<IEnumerable<Order>> GetOrdersByShopAndProdIdsInDateRange(int shopId, int prodId, DateTime from,
+            DateTime to)
+        {
+            var sql = "select * from Orders as o join OrderDetails as od on o.id = od.order_id where o.shop_id = " + 
+                      shopId + " and o.report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" 
+                      + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and o.isOrder = 1 and od.prod_id = " + prodId;
+
+            using (var db = new SqlConnection(conn))
+            {
+                db.Open();
+
+                var orderDictionary = new Dictionary<int, Order>();
+
+                var orderStocks = await db.QueryAsync<Order, OrderDetail, Order>(sql,
+                    (order, orderDetail) =>
+                    {
+                        Order orderEntry;
+                        if (!orderDictionary.TryGetValue(order.id, out orderEntry))
+                        {
+                            orderEntry = order;
+                            orderEntry.OrderDetails = new List<OrderDetail>();
+                            orderDictionary.Add(orderEntry.id, orderEntry);
+                        }
+
+                        orderEntry.OrderDetails.Add(orderDetail);
+                        return orderEntry;
+
+                    }, splitOn: "id");
+
+                return orderStocks.Distinct().ToList();
+            }
+        }
+        
         public async Task<IEnumerable<Order>> GetCancellationsByShopIdInDateRange(int shopId, DateTime from, DateTime to)
         {
             var sql = "select * from Orders as o join OrderDetails as od on o.id = od.order_id where o.shop_id = " +
