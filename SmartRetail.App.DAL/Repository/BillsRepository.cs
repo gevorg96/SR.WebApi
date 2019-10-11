@@ -43,6 +43,50 @@ namespace SmartRetail.App.DAL.Repository
             return billId;
         }
 
+        public async Task<IEnumerable<Bill>> GetBillsWithSalesByProdId(int shopId, int prodId, DateTime from,
+            DateTime to)
+        {
+            var join = "select * from Bills as b join Sales as s on b.id = s.bill_id where b.shop_id = " + 
+                       shopId + " and b.report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" 
+                       + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and s.prod_id = " + prodId;
+            var prodSql = "select * from Products where id = @ProdId";
+            var priceSelect = "select * from Prices where prod_id = @ProdId";
+
+            using (var db = new SqlConnection(conn))
+            {
+                db.Open();
+                var billDict = new Dictionary<int, Bill>();
+
+                var bills = (await db.QueryAsync<Bill, Sale, Bill>(join,
+                    (bill, sales) =>
+                    {
+                        Bill billEntry;
+                        if (!billDict.TryGetValue(bill.id, out billEntry))
+                        {
+                            billEntry = bill;
+                            billEntry.Sales = new List<Sale>();
+                            billDict.Add(billEntry.id, billEntry);
+                        }
+
+                        billEntry.Sales.Add(sales);
+                        return billEntry;
+                    },
+                    splitOn: "id")).Distinct().ToList();
+                foreach (var bill in bills)
+                {
+                    foreach (var sale in bill.Sales)
+                    {
+                        sale.Product = await db.QueryFirstOrDefaultAsync<Product>(prodSql, new {ProdId = sale.prod_id});
+                        if (sale.Product != null)
+                            sale.Product.Price =
+                                await db.QueryFirstOrDefaultAsync<Price>(priceSelect, new {ProdId = sale.prod_id});
+                    }
+                }
+
+                return bills;
+            }
+        }
+        
         public async Task<Bill> GetByIdsWithSalesUow(int billId, int shopId)
         {
             var sql = "select * from Bills as b join Sales as s on b.id = s.bill_id where b.id = "+ billId +" and b.shop_id = " + shopId;

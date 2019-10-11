@@ -30,7 +30,17 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<int> InsertUow(Order order)
         {
-            return await _unitOfWork.Connection.InsertAsync(order, transaction:_unitOfWork.Transaction);
+            if (order?.OrderDetails == null || !order.OrderDetails.Any())
+                return 0;
+            
+            var orderId =  await _unitOfWork.Connection.InsertAsync(order, transaction:_unitOfWork.Transaction);
+            foreach (var detail in order.OrderDetails)
+            {
+                detail.order_id = orderId;
+                await _unitOfWork.Connection.InsertAsync(detail, transaction: _unitOfWork.Transaction);
+            }
+
+            return orderId;
         }
 
         public async Task<Order> GetByIdWithMultiUow(int orderId)

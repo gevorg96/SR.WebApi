@@ -12,6 +12,7 @@ namespace SmartRetail.App.DAL.Repository.Interfaces
 
         Task<Bill> GetByIdAsync(int id);
         Task<IEnumerable<Bill>> GetBillsWithSales(int shopId, DateTime from, DateTime to);
+        Task<IEnumerable<Bill>> GetBillsWithSalesByProdId(int shopId, int prodId, DateTime from, DateTime to);
         Task<int> AddBillAsync(Bill bill);
         Task<Bill> GetBillByNumber(int billNumber, DateTime reportDate); 
     }

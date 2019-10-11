@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Bson;
 using SmartRetail.App.DAL.BLL.DataServices;
 using SmartRetail.App.DAL.BLL.Utils;
 using SmartRetail.App.DAL.DropBox;
+using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.Web.Models.Interface;
@@ -70,14 +73,91 @@ namespace SmartRetail.App.Test
         public async void TestProductPositionDayOff()
         {
             var prodposStr = new ProductPositionStrategy(shopRepo,prodRepo,stockRepo,ordersRepo,billsRepo);
-            await prodposStr.GetProductPositionOffDays(2,1194,new DateTime(2019, 5,15), new DateTime(2019, 9,18));
+            await prodposStr.GetProductPositionOffDays(2,1194,new DateTime(2019, 9,15), new DateTime(2019, 9,20));
         }
 
         [Fact]
         public async void FillOrders()
         {
+            var orderDs = new OrderDataService();
+
+            var rnd = new Random();
+            var dt = new DateTime(2019, 7,5);
+            while (true)
+            {
+                dt = dt.AddDays(rnd.Next(3, 8));
+                if (dt >= DateTime.Now)
+                    break;
+                
+                var order = new Order
+                {
+                    isOrder = true,
+                    report_date = dt,
+                    shop_id = 2,
+                    OrderDetails = new List<OrderDetail>
+                    {
+                        new OrderDetail {prod_id = 1194, cost = rnd.Next(800, 1200), count = rnd.Next(2,8)},
+                        new OrderDetail {prod_id = 1201, cost = rnd.Next(1750, 2150), count = rnd.Next(2,5)},
+                        new OrderDetail {prod_id = 1212, cost = rnd.Next(2350, 2850), count = rnd.Next(2, 5)}
+                    }
+                };
+
+                var id = await orderDs.Insert(order);
+            }
             
         }
-        
+
+        [Fact]
+        public async void FillSales()
+        {
+            var billDs = new BillDataService();
+            var rnd = new Random();
+            var dt = new DateTime(2019, 8,6);
+            
+            var prodList = new List<int>{1194};
+            
+            while (true)
+            {
+                dt = dt.AddDays(rnd.Next(2,4));
+                if (dt >= new DateTime(2019, 9,20))
+                    break;
+
+                var bill = new Bill
+                {
+                    shop_id = 2,
+                    report_date = dt,
+                    sum = 0
+                };
+                
+                var list = new List<Sale>();
+                foreach (var p in prodList)
+                {
+                    var cost = costRepo.GetByProdId(p).FirstOrDefault();
+                    var price = priceRepo.GetPriceByProdId(p);
+                    var sale = new Sale
+                    {
+                        prod_id = p,
+                        count = rnd.Next(1,3),
+                        unit_id = (await prodRepo.GetByIdAsync(p))?.unit_id,
+                        cost = cost?.value ?? 0,
+                        price = price?.price ?? 0
+                    };
+                    sale.sum = price?.price != null
+                        ? (price.price.Value + rnd.Next(-100, 50)) * sale.count
+                        : (cost.value.Value + rnd.Next(500, 1000)) * sale.count;
+                    
+                    sale.profit = sale.sum - (sale.cost != 0 ? sale.cost * sale.count : sale.sum);
+                    list.Add(sale);
+                }
+
+                bill.Sales = list;
+                bill.sum = bill.Sales.Sum(p => p.sum) + rnd.Next(-200, 50);
+                    
+                
+
+                var id = await billDs.Insert(bill);
+            }
+            
+        } 
     }
 }
