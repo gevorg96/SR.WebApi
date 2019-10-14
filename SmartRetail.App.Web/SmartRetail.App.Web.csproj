@@ -10,10 +10,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove=".circleci\**" />
+    <Content Remove=".circleci\**" />
+    <EmbeddedResource Remove=".circleci\**" />
+    <None Remove=".circleci\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="ReflectionIT.Mvc.Paging" Version="3.5.0" />
     <!--<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.2.0" />-->
     <!--<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />-->
   </ItemGroup>
@@ -25,13 +34,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include=".circleci\config.yml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\css" />
     <Folder Include="wwwroot\img" />
     <Folder Include="wwwroot\js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\MainPage\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <!--<Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">-->

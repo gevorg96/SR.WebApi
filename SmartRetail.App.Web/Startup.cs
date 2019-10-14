@@ -16,6 +16,7 @@ using SmartRetail.App.Web.Models.Validation;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.DAL.BLL.StructureFillers;
 using SmartRetail.App.DAL.BLL.Utils;
+using ReflectionIT.Mvc.Paging;
 
 namespace SmartRetail.App.Web
 {
@@ -130,10 +131,16 @@ namespace SmartRetail.App.Web
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => //CookieAuthenticationOptions
                 {
-                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/AccountView/Login");
                 });
  
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddPaging(options => {
+                options.ViewName = "Bootstrap4";
+                options.HtmlIndicatorDown = " <span>&darr;</span>";
+                options.HtmlIndicatorUp = " <span>&uarr;</span>";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -161,7 +168,7 @@ namespace SmartRetail.App.Web
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+                    template: "{controller=MainPage}/{action=Index}/{id?}");
             });
 
             //app.UseSpa(spa =>
