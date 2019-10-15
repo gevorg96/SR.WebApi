@@ -5,32 +5,53 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active">@Html.ActionLink("По товарам", "Index")</li>
+        <li class="breadcrumb-item"><a href="#">@Html.ActionLink("По группам", "Groups")</a></li>
+    </ol>
+</nav>
+
 @*<form method="get" class="form-inline">
     <input name="filter" class="form-control" value="@Model.RouteValue["Filter"]" />&nbsp;
     <button type="submit" class="btn btn-info">Искать</button>
 </form>*@
 
-<p><a asp-action="Create">Добавить</a></p>
+@*<button type="button" class="btn btn-primary" asp-action="">Добавить</button>*@
+
+<div id="modDialog" class="modal fade" >
+    <div id="dialogContent" class="modal-dialog"></div>
+</div>
 
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                Наименование
-            </th>
-            <th>
-                Цена
-            </th>
-            <th>
-                Остаток
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            #
+        </th>
+        <th>
+            Наименование
+        </th>
+        <th>
+            Цена
+        </th>
+        <th>
+            Остаток
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
+                <td>
+                    @{
+                        var img = !string.IsNullOrEmpty(@item.ImgUrl) ? @item.ImgUrl : "/img/default.png";
+                    }
+                    <img src="@img" width="80px" height="80px" alt="@item.ProdName" class="img-circle">
+                    
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ProdName)
                 </td>
@@ -41,9 +62,8 @@
                     @Html.DisplayFor(modelItem => item.Stock)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    @Html.ActionLink("Редактировать", "Edit",
+                        new {id = item.Id}, new {@class = "compItem btn btn-primary"})
                 </td>
             </tr>
         }
@@ -53,3 +73,219 @@
 <nav aria-label="Products navigation example">
     @Html.Partial("SmallPager", this.Model)
 </nav>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        var previousPath = "";
+        var currentPath = "";
+        var image = null;
+        
+        $(function() {
+            $.ajaxSetup({ cache: false });
+            $(".compItem").click(function(e) {
+
+                e.preventDefault();
+                $.get(this.href,
+                    function(data) {
+                        $('#dialogContent').html(data);
+                        $('#modDialog').modal('show');
+                    });
+            });
+        });
+
+        function updateItem(id) {
+            var itemId = id;
+            var item = {
+                Id: parseInt(itemId, 10),
+                ProdName: document.getElementsByName('ProdName')[0].value.toString(),
+                Price: parseFloat(document.getElementsByName('Price')[0].value),
+                VendorCode: document.getElementsByName('VendorCode')[0].value.toString(),
+                Color: document.getElementsByName('Color')[0].value.toString(),
+                Size: document.getElementsByName('Size')[0].value.toString(),
+                Cost: 0,
+                Stock: 0,
+                img: image,
+                Vendor: "",
+                UnitId: parseInt(document.getElementById('unit').value),
+                CategoryId: 0
+            };
+
+            var formData = getFormData(item);
+            formData.append('img', image);
+
+            $.ajax({
+                type: "PUT",
+                url: "../ProductsPage/Edit",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#Result').removeClass("text-danger");
+                    $('#Result').addClass("text-success");
+                    $('#Result').text('Успешно!');
+                    setTimeout(close, 1000);
+                },
+                error: function(thrownError) {
+                    $('#Result').removeClass("text-success");
+                    $('#Result').addClass("text-danger");
+                    $('#Result').text("Не вышло... Попробуйте ещё раз.");
+                    setTimeout(() => { $('#Result').text(""); }, 1000);
+
+                    console.log(thrownError);
+                }
+            });
+        }
+
+        function close() {
+            $('#Result').text("");
+            $('#modDialog').modal('hide');
+        }
+
+        $(document).on('click',
+            '.imgChange',
+            function(s) {
+                var input = document.createElement('input');
+                input.type = 'file';
+                input.onchange = e => {
+                    var file = e.target.files[0];
+
+                    if (isImage(file.type)) {
+                        var fr = new FileReader();
+                        fr.onload = function() {
+                            $('.innerImage').attr('src', fr.result);
+                        }
+                        fr.readAsDataURL(file);
+                        image = file;
+                    }
+                }
+
+                input.click();
+            });
+
+        function isImage(type) {
+            switch (type) {
+            case "image/jpeg":
+            case "image/png":
+            case "image/jpg":
+            case "image/raw":
+            case "image/tiff":
+            case "image/bmp":
+            case "image/gif":
+            case "image/jp2":
+            case "image/pcx":
+            case "image/ico":
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        function getFormData(object) {
+            var formData = new FormData();
+            Object.keys(object).forEach(key => formData.append(key, object[key]));
+            return formData;
+        }
+
+        
+        $(function() {
+            $.ajaxSetup({ cache: false });
+            $(".folderModal").click(function(e) {
+
+                e.preventDefault();
+                $.get(this.href,
+                    function(data) {
+                        $('#dialogContentFolder').html(data);
+                        $('#modFolders').modal('show');
+                    });
+            });
+        });
+        
+        $(document).on('click',
+            '.folderRow',
+            function(s) {
+                previousPath = getPreviousPath(s.currentTarget.id);
+                currentPath = s.currentTarget.id;
+                goIn(currentPath);
+        
+            });
+        
+        $(document).on('click',
+            '.escapeButton',
+            function(s) {
+                previousPath = getPreviousPath(s.currentTarget.id);
+                currentPath = s.currentTarget.id;
+                goIn(currentPath);
+            });
+        
+        function goIn(fullPath) {
+            var resp;
+            var item = {
+                fullpath: fullPath
+            };
+            $.ajax({
+                type: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                url: "../ProductsPage/Folders",
+                data: JSON.stringify(item),
+                success: function(response) {
+                    resp = response;
+                    reRender(resp);
+                },
+                error: function(thrownError) {
+                    console.error('Unable to goIn.', thrownError)
+                }
+            });
+        
+            return false;
+        }
+        
+        function reRender(newLevel) {
+            $('#tableBody').empty();
+            $('.escape').remove();
+            if (newLevel.folders != null && newLevel.folders.length != 0 && newLevel.folders[0].fullpath.split('/').length > 3) {
+                $('#modDialog').after('<div class="mb-3"><button class="btn btn-primary escapeButton" id="' +
+                    getPreviousPath(newLevel.folders[0].fullpath) +
+                    '">Назад</button></div>');
+            } else if (newLevel.folders == null || newLevel.folders.length == 0) {
+                $('#modDialog').after('<div class="mb-3"><button class="btn btn-primary escape" id="' +
+                    getParentFolder(currentPath) +
+                    '">Назад</button></div>');
+            }
+        
+            for (var i = 0; i < newLevel.folders.length; i++) {
+                $('#tableBody').append('<tr><td><div class="row folderRow" id="' +
+                    newLevel.folders[i].fullpath +
+                    '"><img src="/img/folder.JPG" width="80px" height="80px"><div class="col-md-4"><p><b>' +
+                    newLevel.folders[i].folder +
+                    '</b></p></div></div></td></tr>');
+            }
+
+        }
+        
+        function getPreviousPath(fullpath) {
+            var path = fullpath.split('/');
+            var newPath = "";
+            for (var i = 1; i < path.length - 2; i++) {
+                newPath += ("/" + path[i]);
+            }
+            return newPath;
+        }
+        
+        function getParentFolder(fullpath) {
+            var path = fullpath.split('/');
+            var newPath = "";
+            for (var i = 1; i < path.length - 1; i++) {
+                newPath += ("/" + path[i]);
+            }
+            return newPath;
+        }
+        
+        
+    </script>
+}
+

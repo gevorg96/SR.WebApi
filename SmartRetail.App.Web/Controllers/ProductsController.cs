@@ -155,7 +155,7 @@ namespace SmartRetail.App.Web.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<ProductViewModel>> UpdateProduct(int id, [FromForm] ProductDetailViewModel product)
+        public async Task<ActionResult<ProductViewModel>> UpdateProduct(int id, [FromBody] ProductDetailViewModel product)
         {
             product.Id = id;
             var user = await _userRepo.GetByLogin(User.Identity.Name);

@@ -1,0 +1,34 @@
+@model SmartRetail.App.Web.Models.ViewModel.Products.ProductGroupViewModel
+
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4>Категории</h4>
+    </div>
+    <div class="modal-body">
+        <div class="container-fluid">
+            <table class="table">
+                <tbody id="tableBodyFolder">
+                    @foreach (var item in Model.Folders)
+                    {
+                        <tr>
+                            <td>
+                                <div class="row folderRow" id="@item.fullpath">
+                                    <img src="/img/folder.JPG" width="80px" height="80px">
+                                    <div class="col-md-4">
+                                        <p><b>@item.folder</b></p></div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" id="EditButton" class="btn btn-primary">Сохранить</button>
+    </div>
+</div>
+

@@ -21,7 +21,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" id="logo" asp-area="" asp-controller="Home" asp-action="Index">Товаровед 2.0</a>
+                <a class="navbar-brand" id="logo" asp-area="" asp-controller="MainPage" asp-action="Index">Товаровед 2.0</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -35,19 +35,19 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="ProductsPage" asp-action="Index">Товары</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Продажи</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="SalesPage" asp-action="Index">Продажи</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Остатки</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="StocksPage" asp-action="Index">Остатки</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Расходы</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="ExpensesPage" asp-action="Index">Расходы</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Приходы</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="OrdersPage" asp-action="Index">Приходы</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Списания</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="CancellationsPage" asp-action="Index">Списания</a>
                         </li>
                     </ul>
                 </div>
@@ -90,6 +90,8 @@
                 asp-fallback-test="window.jQuery"
                 crossorigin="anonymous"
                 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+        </script>
+        <script src="~/scripts/jquery.unobtrusive-ajax.js">
         </script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"

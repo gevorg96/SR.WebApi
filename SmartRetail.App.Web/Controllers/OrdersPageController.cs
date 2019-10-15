@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace SmartRetail.App.Web.Controllers
 {
     [Authorize]
-    public class MainPageController : Controller
+    public class OrdersPageController : Controller
     {
         // GET
         public IActionResult Index()

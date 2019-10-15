@@ -218,11 +218,11 @@ namespace SmartRetail.App.Web.Models.Service
         public async Task<ProductViewModel> UpdateProductTransaction(UserProfile user, ProductDetailViewModel product)
         {
             var business = await _businessRepo.GetByIdAsync(user.business_id.Value);
-
+            Product pr;
             int prodId;
             try
             {
-                var pr = await _prodRepo.GetByIdAsync(product.Id.Value, user.business_id.Value);
+                pr = await _prodRepo.GetByIdAsync(product.Id.Value, user.business_id.Value);
                 if (pr != null)
                 {
                     prodId = pr.id;
@@ -257,6 +257,10 @@ namespace SmartRetail.App.Web.Models.Service
             if (!string.IsNullOrEmpty(product.Category))
             {
                 prod.folder_id = await _foldersDataService.GetFolderIdByPath(product.Category, business.id);
+            }
+            else
+            {
+                prod.folder_id = pr.folder_id;
             }
 
             var candidatePrice = _priceRepo.GetPriceByProdId(prodId);
