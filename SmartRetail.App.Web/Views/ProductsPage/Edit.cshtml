@@ -6,19 +6,15 @@
 }
 
 
-<div id="modFolders" class="modal fade" >
-    <div id="dialogContentFolder" class="modal-dialog"></div>
-</div>
-
 <div class="modal-content">
     <div class="modal-header">
         <h4>Редактирование товара</h4>
     </div>
     <div class="modal-body">
         <div class="container-fluid">
-            <form asp-action="Edit" asp-controller="ProductsPage"  asp-antiforgery="true" method="post" class="form-horizontal" id="EditForm" onsubmit="updateItem(@Model.Id)" enctype="multipart/form-data">
+            <form asp-action="Edit" asp-controller="ProductsPage"  asp-antiforgery="true" method="post" class="form-horizontal" id="EditForm" enctype="multipart/form-data">
                 <div class="row form-group">
-                    <div class="col-md-6">
+                    <div class="col-6">
                         @if (!string.IsNullOrEmpty(Model.ImgUrl))
                         {
                             <div class="imgChange"><img src="@Model.ImgUrl" width="150px" height="100px" alt="@Model.ProdName" class="img-circle innerImage"></div>
@@ -28,7 +24,7 @@
                             <div class="imgChange"><img src="/img/default.png" width="100px" height="100px" alt="@Model.ProdName" class="img-circle"></div>
                         }
                     </div>
-                    <div class="col-md-6 ml-auto">
+                    <div class="col-6 ml-auto">
                         <label asp-for="ProdName">Наименование</label>
                         <input asp-for="ProdName" class="form-control" value="@Model.ProdName"/>
                         <span asp-validation-for="ProdName" class="text-danger"></span>
@@ -39,8 +35,8 @@
                     </div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-md-4">
-                        <label asp-for="UnitId">Ед. измерения</label>
+                    <div class="col-4">
+                        <label asp-for="UnitId">Ед. изм.</label>
                         @Html.DropDownList("Unit", units.Select(item => new SelectListItem
                         {
                             Value = item.id.ToString(),
@@ -49,12 +45,12 @@
                         }), new {@class = "form-control", @id = "unit"})
                         <span asp-validation-for="Size" class="text-danger"></span>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-4">
                         <label asp-for="Size">Размер</label>
                         <input type="number" asp-for="Size" class="form-control" value="@Model.Size"/>
                         <span asp-validation-for="Size" class="text-danger"></span>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-4">
                         <label asp-for="Color">Цвет</label>
                         <input asp-for="Color" class="form-control" value="@Model.Color"/>
                         <span asp-validation-for="Color" class="text-danger"></span>
@@ -62,25 +58,26 @@
                     
                 </div>
                 <div class="row form-group">
-                    <div class="col-md-4">
+                    <div class="col-4">
                         <label asp-for="Price">Цена</label>
                         <input class="form-control" type="text" data-val="true" data-val-number="Цена должна быть числом" id="Price" name="Price" value="@Model.Price"/>
                         <span asp-validation-for="Price" class="text-danger"></span>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-4">
                         <label asp-for="Cost">Себестоимость</label>
                         <input disabled class="form-control" type="text" id="Cost" name="Cost" value="@Model.Cost"/>
                         <span asp-validation-for="Cost" class="text-danger"></span>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-4">
                         <label asp-for="Stock">Остаток</label>
                         <input disabled class="form-control" type="text" id="Stock" name="Stock" value="@Model.Stock"/>
                         <span asp-validation-for="Stock" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-md-12">
-                        @Html.ActionLink("Категории", "Folders", new {path = ""}, new {@class = "folderModal btn btn-primary"})
+                    <div class="col-12">
+                        <button type="button" class="btn btn-primary folderModal">Категории</button>
+                        @*@Html.ActionLink("Категории", "Folders", new {path = ""}, new {@class = "folderModal btn btn-primary"})*@
                     </div>
                 </div>
                 <div class="row">

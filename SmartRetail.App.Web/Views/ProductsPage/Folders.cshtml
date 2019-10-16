@@ -3,32 +3,38 @@
 
 <div class="modal-content">
     <div class="modal-header">
-        <h4>Категории</h4>
+        <div class="container">
+            <div class="row">
+                <div class="col-9">
+                    <h4>Категории</h4>
+                </div>
+                <div class="col-3"><button type="button" class="btn btn-secondary" onclick="closeFolderModal()">Закрыть</button></div>
+            </div>
+        </div>
     </div>
     <div class="modal-body">
         <div class="container-fluid">
-            <table class="table">
+            <table class="table folderTable">
                 <tbody id="tableBodyFolder">
-                    @foreach (var item in Model.Folders)
-                    {
-                        <tr>
-                            <td>
-                                <div class="row folderRow" id="@item.fullpath">
-                                    <img src="/img/folder.JPG" width="80px" height="80px">
-                                    <div class="col-md-4">
-                                        <p><b>@item.folder</b></p></div>
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                @foreach (var item in Model.Folders)
+                {
+                    <tr>
+                        <td>
+                            <div class="row folderRow" id="@item.fullpath">
+                                <div class="col-4">
+                                    <p><b>@item.folder</b></p></div>
+                            </div>
+                        </td>
+                    </tr>
+                }
                 </tbody>
             </table>
 
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-        <button type="submit" id="EditButton" class="btn btn-primary">Сохранить</button>
+        @*<button type="button" class="btn btn-secondary" onclick="closeFolderModal()">Закрыть</button>*@
+        <button type="button" disabled="disabled" class="btn btn-primary">Сохранить</button>
     </div>
 </div>
 

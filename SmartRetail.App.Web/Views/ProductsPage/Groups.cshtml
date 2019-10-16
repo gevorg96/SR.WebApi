@@ -24,7 +24,7 @@
             <td>
                 <div class="row folder" id="@item.fullpath">
                     <img src="/img/folder.JPG" width="80px" height="80px">
-                    <div class="col-md-4">
+                    <div class="col-12">
                         <p><b>@item.folder</b></p></div>
                 </div>
             </td>
@@ -33,20 +33,27 @@
     @foreach (var item in Model.Products)
     {
         <tr>
-            <td>
-                @{
-                    var img = !string.IsNullOrEmpty(@item.ImgUrl) ? @item.ImgUrl : "/img/default.png";
-                }
-                <img src="@img" width="80px" height="80px" alt="@item.ProdName" class="img-circle">
-                    
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProdName)
-            </td>
-            <td>
-                @Html.ActionLink("Редактировать", "Edit",
-                    new {id = item.Id}, new {@class = "compItem btn btn-primary"})
-            </td>
+            <div class="row">
+                <td>
+                    <div class="col-4">
+                    @{
+                        var img = !string.IsNullOrEmpty(@item.ImgUrl) ? @item.ImgUrl : "/img/default.png";
+                    }
+                    <img src="@img" width="80px" height="80px" alt="@item.ProdName" class="img-circle">
+                    </div>
+                </td>
+                <td>
+                    <div class="col-4">
+                    @Html.DisplayFor(modelItem => item.ProdName)
+                    </div>
+                </td>
+                <td>
+                    <div class="col-4">
+                        @Html.ActionLink("Редактировать", "Edit",
+                            new {id = item.Id}, new {@class = "compItem btn btn-primary"})
+                    </div>
+                </td>
+            </div>
         </tr>
     }
     </tbody>
@@ -89,7 +96,7 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                url: "../ProductsPage/Groups",
+                url: "../Groups",
                 data: JSON.stringify(item),
                 success: function(response) {
                     resp = response;
@@ -119,7 +126,7 @@
             for (var i = 0; i < newLevel.folders.length; i++) {
                 $('#tableBody').append('<tr><td><div class="row folder" id="' +
                     newLevel.folders[i].fullpath +
-                    '"><img src="/img/folder.JPG" width="80px" height="80px"><div class="col-md-4"><p><b>' +
+                    '"><img src="/img/folder.JPG" width="80px" height="80px"><div class="col-12"><p><b>' +
                     newLevel.folders[i].folder +
                     '</b></p></div></div></td></tr>');
             }
@@ -128,18 +135,18 @@
                 for (var i = 0; i < newLevel.products.length; i++) {
                     var prod = newLevel.products[i];
                     var img = prod.imgUrl.split('/').length == 0 ? "/img/default.JPG" : prod.imgUrl;
-                    $('#tableBody').append('<tr><td><img src="' +
+                    $('#tableBody').append('<tr><div class="row"><td><div class="col-4"><img src="' +
                         img +
                         '" width="80px" height="80px" alt="' +
                         prod.prodName +
                         '" class="img-circle">' +
-                        '</td><td>' +
+                        '</div></td><td><div class="col-4">' +
                         prod.prodName +
-                        '</td>' +
-                        '<td><a class="compItem btn btn-primary" href="/' +
+                        '</div></td>' +
+                        '<td><div class="col-4"><a class="compItem btn btn-primary" href="/' +
                         prod.id +
-                        '">Редактировать</a></td>' +
-                        '</tr>');
+                        '">Редактировать</a></div></td>' +
+                        '</div></tr>');
                 }
             }
         }
@@ -194,7 +201,7 @@
             
             $.ajax({
                 type: "PUT",
-                url: "../ProductsPage/Edit",
+                url: "../Edit",
                 data: formData,
                 processData: false,
                 contentType: false,

@@ -23,48 +23,56 @@
     <div id="dialogContent" class="modal-dialog"></div>
 </div>
 
+<div id="modFolders" class="modal fade" >
+    <div id="dialogContentFolder" class="modal-dialog"></div>
+</div>
+
 <table class="table">
     <thead>
     <tr>
-        <th>
-            #
-        </th>
-        <th>
-            Наименование
-        </th>
-        <th>
-            Цена
-        </th>
-        <th>
-            Остаток
-        </th>
-        <th></th>
+        <div class="row">
+            <div class="col-4">
+                <th>
+                    #
+                </th>
+            </div>
+            <div class="col-2">
+                <th>
+                    Наименование
+                </th>
+            </div>
+            <div class="col-4">
+                <th></th>
+            </div>
+        </div>
     </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @{
-                        var img = !string.IsNullOrEmpty(@item.ImgUrl) ? @item.ImgUrl : "/img/default.png";
-                    }
-                    <img src="@img" width="80px" height="80px" alt="@item.ProdName" class="img-circle">
-                    
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProdName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Stock)
-                </td>
-                <td>
-                    @Html.ActionLink("Редактировать", "Edit",
-                        new {id = item.Id}, new {@class = "compItem btn btn-primary"})
-                </td>
+                <div class="row">
+                    <div class="col-4">
+                        <td>
+                            @{
+                                var img = !string.IsNullOrEmpty(@item.ImgUrl) ? @item.ImgUrl : "/img/default.png";
+                            }
+                            <img src="@img" width="80px" height="80px" alt="@item.ProdName" class="img-circle">
+                        </td>
+
+                    </div>
+                    <div class="col-4">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProdName)
+                        </td>
+                    </div>
+                    <div class="col-4">
+                        <td>
+                            @Html.ActionLink("Редактировать", "Edit",
+                                new {id = item.Id}, new {@class = "compItem btn btn-primary"})
+                        </td>
+                    </div>
+                </div>
             </tr>
         }
     </tbody>
@@ -81,7 +89,7 @@
         var previousPath = "";
         var currentPath = "";
         var image = null;
-        
+
         $(function() {
             $.ajaxSetup({ cache: false });
             $(".compItem").click(function(e) {
@@ -126,6 +134,7 @@
                     $('#Result').addClass("text-success");
                     $('#Result').text('Успешно!');
                     setTimeout(close, 1000);
+                    
                 },
                 error: function(thrownError) {
                     $('#Result').removeClass("text-success");
@@ -188,29 +197,43 @@
             return formData;
         }
 
-        
-        $(function() {
-            $.ajaxSetup({ cache: false });
-            $(".folderModal").click(function(e) {
 
-                e.preventDefault();
-                $.get(this.href,
-                    function(data) {
-                        $('#dialogContentFolder').html(data);
+        $(document).on('click',
+            '.folderModal',
+            function(s, e) {
+                var item = {
+                    fullpath: ""
+                };
+
+                $.ajax({
+                    type: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    url: "../FoldersTree",
+                    data: JSON.stringify(item),
+                    success: function(response) {
+                        $('#modDialog').modal('hide');
+                        $('#dialogContentFolder').html(response);
                         $('#modFolders').modal('show');
-                    });
+                    },
+                    error: function(thrownError) {
+                        console.error('Unable to fetch folder list.', thrownError);
+                    }
+                });
             });
-        });
-        
+
+
         $(document).on('click',
             '.folderRow',
             function(s) {
                 previousPath = getPreviousPath(s.currentTarget.id);
                 currentPath = s.currentTarget.id;
                 goIn(currentPath);
-        
+
             });
-        
+
         $(document).on('click',
             '.escapeButton',
             function(s) {
@@ -218,7 +241,7 @@
                 currentPath = s.currentTarget.id;
                 goIn(currentPath);
             });
-        
+
         function goIn(fullPath) {
             var resp;
             var item = {
@@ -230,7 +253,7 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                url: "../ProductsPage/Folders",
+                url: "../FoldersTree",
                 data: JSON.stringify(item),
                 success: function(response) {
                     resp = response;
@@ -240,33 +263,35 @@
                     console.error('Unable to goIn.', thrownError)
                 }
             });
-        
+
             return false;
         }
-        
+
         function reRender(newLevel) {
-            $('#tableBody').empty();
-            $('.escape').remove();
-            if (newLevel.folders != null && newLevel.folders.length != 0 && newLevel.folders[0].fullpath.split('/').length > 3) {
-                $('#modDialog').after('<div class="mb-3"><button class="btn btn-primary escapeButton" id="' +
+            $('#tableBodyFolder').empty();
+            $('.escapeButton').remove();
+            if (newLevel.folders != null &&
+                newLevel.folders.length != 0 &&
+                newLevel.folders[0].fullpath.split('/').length > 3) {
+                $('.folderTable').before('<div class="mb-3"><button class="btn btn-primary escapeButton" id="' +
                     getPreviousPath(newLevel.folders[0].fullpath) +
                     '">Назад</button></div>');
             } else if (newLevel.folders == null || newLevel.folders.length == 0) {
-                $('#modDialog').after('<div class="mb-3"><button class="btn btn-primary escape" id="' +
+                $('.folderTable').before('<div class="mb-3"><button class="btn btn-primary escapeButton" id="' +
                     getParentFolder(currentPath) +
                     '">Назад</button></div>');
             }
-        
+
             for (var i = 0; i < newLevel.folders.length; i++) {
-                $('#tableBody').append('<tr><td><div class="row folderRow" id="' +
+                $('#tableBodyFolder').append('<tr><td><div class="row folderRow" id="' +
                     newLevel.folders[i].fullpath +
-                    '"><img src="/img/folder.JPG" width="80px" height="80px"><div class="col-md-4"><p><b>' +
+                    '"><div class="col-4"><p><b>' +
                     newLevel.folders[i].folder +
                     '</b></p></div></div></td></tr>');
             }
 
         }
-        
+
         function getPreviousPath(fullpath) {
             var path = fullpath.split('/');
             var newPath = "";
@@ -275,7 +300,7 @@
             }
             return newPath;
         }
-        
+
         function getParentFolder(fullpath) {
             var path = fullpath.split('/');
             var newPath = "";
@@ -284,8 +309,12 @@
             }
             return newPath;
         }
-        
-        
+
+        function closeFolderModal() {
+            $('#modFolders').modal('hide');
+            $('#modDialog').modal('show');
+        }
+
     </script>
 }
 

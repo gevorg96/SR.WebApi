@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +12,7 @@ using SmartRetail.App.Web.Models.ViewModel.Products;
 
 namespace SmartRetail.App.Web.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class ProductsPageController : Controller
     {
         private readonly IProductService _service;
@@ -52,6 +50,7 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
+        [Route("Groups")]
         public async Task<IActionResult> Groups()
         {
             var user = await _userRepo.GetByLogin(User.Identity.Name);
@@ -60,6 +59,7 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpPost]
+        [Route("Groups")]
         public async Task<ProductGroupViewModel> Groups([FromBody]Fullpath fullpath)
         {
             var user = await _userRepo.GetByLogin(User.Identity.Name);
@@ -67,14 +67,16 @@ namespace SmartRetail.App.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Folders(string path)
+        [Route("FoldersTree")]
+        public async Task<IActionResult> Folders()
         {
             var user = await _userRepo.GetByLogin(User.Identity.Name);
-            var tree = await _categoryService.GetNexLevelGroup(user, null, false);
-            return PartialView(tree);
+            var res =  await _categoryService.GetNexLevelGroup(user, null, false);
+            return PartialView(res);
         }
         
         [HttpPost]
+        [Route("FoldersTree")]
         public async Task<ProductGroupViewModel> Folders([FromBody]Fullpath fullpath)
         {
             var user = await _userRepo.GetByLogin(User.Identity.Name);
