@@ -1,0 +1,32 @@
+@model SmartRetail.App.Web.Controllers.Fullpath
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4>Папка</h4>
+    </div>
+    <div class="modal-body">
+        <div class="container-fluid">
+            <form asp-action="ChangeFolderName" asp-controller="ProductsPage"  asp-antiforgery="true" method="post" class="form-horizontal" id="EditForm" enctype="multipart/form-data">
+                <div class="row form-group">                     
+                    <div class="col-12">
+                        <label>Наименование</label>
+                        <input class="form-control" id="newFolderName" value="@Model.fullpath.Split('/').Last()"/>
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <span id="Result" class="text-danger"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        @{
+            var path = "'" + @Model.fullpath + "'";
+        }
+        <button type="submit" id="EditButton" onclick="changeFolderNameSubmit(@path)" class="btn btn-primary">Сохранить</button>
+    </div>
+</div>
+
+

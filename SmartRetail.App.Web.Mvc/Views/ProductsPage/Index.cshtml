@@ -1,0 +1,80 @@
+﻿@model PagingList<SmartRetail.App.Web.Models.ViewModel.Products.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<nav aria-label="breadcrumb">
+    <div class="row">
+        <div class="col-7">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active">@Html.ActionLink("По товарам", "Index")</li>
+                <li class="breadcrumb-item"><a href="#">@Html.ActionLink("По группам", "Groups")</a></li>
+            </ol>  
+        </div>
+        <div class="col-2"></div>
+        <div class="col-3">
+            @Html.ActionLink("Добавить", "Edit", new{id = 0},new {@class = "compItem btn btn-primary"})
+        </div>
+    </div>
+</nav>
+
+
+<div id="modDialog" class="modal fade" >
+    <div id="dialogContent" class="modal-dialog"></div>
+</div>
+
+<div id="modFolders" class="modal fade" >
+    <div id="dialogContentFolder" class="modal-dialog"></div>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            <div class="row">
+                <div class="col-4">
+                
+                    #
+                </div>
+                <div class="col-5">
+                    Наименование
+                </div>
+                <div class="col-3">
+                </div>
+            </div>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <div class="row">
+                        <div class="col-4">
+                            @{
+                                var img = !string.IsNullOrEmpty(@item.ImgUrl) ? @item.ImgUrl : "/img/default.png";
+                            }
+                            <img src="@img" width="80px" height="80px" alt="@item.ProdName" class="img-circle">
+                        </div>
+                        <div class="col-5">
+                            @Html.DisplayFor(modelItem => item.ProdName)
+                        </div>
+                        <div class="col-3">
+                            @Html.ActionLink("Редактировать", "Edit",
+                                new {id = item.Id}, new {@class = "compItem btn btn-primary"})
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav aria-label="Products navigation example">
+    @Html.Partial("SmallPager", this.Model)
+</nav>
+
+

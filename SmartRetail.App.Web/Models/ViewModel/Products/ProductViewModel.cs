@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using SmartRetail.App.DAL.BLL.HelperClasses;
 
 namespace SmartRetail.App.Web.Models.ViewModel.Products
 {
@@ -18,5 +19,6 @@ namespace SmartRetail.App.Web.Models.ViewModel.Products
         public string Size { get; set; }
         public int? UnitId { get; set; }
         public int? CategoryId { get; set; }
+        public ImgTwinModel Category { get; set; }
     }
 }

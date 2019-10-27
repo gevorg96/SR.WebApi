@@ -128,19 +128,19 @@ namespace SmartRetail.App.Web
             services.AddTransient<IExpensesTypeService, ExpensesTypeService>();
             services.AddTransient<IStockMoveService, StockMoveService>();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            /*services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => //CookieAuthenticationOptions
                 {
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/AccountView/Login");
                 });
- 
+            */
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddPaging(options => {
+            /*services.AddPaging(options => {
                 options.ViewName = "Bootstrap4";
                 options.HtmlIndicatorDown = " <span>&darr;</span>";
                 options.HtmlIndicatorUp = " <span>&uarr;</span>";
-            });
+            });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -156,21 +156,26 @@ namespace SmartRetail.App.Web
                 app.UseHsts();
             }
 
-            app.UseStatusCodePages("application/json", "Status code page, status code: {0}");
+            //app.UseStatusCodePages("application/json", "Status code page, status code: {0}");
             app.UseCors("MyPolicy");
 
-            app.UseHttpsRedirection();
-            app.UseDefaultFiles();
+            //app.UseHttpsRedirection();
+            //app.UseDefaultFiles();
             app.UseAuthentication();
-            app.UseStaticFiles();
+            //app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            /*app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=MainPage}/{action=Index}/{id?}");
+            });*/
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action}/{id?}");
             });
-
             //app.UseSpa(spa =>
             //{
             //    spa.Options.SourcePath = "ClientApp";

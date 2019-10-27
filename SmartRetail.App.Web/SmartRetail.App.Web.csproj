@@ -35,14 +35,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\css" />
-    <Folder Include="wwwroot\img" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Views\MainPage\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <_ContentIncludedByDefault Remove="Views\CancellationsPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\ExpensesPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\OrdersPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\ProductsPage\ChangeFolderName.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\ProductsPage\Edit.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\ProductsPage\Folders.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\ProductsPage\Groups.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\ProductsPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\SalesPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\Pager\Bootstrap5.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Error.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\SmallPager.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_CookieConsentPartial.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\StocksPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\site.js" />
   </ItemGroup>
 
   <!--<Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">-->

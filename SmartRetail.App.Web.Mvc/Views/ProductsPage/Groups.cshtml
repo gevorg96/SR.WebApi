@@ -1,0 +1,73 @@
+@model SmartRetail.App.Web.Models.ViewModel.Products.ProductGroupViewModel
+
+@{
+    ViewBag.Title = "По группам";
+    Layout = "_Layout";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">@Html.ActionLink("По товарам", "Index")</li>
+        <li class="breadcrumb-item active"><a href="#">@Html.ActionLink("По группам", "Groups")</a></li>
+    </ol>
+</nav>
+
+<div id="modDialog" class="modal fade" >
+    <div id="dialogContent" class="modal-dialog"></div>
+</div>
+
+<table class="table">
+    <tbody id="tableBody">
+    @foreach (var item in Model.Folders)
+    {
+
+        <tr>
+            <td>
+                <div class="row" id="@item.fullpath">
+                        <div class="col-3 folder">
+                            <img src="/img/folder.svg" width="50px" height="50px">
+                        </div>
+                        <div class="col-6 folder">
+                            <p id="@item.folder"><b>@item.folder</b></p>
+                        </div>
+                    <div class="col-3">
+                        <div class="dropdown">
+                            <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                ...
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item changeFolderName" href="../FolderRename/?path=@item.fullpath" >Изменить</a>
+                                <a class="dropdown-item" href="#">Переместить</a>
+                                <a class="dropdown-item" href="#">Скопировать</a>
+                                <a class="dropdown-item" href="#">Удалить</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    }
+    @foreach (var item in Model.Products)
+    {
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col-3">
+                        @{
+                            var img = !string.IsNullOrEmpty(@item.ImgUrl) ? @item.ImgUrl : "/img/default.png";
+                        }
+                        <img src="@img" width="80px" height="80px" alt="@item.ProdName" class="img-circle">
+                    </div>
+                    <div class="col-6"><b>
+                        @Html.DisplayFor(modelItem => item.ProdName)
+                    </b></div>
+                    <div class="col-3">
+                        @Html.ActionLink("Изменить", "Edit",
+                            new {id = item.Id}, new {@class = "compItem btn btn-primary"})
+                    </div>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
