@@ -10,7 +10,7 @@ COPY . ./
 RUN dotnet publish SmartRetail.App.sln -c Release -o out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
+FROM microsoft/dotnet:2.2-aspnetcore-runtime
 WORKDIR /out
 COPY --from=build-env /out .
 CMD dotnet SmartRetail.App.Web.dll
