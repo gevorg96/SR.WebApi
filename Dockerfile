@@ -7,7 +7,7 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet publish SmartRetail.App.Web.sln -c Release -o /app/out
+RUN dotnet publish SmartRetail.App.sln -c Release -o /app/out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
