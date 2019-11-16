@@ -8,7 +8,7 @@ Projects:
 
 
 DAL.BLL:
-  - FifoStrategy-class implements strategy for recalculation of average cost of product.
+  - FifoStrategy-class implements strategy for recalculation the average cost of product.
   - FoldersDataService-class realize a virtual folder tree and give a functionality for working with them.
 
 
