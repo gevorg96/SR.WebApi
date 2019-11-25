@@ -1,10 +1,10 @@
 using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using Npgsql;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.DAL.UnitOfWork;
@@ -41,9 +41,9 @@ namespace SmartRetail.App.DAL.Repository
 
         public void Add(Price entity)
         {
-            var insert = "insert into Prices (prod_id, price, shop_id) values (" + entity.prod_id + ", " + isNotNull(entity.price) + ", " +
+            var insert = "insert into \"Prices\" (prod_id, price, shop_id) values (" + entity.prod_id + ", " + isNotNull(entity.price) + ", " +
                          isNotNull(entity.shop_id) + ")";
-            using (var db = new SqlConnection(_connectionString))
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 try
@@ -52,15 +52,15 @@ namespace SmartRetail.App.DAL.Repository
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Что-то пошло не так: " + ex.Message);
+                    throw new Exception("пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ: " + ex.Message);
                 }
             }
         }
 
         public Price GetPriceByProdId(int prodId)
         {
-            var sql = "select * from Prices where prod_id = " + prodId;
-            using (IDbConnection db = new SqlConnection(_connectionString))
+            var sql = "select * from \"Prices\" where prod_id = " + prodId;
+            using (IDbConnection db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 return db.Query<Price>(sql).FirstOrDefault();
@@ -69,10 +69,10 @@ namespace SmartRetail.App.DAL.Repository
 
         public void Update(Price entity)
         {
-            var update = "update Prices set price = " + isNotNull(entity.price) +
+            var update = "update \"Prices\" set price = " + isNotNull(entity.price) +
                          ", shop_id = " + isNotNull(entity.shop_id) + " where prod_id = " + entity.prod_id;
 
-            using (var db = new SqlConnection(_connectionString))
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 try
@@ -81,7 +81,7 @@ namespace SmartRetail.App.DAL.Repository
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Что-то пошло не так: " + ex.Message);
+                    throw new Exception("пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ: " + ex.Message);
                 }
             }
         }

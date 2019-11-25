@@ -7,6 +7,7 @@ using SmartRetail.App.DAL.Helpers;
 using System.Threading.Tasks;
 using System.Text;
 using Dapper.Contrib.Extensions;
+using Npgsql;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.DAL.UnitOfWork;
 
@@ -40,9 +41,9 @@ namespace SmartRetail.App.DAL.Repository
 
         public void Add(Image entity)
         {
-            string sql = "INSERT INTO Images (ROWGUID, prod_id, img_type, img_name, img_url, img_url_temp, img_path) Values (@ROWGUID, @prod_id, @img_type, @img_name, @img_url, @img_url_temp, @img_path);";
+            string sql = "INSERT INTO \"Images\" (ROWGUID, prod_id, img_type, img_name, img_url, img_url_temp, img_path) Values (@ROWGUID, @prod_id, @img_type, @img_name, @img_url, @img_url_temp, @img_path);";
 
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new NpgsqlConnection(connectionString))
             {
                 var affectedRows = connection.Execute(sql, new { ROWGUID = Guid.NewGuid(), prod_id = entity.prod_id, img_type = entity.img_type, 
                     img_name = entity.img_name, img_url = entity.img_url , img_url_temp = entity.img_url_temp, img_path = entity.img_path});
@@ -51,8 +52,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Image> GetByIdAsync(int id)
         {
-            string sql = "SELECT * FROM Images WHERE prod_id = @Id";
-            using (var connection = new SqlConnection(connectionString))
+            string sql = "SELECT * FROM \"Images\" WHERE prod_id = @Id";
+            using (var connection = new NpgsqlConnection(connectionString))
             {
                 return await connection.QueryFirstOrDefaultAsync<Image>(sql, new { Id = id });
             }
@@ -60,13 +61,13 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task UpdateImage(Image img)
         {
-            var sql = "select * from Images where prod_id = " + img.prod_id;
+            var sql = "select * from \"Images\" where prod_id = " + img.prod_id;
             var sb = new StringBuilder();
-            sb.Append("update Images set ");
+            sb.Append("update \"Images\" set ");
 
             var pi = img.GetType().GetProperties();
 
-            using (var db = new SqlConnection(connectionString))
+            using (var db = new NpgsqlConnection(connectionString))
             {
                 db.Open();
                 var row = await db.QueryFirstOrDefaultAsync<Image>(sql.ToString());

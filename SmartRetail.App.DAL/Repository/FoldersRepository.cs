@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using Dapper;
+using Npgsql;
 using SmartRetail.App.DAL.Helpers;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
 
@@ -26,10 +27,10 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<Folder>> GetPathByChildId(int id)
         {
-            var sql = "select * from Folders where id = @Id";
+            var sql = "select * from \"Folders\" where id = @Id";
             var folders = new List<Folder>();
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 var folder = await db.QueryFirstOrDefaultAsync<Folder>(sql, new {Id = id});
@@ -48,9 +49,9 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<Folder>> GetByBusinessAsync(int businessId)
         {
-            var sql = "select * from Folders where business_id = " + businessId;
+            var sql = "select * from \"Folders\" where business_id = " + businessId;
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 return await db.QueryAsync<Folder>(sql);
@@ -60,8 +61,8 @@ namespace SmartRetail.App.DAL.Repository
         public async Task<Tree<Folder>> GetSubTreeAsync(int rootId)
         {
             var tree = new Tree<Folder>();
-            var select = "select * from Folders where id = " + rootId;
-            using (var db = new SqlConnection(conn))
+            var select = "select * from \"Folders\" where id = " + rootId;
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 tree.Value = await db.QueryFirstOrDefaultAsync<Folder>(select);
@@ -72,7 +73,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task AddFolderSubTreeAsync(Tree<Folder> foldersTree)
         { 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 await InsertChildren(foldersTree.Parent?.Value?.id, foldersTree, db);
@@ -82,12 +83,12 @@ namespace SmartRetail.App.DAL.Repository
         public async Task UpdateFolderAsync(Folder folder)
         {
             qb.Clear();
-            var select = qb.Select("*").From("Folders").Where("id").Op(Ops.Equals, folder.id.ToString());
+            var select = qb.Select("*").From("\"Folders\"").Where("id").Op(Ops.Equals, folder.id.ToString());
             var sb = new StringBuilder();
-            sb.Append("update Folders set ");
+            sb.Append("update \"Folders\" set ");
             var pi = folder.GetType().GetProperties();
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 var dal = await db.QueryFirstOrDefaultAsync<Folder>(select.ToString());
@@ -112,11 +113,11 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task DeleteFoldersAsync(Tree<Folder> tree)
         {
-            var delete = "delete from Folders where id = @Id";
-            var update = "update Products set folder_id = NULL where folder_id = @folderId";
+            var delete = "delete from \"Folders\" where id = @Id";
+            var update = "update \"Products\" set folder_id = NULL where folder_id = @folderId";
             
             var list = Tree<Folder>.ToList(tree).OrderByDescending(p => p.parent_id);
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 using (var transaction = db.BeginTransaction())
@@ -142,9 +143,9 @@ namespace SmartRetail.App.DAL.Repository
 
         #region Additional Methods
 
-        private async Task FillTree(int parentId, Tree<Folder> tree, SqlConnection db)
+        private async Task FillTree(int parentId, Tree<Folder> tree, NpgsqlConnection db)
         {
-            var sql = "select * from Folders where parent_id = " + parentId;
+            var sql = "select * from \"Folders\" where parent_id = " + parentId;
             var children = await db.QueryAsync<Folder>(sql);
             foreach (var child in children)
             {
@@ -152,7 +153,7 @@ namespace SmartRetail.App.DAL.Repository
                 await FillTree(child.id, ch, db);
             }
         }
-        private async Task InsertChildren(int? parentId, Tree<Folder> foldersTree, SqlConnection db)
+        private async Task InsertChildren(int? parentId, Tree<Folder> foldersTree, NpgsqlConnection db)
         {
             if (isFile(foldersTree.Value.folder))
             {
@@ -160,15 +161,15 @@ namespace SmartRetail.App.DAL.Repository
                 if (!string.IsNullOrEmpty(prodIdStr))
                 {
                     var prodId = Int32.Parse(prodIdStr);
-                    var sql = "update Products set folder_id = " + isNotNull(parentId) + " where id = " + prodId;
+                    var sql = "update \"Products\" set folder_id = " + isNotNull(parentId) + " where id = " + prodId;
                     await db.ExecuteAsync(sql);
                     return;
                 }
             }
 
-            var insertSql = "insert into Folders (business_id, parent_id, folder) values (" + foldersTree.Value.business_id + ", " +
+            var insertSql = "insert into \"Folders\" (business_id, parent_id, folder) values (" + foldersTree.Value.business_id + ", " +
                             isNotNull(parentId) + ", N'" + foldersTree.Value.folder + "')";
-            var selectSql = "select * from Folders where business_id = " + foldersTree.Value.business_id +
+            var selectSql = "select * from \"Folders\" where business_id = " + foldersTree.Value.business_id +
                             " and parent_id " + (parentId.HasValue ? " = " + parentId.Value : "is null") + " and  folder = N'" + foldersTree.Value.folder + "'";
             if (foldersTree != null)
             {

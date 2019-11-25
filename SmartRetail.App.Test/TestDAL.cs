@@ -24,6 +24,9 @@ namespace SmartRetail.App.Test
     {
         private const string conn =
             "Data Source=SQL6007.site4now.net;Initial Catalog=DB_A4E50E_smartretail;User Id=DB_A4E50E_smartretail_admin;Password=1234QWer;";
+
+        private string postgresConn =
+            "database=d369fmctn65rq9;host=ec2-46-137-91-216.eu-west-1.compute.amazonaws.com;password=f8774cccfae05a0a4c4bd86c0d40d504db71cd50ebaa52d5ad6767709ffcd5d4;username=nfedurzdslzhpo;port=5432;pooling=True;trust server certificate=True;ssl mode=Require";       
         private const string dropboxBasePath = "/products";
 
         private readonly IShopRepository shopRepo;
@@ -195,8 +198,8 @@ namespace SmartRetail.App.Test
         [Fact]
         public void GetShopsByBusiness()
         {
-            var shopRepo = new ShopRepository(conn);
-            var t = shopRepo.GetShopsByBusiness(3);
+            var shopRepo = new ShopRepository(postgresConn);
+            var t = shopRepo.GetShopsByBusiness(1);
         }
 
         [Fact]

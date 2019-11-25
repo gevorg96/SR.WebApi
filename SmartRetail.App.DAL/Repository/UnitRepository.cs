@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
 
@@ -19,8 +20,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<Unit>> GetAllUnitsAsync()
         {
-            var sql = "select * from Units";
-            using (var conn = new SqlConnection(connection))
+            var sql = "select * from \"Units\"";
+            using (var conn = new NpgsqlConnection(connection))
             {
                 return await conn.QueryAsync<Unit>(sql);
             }

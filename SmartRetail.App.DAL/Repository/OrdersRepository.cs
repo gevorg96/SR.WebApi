@@ -7,6 +7,7 @@ using Dapper;
 using System.Threading.Tasks;
 using System.Linq;
 using Dapper.Contrib.Extensions;
+using Npgsql;
 using SmartRetail.App.DAL.UnitOfWork;
 
 namespace SmartRetail.App.DAL.Repository
@@ -45,7 +46,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Order> GetByIdWithMultiUow(int orderId)
         {
-            var sql = "select * from Orders as o join OrderDetails as od on o.id = od.order_id where o.id = " + orderId;
+            var sql = "select * from \"Orders\" as o join \"OrderDetails\" as od on o.id = od.order_id where o.id = " + orderId;
 
             var orderDictionary = new Dictionary<int, Order>();
 
@@ -72,9 +73,9 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Order> GetByIdAsync(int orderId)
         {
-            var sql = "select * from Orders where id = " + orderId;
-            var detailSql = "select * from OrderDetails where order_id = " + orderId;
-            using (var db = new SqlConnection(conn))
+            var sql = "select * from \"Orders\" where id = " + orderId;
+            var detailSql = "select * from \"OrderDetails\" where order_id = " + orderId;
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 var order =  await db.QueryFirstOrDefaultAsync<Order>(sql);
@@ -85,9 +86,9 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Order> GetByIdWithMultiAsync(int orderId)
         {
-            var sql = "select * from Orders as o join OrderDetails as od on o.id = od.order_id where o.id = " + orderId;
+            var sql = "select * from \"Orders\" as o join \"OrderDetails\" as od on o.id = od.order_id where o.id = " + orderId;
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
 
@@ -119,10 +120,10 @@ namespace SmartRetail.App.DAL.Repository
             {
                 return 0;
             }
-            var sql = "insert into Orders (report_date, shop_id, isOrder) values ('" + order.report_date.ToString("MM.dd.yyyy HH:mm:ss") +"', " + order.shop_id + ", 1)";
-            var odSql = "insert into OrderDetails (order_id, prod_id, cost, count) values (@OrderId, @ProdId, @Cost, @Count)";
+            var sql = "insert into \"Orders\" (report_date, shop_id, isOrder) values ('" + order.report_date.ToString("MM.dd.yyyy HH:mm:ss") +"', " + order.shop_id + ", 1)";
+            var odSql = "insert into \"OrderDetails\" (order_id, prod_id, cost, count) values (@OrderId, @ProdId, @Cost, @Count)";
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 await db.ExecuteAsync(sql);
@@ -141,10 +142,10 @@ namespace SmartRetail.App.DAL.Repository
             {
                 return 0;
             }
-            var sql = "insert into Orders (report_date, shop_id, isOrder) values ('" + order.report_date.ToString("MM.dd.yyyy HH:mm:ss") + "', " + order.shop_id + ", 0)";
-            var odSql = "insert into OrderDetails (order_id, prod_id, cost, count) values (@OrderId, @ProdId, @Cost, @Count)";
+            var sql = "insert into \"Orders\" (report_date, shop_id, isOrder) values ('" + order.report_date.ToString("MM.dd.yyyy HH:mm:ss") + "', " + order.shop_id + ", 0)";
+            var odSql = "insert into \"OrderDetails\" (order_id, prod_id, cost, count) values (@OrderId, @ProdId, @Cost, @Count)";
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 await db.ExecuteAsync(sql);
@@ -159,11 +160,11 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<Order>> GetOrdersByShopIdInDateRange(int shopId, DateTime from, DateTime to)
         {
-            var sql = "select * from Orders as o join OrderDetails as od on o.id = od.order_id where o.shop_id = " + 
+            var sql = "select * from \"Orders\" as o join \"OrderDetails\" as od on o.id = od.order_id where o.shop_id = " + 
                 shopId + " and o.report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" 
                 + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and o.isOrder = 1";
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
 
@@ -193,11 +194,11 @@ namespace SmartRetail.App.DAL.Repository
         public async Task<IEnumerable<Order>> GetOrdersByShopAndProdIdsInDateRange(int shopId, int prodId, DateTime from,
             DateTime to)
         {
-            var sql = "select * from Orders as o join OrderDetails as od on o.id = od.order_id where o.shop_id = " + 
+            var sql = "select * from \"Orders\" as o join \"OrderDetails\" as od on o.id = od.order_id where o.shop_id = " + 
                       shopId + " and o.report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" 
                       + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and o.isOrder = 1 and od.prod_id = " + prodId;
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
 
@@ -225,11 +226,11 @@ namespace SmartRetail.App.DAL.Repository
         
         public async Task<IEnumerable<Order>> GetCancellationsByShopIdInDateRange(int shopId, DateTime from, DateTime to)
         {
-            var sql = "select * from Orders as o join OrderDetails as od on o.id = od.order_id where o.shop_id = " +
+            var sql = "select * from \"Orders\" as o join \"OrderDetails\" as od on o.id = od.order_id where o.shop_id = " +
                 shopId + " and o.report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '"
                 + to.ToString("MM.dd.yyyy HH:mm:ss") + "' and o.isOrder = 0";
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
 
@@ -258,9 +259,9 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Order> GetByShopIdOnDate(int shopId, DateTime reportDate, bool isOrder)
         {
-            var sql = "select * from Orders where shop_id = " + shopId + " and report_date = '" +
+            var sql = "select * from \"Orders\" where shop_id = " + shopId + " and report_date = '" +
                reportDate.ToString("MM.dd.yyyy HH:mm:ss") + "' and isOrder = " + (isOrder ? "1" : "0");
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 var result = await db.QueryAsync<Order>(sql);

@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.DAL.UnitOfWork;
@@ -26,8 +27,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public void Add(Business b)
         {
-            var sql = "insert into Business (name, tel) values (@name, @tel})"; 
-            using (IDbConnection db = new SqlConnection(_connectionString))
+            var sql = "insert into \"Business\" (name, tel) values (@name, @tel})"; 
+            using (IDbConnection db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 db.Execute(sql, new { name = b.name, tel = b.tel});
@@ -36,8 +37,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public Business GetById(int id)
         {
-            var sql = "SELECT * FROM Business WHERE id = @BusinessId"; 
-            using (IDbConnection db = new SqlConnection(_connectionString))
+            var sql = "SELECT * FROM \"Business\" WHERE id = @BusinessId"; 
+            using (IDbConnection db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 return db.Query<Business>(sql, new {BusinessId = id}).FirstOrDefault();
@@ -46,14 +47,14 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Business> GetByIdUow(int businessId)
         {
-            var sql = "SELECT * FROM Business WHERE id = @BusinessId";
+            var sql = "SELECT * FROM \"Business\" WHERE id = @BusinessId";
             return await _unitOfWork.Connection.QueryFirstOrDefaultAsync<Business>(sql, new { BusinessId = businessId }, _unitOfWork.Transaction);
         }
 
         public async Task<Business> GetByIdAsync(int businessId)
         {
-            var sql = "SELECT * FROM Business WHERE id = @BusinessId";
-            using (var db = new SqlConnection(_connectionString))
+            var sql = "SELECT * FROM \"Business\" WHERE id = @BusinessId";
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 return await db.QueryFirstOrDefaultAsync<Business>(sql, new {BusinessId = businessId});
             }

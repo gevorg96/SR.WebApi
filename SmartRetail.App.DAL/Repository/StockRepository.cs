@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using Npgsql;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.DAL.UnitOfWork;
@@ -37,7 +38,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Stock> GetStockByShopAndProdIdsUow(int shopId, int prodId)
         {
-            var sql = "select * from Stocks where shop_id = " + shopId + " and prod_id = " + prodId;
+            var sql = "select * from \"Stocks\" where shop_id = " + shopId + " and prod_id = " + prodId;
             return await _unitOfWork.Connection.QueryFirstOrDefaultAsync<Stock>(sql, transaction:_unitOfWork.Transaction);
         }
 
@@ -45,12 +46,12 @@ namespace SmartRetail.App.DAL.Repository
 
         public IEnumerable<Stock> GetStocksWithProductsByBusiness(int businessId)
         {
-            var sql = "select * from Shops where business_id = @businessId";
-            var subSql = "select * from Stocks where shop_id = @shopId";
-            var sub2Sql = "select * from Products where id = @prodId";
-            var sub3Sql = "select * from Images where prod_id = @prodId";
+            var sql = "select * from \"Shops\" where business_id = @businessId";
+            var subSql = "select * from \"Stocks\" where shop_id = @shopId";
+            var sub2Sql = "select * from \"Products\" where id = @prodId";
+            var sub3Sql = "select * from \"Images\" where prod_id = @prodId";
             
-            using (var connection = new SqlConnection(conn))
+            using (var connection = new NpgsqlConnection(conn))
             {
                 connection.Open();
                 var shops = connection.Query<Shop>(sql, new {businessId = businessId});
@@ -72,8 +73,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public Stock GetStockByShopAndProdIds(int shopId, int prodId)
         {
-            var sql = "select * from Stocks where shop_id = " + shopId + " and prod_id = " + prodId;
-            using (var db = new SqlConnection(conn))
+            var sql = "select * from \"Stocks\" where shop_id = " + shopId + " and prod_id = " + prodId;
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 return db.Query<Stock>(sql).FirstOrDefault();
@@ -82,11 +83,11 @@ namespace SmartRetail.App.DAL.Repository
         
         public async Task<IEnumerable<Stock>> GetStocksWithProducts(int shopId)
         {
-            var sql = "select * from Stocks where shop_id = @shopId";
-            var subSql = "select * from Products where id = @prodId";
-            var sub2Sql = "select * from Images where prod_id = @prodId";
+            var sql = "select * from \"Stocks\" where shop_id = @shopId";
+            var subSql = "select * from \"Products\" where id = @prodId";
+            var sub2Sql = "select * from \"Images\" where prod_id = @prodId";
 
-            using (var connection = new SqlConnection(conn))
+            using (var connection = new NpgsqlConnection(conn))
             {
                 connection.Open();
                 var stocks = await connection.QueryAsync<Stock>(sql, new { shopId = shopId });
@@ -109,11 +110,11 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task AddAsync(Stock entity)
         {
-            var sql = "INSERT INTO Stocks (shop_id, prod_id, count) values(" + isNotNull(entity.shop_id) + ", " +
+            var sql = "INSERT INTO \"Stocks\" (shop_id, prod_id, count) values(" + isNotNull(entity.shop_id) + ", " +
                       entity.prod_id +
                       ", " + isNotNull(entity.count) + ")";
           
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 await db.ExecuteAsync(sql);
@@ -126,8 +127,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task UpdateValueAsync(Stock entity)
         {
-            var sql = "update Stocks set count = " + entity.count + " where id = " + entity.id;
-            using (var db = new SqlConnection(conn))
+            var sql = "update \"Stocks\" set count = " + entity.count + " where id = " + entity.id;
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 await db.ExecuteAsync(sql);

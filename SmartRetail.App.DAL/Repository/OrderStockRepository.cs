@@ -2,9 +2,9 @@
 using SmartRetail.App.DAL.Repository.Interfaces;
 using Dapper;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using Npgsql;
 using SmartRetail.App.DAL.UnitOfWork;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
 
@@ -38,7 +38,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdAndShopIdsUow(int prodId, int shopId)
         {
-            var sql = "select * from OrderStocks as OS join OrderDetails as O ON OS.order_id = O.id where OS.prod_id = "
+            var sql = "select * from \"OrderStocks\" as OS join \"OrderDetails\" as O ON OS.order_id = O.id where OS.prod_id = "
                       + prodId + " and OS.curr_stocks != 0 and OS.shop_id = " + shopId + " order by OS.order_id";
             
             var orderStocks = await _unitOfWork.Connection.QueryAsync<OrderStock, OrderDetail, OrderStock>(sql,
@@ -55,7 +55,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdIdUow(int prodId)
         {
-            var sql = "select * from OrderStocks as OS join OrderDetails as O ON OS.order_id = O.id where OS.prod_id = "
+            var sql = "select * from \"OrderStocks\" as OS join \"OrderDetails\" as O ON OS.order_id = O.id where OS.prod_id = "
                       + prodId + " and OS.curr_stocks != 0 order by OS.order_id";
 
             var orderStocks = await _unitOfWork.Connection.QueryAsync<OrderStock, OrderDetail, OrderStock>(sql,
@@ -72,8 +72,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task AddOrderStockAsync(OrderStock entity)
         {
-            var sql = "insert into OrderStocks (order_id, prod_id, curr_stocks, shop_id) values (" + entity.order_id + ", " + entity.prod_id + ", " + entity.curr_stocks + ", " + entity.shop_id + ")";
-            using (var db = new SqlConnection(conn))
+            var sql = "insert into \"OrderStocks\" (order_id, prod_id, curr_stocks, shop_id) values (" + entity.order_id + ", " + entity.prod_id + ", " + entity.curr_stocks + ", " + entity.shop_id + ")";
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 await db.ExecuteAsync(sql);
@@ -82,10 +82,10 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdAndShopIds(int prodId, int shopId)
         {
-            var sql = "select * from OrderStocks as OS join OrderDetails as O ON OS.order_id = O.id where OS.prod_id = "
+            var sql = "select * from \"OrderStocks\" as OS join \"OrderDetails\" as O ON OS.order_id = O.id where OS.prod_id = "
                 + prodId + " and OS.curr_stocks != 0 and OS.shop_id = " + shopId + " order by OS.order_id";
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 var orderStocks = await db.QueryAsync<OrderStock, OrderDetail, OrderStock>(sql,
@@ -100,10 +100,10 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<OrderStock>> GetPureOrderStocksByProdId(int prodId)
         {
-            var sql = "select * from OrderStocks as OS join OrderDetails as O ON OS.order_id = O.id where OS.prod_id = "
+            var sql = "select * from \"OrderStocks\" as OS join \"OrderDetails\" as O ON OS.order_id = O.id where OS.prod_id = "
                 + prodId + " and OS.curr_stocks != 0 order by OS.order_id";
 
-            using (var db = new SqlConnection(conn))
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 var orderStocks = await db.QueryAsync<OrderStock, OrderDetail, OrderStock>(sql,
@@ -118,8 +118,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task UpdateOrderStockAsync(OrderStock entity)
         {
-            var sql = "update OrderStocks set curr_stocks = " + isNotNull(entity.curr_stocks) + " where id = " + entity.id;
-            using (var db = new SqlConnection(conn))
+            var sql = "update \"OrderStocks\" set curr_stocks = " + isNotNull(entity.curr_stocks) + " where id = " + entity.id;
+            using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
                 await db.ExecuteAsync(sql);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
@@ -25,20 +26,20 @@ namespace SmartRetail.App.DAL.Repository
             var sql = "";
             if (shopId.HasValue)
             {
-                sql = "select * from Expenses as e join ExpensesDetails as ed on e.id = ed.expenses_id WHERE business_id = " + businessId +
+                sql = "select * from \"Expenses\" as e join \"ExpensesDetails\" as ed on e.id = ed.expenses_id WHERE business_id = " + businessId +
                     " AND shop_id = " + shopId.Value + " and report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '"
                     + to.ToString("MM.dd.yyyy HH:mm:ss") + "'";
             }
             else
             {
-                sql = "select * from Expenses as e join ExpensesDetails as ed on e.id = ed.expenses_id WHERE " +
+                sql = "select * from \"Expenses\" as e join \"ExpensesDetails\" as ed on e.id = ed.expenses_id WHERE " +
                     "business_id = " + businessId + " and report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") +
                     "' and '" + to.ToString("MM.dd.yyyy HH:mm:ss") + "'";
             }
 
-            var subSql = "select * from ExpensesType where id = @TypeId";
+            var subSql = "select * from \"ExpensesType\" where id = @TypeId";
 
-            using (var db = new SqlConnection(_connectionString))
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 var expDict = new Dictionary<int, Expense>();
@@ -76,11 +77,11 @@ namespace SmartRetail.App.DAL.Repository
             {
                 return -1;
             }
-            var expInsert = "insert into Expenses (business_id, shop_id, sum, report_date) values (" + exp.business_id + ", " + isNotNull(exp.shop_id)
+            var expInsert = "insert into \"Expenses\" (business_id, shop_id, sum, report_date) values (" + exp.business_id + ", " + isNotNull(exp.shop_id)
                 + ", " + isNotNull(exp.sum) + ", '" + exp.report_date.ToString("MM.dd.yyyy HH:mm:ss") + "')";
 
-            var expDetailsInsert = "insert into ExpensesDetails (expenses_id, expenses_type_id, sum) values(@expId, @expTypeId, @expTypeSum)"; 
-            using (var db = new SqlConnection(_connectionString))
+            var expDetailsInsert = "insert into \"ExpensesDetails\" (expenses_id, expenses_type_id, sum) values(@expId, @expTypeId, @expTypeSum)"; 
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 await db.ExecuteAsync(expInsert);
@@ -95,13 +96,13 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Expense> GetByDateAndShopBusiness(int businessId, DateTime reportDate, int? shopid = null)
         {
-            var sql = new StringBuilder().Append("select * from Expenses where business_id = " + businessId + " and report_date = '" + reportDate.ToString("MM.dd.yyyy HH:mm:ss") + "'");
+            var sql = new StringBuilder().Append("select * from \"Expenses\" where business_id = " + businessId + " and report_date = '" + reportDate.ToString("MM.dd.yyyy HH:mm:ss") + "'");
             if (shopid.HasValue)
             {
                 sql.Append(" and shop_id = " + shopid.Value);
             }
 
-            using (var db = new SqlConnection(_connectionString))
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 return (await db.QueryAsync<Expense>(sql.ToString())).Last();
@@ -110,10 +111,10 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Expense> GetByIdAsync(int id)
         {
-            var sql = "select * from Expenses as e join ExpensesDetails as ed on e.id = ed.expenses_id WHERE e.id = " + id;
-            var subSql = "select * from ExpensesType where id = @TypeId";
+            var sql = "select * from \"Expenses\" as e join \"ExpensesDetails\" as ed on e.id = ed.expenses_id WHERE e.id = " + id;
+            var subSql = "select * from \"ExpensesType\" where id = @TypeId";
 
-            using (var db = new SqlConnection(_connectionString))
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 var expDict = new Dictionary<int, Expense>();

@@ -9,6 +9,7 @@ using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Helpers;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using Npgsql;
 using SmartRetail.App.DAL.Repository.Interfaces;
 using SmartRetail.App.DAL.UnitOfWork;
 using static SmartRetail.App.DAL.Helpers.NullChecker;
@@ -47,7 +48,7 @@ namespace SmartRetail.App.DAL.Repository
         public async Task<Product> GetByIdUow(int id)
         {
             return await _unitOfWork.Connection.QueryFirstOrDefaultAsync<Product>(
-                "select * from Products where id = " + id, null, _unitOfWork.Transaction);
+                "select * from \"Products\" where id = " + id, null, _unitOfWork.Transaction);
         }
 
         #region WithOut Transactions
@@ -56,8 +57,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Product> GetByIdAsync(int id)
         {
-            var sql = "SELECT * FROM Products WHERE id = " + id;
-            using (IDbConnection db = new SqlConnection(_connectionString))
+            var sql = "SELECT * FROM \"Products\" WHERE id = " + id;
+            using (IDbConnection db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 return await db.QueryFirstOrDefaultAsync<Product>(sql);
@@ -66,8 +67,8 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<Product> GetByIdAsync(int id, int businessId)
         {
-            var sql = "select * from Products where business_id = @BusinessId and id = @Id";
-            using (var db = new SqlConnection(_connectionString))
+            var sql = "select * from \"Products\" where business_id = @BusinessId and id = @Id";
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 return await db.QueryFirstOrDefaultAsync<Product>(sql, new { BusinessId = businessId, Id = id });
@@ -77,9 +78,9 @@ namespace SmartRetail.App.DAL.Repository
         public IEnumerable<Product> GetProductsByIds(IEnumerable<int> prodIds)
         {
             qb.Clear();
-            var sql = "select * from Products where id in (" + QueryHelper.GetIds(prodIds) + ")";
+            var sql = "select * from \"Products\" where id in (" + QueryHelper.GetIds(prodIds) + ")";
 
-            using (var db = new SqlConnection())
+            using (var db = new NpgsqlConnection())
             {
                 db.Open();
                 return db.Query<Product>(sql);
@@ -88,11 +89,11 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<IEnumerable<Product>> GetProductsByBusinessAsync(int businessId)
         {
-            var prsql = "select * from Products where business_id = " + businessId;
-            var imgSql = "select * from Images where prod_id = @prodId";
+            var prsql = "select * from \"Products\" where business_id = " + businessId;
+            var imgSql = "select * from \"Images\" where prod_id = @prodId";
 
             IEnumerable<Product> prods = new List<Product>();
-            using (var db = new SqlConnection(_connectionString))
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 prods = await db.QueryAsync<Product>(prsql);
@@ -111,7 +112,7 @@ namespace SmartRetail.App.DAL.Repository
         public int AddProduct(Product entity)
         {
             //shop_id,
-            string prodSql = string.Format("INSERT INTO Products ( business_id, supplier_id, name, attr1, " +
+            string prodSql = string.Format("INSERT INTO \"Products\" ( business_id, supplier_id, name, attr1, " +
                                            "attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9, attr10, unit_id, folder_id) Values ( {0}, {1}, {2}, " +
                                            "{3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14});", isNotNull(entity.business_id),
                 isNotNull(entity.supplier_id), isNotNull(entity.name), isNotNull(entity.attr1), isNotNull(entity.attr2),
@@ -119,11 +120,11 @@ namespace SmartRetail.App.DAL.Repository
                 isNotNull(entity.attr7), isNotNull(entity.attr8), isNotNull(entity.attr9), isNotNull(entity.attr10), isNotNull(entity.unit_id),
                 isNotNull(entity.folder_id));
 
-            string priceSql = "INSERT INTO Prices (prod_id, price) VALUES (@prodId, @Price)";
+            string priceSql = "INSERT INTO \"Prices\" (prod_id, price) VALUES (@prodId, @Price)";
 
-            var selectSql = "SELECT * FROM Products WHERE business_id = " + entity.business_id + " AND name = N'" + entity.name + "'";
+            var selectSql = "SELECT * FROM \"Products\" WHERE business_id = " + entity.business_id + " AND name = N'" + entity.name + "'";
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new NpgsqlConnection(_connectionString))
             {
                 try
                 {
@@ -158,13 +159,13 @@ namespace SmartRetail.App.DAL.Repository
         public void UpdateProduct(Product entity)
         {
             qb.Clear();
-            var select = qb.Select("*").From("Products").Where("id").Op(Ops.Equals, entity.id.ToString());
+            var select = qb.Select("*").From("\"Products\"").Where("id").Op(Ops.Equals, entity.id.ToString());
             var sb = new StringBuilder();
-            sb.Append("update Products set ");
+            sb.Append("update \"Products\" set ");
 
             var pi = entity.GetType().GetProperties();
 
-            using (var db = new SqlConnection(_connectionString))
+            using (var db = new NpgsqlConnection(_connectionString))
             {
                 db.Open();
                 var row = db.QueryFirstOrDefault<Product>(select.ToString());
