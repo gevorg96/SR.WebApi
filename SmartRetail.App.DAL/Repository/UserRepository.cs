@@ -35,7 +35,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public UserProfile GetById(int id)
         {
-            string sql = "SELECT * FROM \"UserProfiles\" WHERE UserId = @Id";
+            string sql = "SELECT * FROM \"UserProfiles\" WHERE \"UserId\" = @Id";
             using (var connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
