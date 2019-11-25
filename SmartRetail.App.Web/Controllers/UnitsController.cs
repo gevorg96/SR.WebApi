@@ -10,7 +10,7 @@ using SmartRetail.App.Web.Models.ViewModel.Units;
 namespace SmartRetail.App.Web.Controllers
 {
     [EnableCors("MyPolicy")]
-    [Route("units")]
+    [Route("api/units")]
     [Authorize]
     [ApiController]
     public class UnitsController : Controller

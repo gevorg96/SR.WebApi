@@ -12,7 +12,7 @@ using SmartRetail.App.Web.Models.ViewModel.Orders;
 namespace SmartRetail.App.Web.Controllers
 {
     [EnableCors("MyPolicy")]
-    [Route("cancellations")]
+    [Route("api/cancellations")]
     [Authorize]
     [ApiController]
     public class CancellationsController : Controller

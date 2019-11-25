@@ -11,7 +11,7 @@ using SmartRetail.App.Web.Models.ViewModel;
 namespace SmartRetail.App.Web.Controllers
 {
     [EnableCors("MyPolicy")]
-    [Route("shops")]
+    [Route("api/shops")]
     [Authorize]
     [ApiController]
     public class ShopsController : Controller

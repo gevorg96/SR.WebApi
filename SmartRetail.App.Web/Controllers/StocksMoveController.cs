@@ -10,7 +10,7 @@ using SmartRetail.App.Web.Models.ViewModel.StockMove;
 namespace SmartRetail.App.Web.Controllers
 {
     [EnableCors("MyPolicy")]
-    [Route("moving")]
+    [Route("api/moving")]
     [Authorize]
     [ApiController]
     public class StocksMoveController : Controller

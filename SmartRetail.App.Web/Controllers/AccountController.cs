@@ -29,7 +29,7 @@ namespace SmartRetail.App.Web.Controllers
         //    new User { Username="qwerty", Password="55555", Role = "user" }
         //};
  
-        [HttpPost("/login")]
+        [HttpPost("/api/login")]
         public async Task<ActionResult> Token([FromBody]LoginViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

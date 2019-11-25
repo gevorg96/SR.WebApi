@@ -10,7 +10,7 @@ using SmartRetail.App.Web.Models.ViewModel.Products;
 namespace SmartRetail.App.Web.Controllers
 {
     [EnableCors("MyPolicy")]
-    [Route("categories")]
+    [Route("api/categories")]
     [Authorize]
     [ApiController]
     public class CategoryController : Controller

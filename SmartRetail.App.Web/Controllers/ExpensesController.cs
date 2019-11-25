@@ -12,7 +12,7 @@ using SmartRetail.App.Web.Models.ViewModel.Expenses;
 namespace SmartRetail.App.Web.Controllers
 {
     [EnableCors("MyPolicy")]
-    [Route("expenses")]
+    [Route("api/expenses")]
     [Authorize]
     [ApiController]
     public class ExpensesController: ControllerBase
