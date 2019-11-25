@@ -45,7 +45,7 @@ namespace SmartRetail.App.DAL.Repository
 
         public async Task<UserProfile> GetByLogin(string login)
         {
-            string sql = "SELECT * FROM \"UserProfiles\" WHERE UserName = @Login";
+            string sql = "SELECT * FROM \"UserProfiles\" WHERE \"UserName\" = @Login";
             using (var connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
