@@ -15,3 +15,6 @@ DAL.BLL:
 Web:
   - Each service realize a wrapper over DataService/Repository and should prepare data for them.
   - ViewModels are the interface for communicating with clients.
+
+Test Api:
+  - You can use Postman to test api. Postman collection called SR.Api.json.
