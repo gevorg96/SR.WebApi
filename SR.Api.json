@@ -1,0 +1,1922 @@
+{
+	"info": {
+		"_postman_id": "65d0bbcd-53e9-4f41-a4dd-c0a744b6871b",
+		"name": "SmartRetail.App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authorization",
+			"item": [
+				{
+					"name": "login v1",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"qwerty\",\n\t\"password\": \"55555\"\n}"
+						},
+						"url": {
+							"raw": "https://smartretailapp.herokuapp.com/api/login",
+							"protocol": "https",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						},
+						"description": "Возвращает имя пользователя и token"
+					},
+					"response": []
+				},
+				{
+					"name": "login v2",
+					"request": {
+						"auth": {
+							"type": "bearer"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"grant_type\": \"password\",\n\t\"username\": \"admin@gmail.com\",\n\t\"password\": \"12345\"\n}"
+						},
+						"url": {
+							"raw": "https://smartretailapp.herokuapp.com/api/login",
+							"protocol": "https",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login v3",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"sunzi\",\n\t\"password\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "https://smartretailapp.herokuapp.com/api/login",
+							"protocol": "https",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login v4",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tusername: \"nikartash\",\n\tpassword: \"1234qwer\"\n}"
+						},
+						"url": {
+							"raw": "https://smartretailapp.herokuapp.com/api/login",
+							"protocol": "https",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "2 аккаунта",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Main Layout (todo)",
+			"item": [
+				{
+					"name": "Get Daily Sales",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc1OTcwNywiZXhwIjoxNTY3OTc1NzA3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.4JuNok269gSnNqic4iM8VuadZTSuK49zGywKTDAhK8Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/getdailysales?whouse=1",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"getdailysales"
+							],
+							"query": [
+								{
+									"key": "whouse",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Возвращает информацию о дневных продажах:\n- две картинки товаров, которых было продано больше всего\n- дневная выручка\n- дневная прибыль\n- дневное количество продаж\n- средний чек по дню\n- доли товаров по сегментам"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Monthly Sales",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc1OTcwNywiZXhwIjoxNTY3OTc1NzA3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.4JuNok269gSnNqic4iM8VuadZTSuK49zGywKTDAhK8Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/getmonthlysales",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"getmonthlysales"
+							]
+						},
+						"description": "Возвращает информацию о месячных продажах:\n- две картинки товаров, которых было продано больше всего\n- месячная выручка\n- месячная прибыль\n- месячное количество продаж\n- средний чек по месяцу\n- доли товаров по сегментам"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stocks",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc1OTcwNywiZXhwIjoxNTY3OTc1NzA3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.4JuNok269gSnNqic4iM8VuadZTSuK49zGywKTDAhK8Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/getstocks",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"getstocks"
+							]
+						},
+						"description": "Возвращает информацию по остаткам на складе/складах"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expenses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc1OTcwNywiZXhwIjoxNTY3OTc1NzA3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.4JuNok269gSnNqic4iM8VuadZTSuK49zGywKTDAhK8Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/getexpenses",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"getexpenses"
+							]
+						},
+						"description": "Возвращает информацию по расходам текущего месяца"
+					},
+					"response": []
+				}
+			],
+			"description": "4 request'a, каждый из которых на одно окошко.",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create",
+					"item": [
+						{
+							"name": "Add Product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2NDQwMDYwNiwiZXhwIjoxNTY0NjE2NjA2LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.ZG2gagQ4Ebd3_OPcShNnNW9rnbceA-L4aYcLEwnSc_M",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "prodname",
+											"value": "Кофта",
+											"type": "text"
+										},
+										{
+											"key": "vendorcode",
+											"value": "од4324",
+											"type": "text"
+										},
+										{
+											"key": "price",
+											"value": "1500",
+											"type": "text"
+										},
+										{
+											"key": "cost",
+											"value": "800",
+											"type": "text"
+										},
+										{
+											"key": "color",
+											"value": "серый",
+											"type": "text"
+										},
+										{
+											"key": "size",
+											"value": "52",
+											"type": "text"
+										},
+										{
+											"key": "unitid",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "category",
+											"value": "/products/1. Кайфы от Петерфельдо/Одежда",
+											"type": "text"
+										},
+										{
+											"key": "stocks[0][shopid]",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "stocks[0][stock]",
+											"value": "2",
+											"type": "text"
+										},
+										{
+											"key": "stocks[1][shopid]",
+											"value": "2",
+											"type": "text"
+										},
+										{
+											"key": "stocks[1][stock]",
+											"value": "5",
+											"type": "text"
+										},
+										{
+											"key": "img",
+											"type": "file",
+											"src": "/C:/Users/gevorg.kesyan/Desktop/Снимок.PNG"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/products",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"products"
+									]
+								},
+								"description": "prodname - required\ncathegory - from /getproductgroups (needproducts: false)\nimgbase64 - picture in base64 convertion\n\nДобавляет товар в БД. Возвращает уже добавленный товар."
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Read",
+					"item": [
+						{
+							"name": "Get All Products v1",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/products",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"products"
+									]
+								},
+								"description": "Возвращает информацию по продуктам.\nпараметры endpoint'а:\n- page - номер страницы\n- limit - количество элементов в респонсе\n- name - поиск по названию (здесь может быть как полное название товара, так и первые буквы названия товара)\n- color - аналогично с name, только по полю \"Цвет\" товара\n- size - аналогично с name, только по полю \"Размер\" товара"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Products v2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzcyOTc1MywiZXhwIjoxNTYzOTQ1NzUzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.2HDvdOEJRVE4zrUybor9JV7CAMjp-1UEjfP5FkLEa6k",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/products?name=О",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"products"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "О"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Product Info",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzcyOTc1MywiZXhwIjoxNTYzOTQ1NzUzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.2HDvdOEJRVE4zrUybor9JV7CAMjp-1UEjfP5FkLEa6k",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/products?page=1&limit=30",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"products"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "30"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Update",
+					"item": [
+						{
+							"name": "Update Product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2NDQ3NzU0MiwiZXhwIjoxNTY0NjkzNTQyLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.9jWrZGi62-Oyh2y6fJqZuLwzy2EAbb8HZ4V6Vubpdts",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "prodName",
+											"value": "test400",
+											"type": "text"
+										},
+										{
+											"key": "price",
+											"value": "9",
+											"type": "text"
+										},
+										{
+											"key": "color",
+											"value": "черный",
+											"type": "text"
+										},
+										{
+											"key": "unitid",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "size",
+											"value": "64",
+											"type": "text"
+										},
+										{
+											"key": "img",
+											"type": "file",
+											"src": "/C:/Users/gevorg.kesyan/Desktop/2.PNG"
+										},
+										{
+											"key": "category",
+											"value": "/products/1. Кайфы от Петерфельдо/Что-то",
+											"type": "text"
+										},
+										{
+											"key": "vendorCode",
+											"value": "er234",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/products/1251",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"products",
+										"1251"
+									]
+								},
+								"description": "id is required\n\nИзменяет атрибуты товара.\nВозвращает изменнёный товар.\n\nВажно! Если пользователь не изменил какое-либо из полей, то не нужно его присылать на сервер. Чаще всего это касается картинок и поля category."
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Sales",
+			"item": [
+				{
+					"name": "Read",
+					"item": [
+						{
+							"name": "Get Sales v1",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/sales?shopId=1&from=2018-05-29T21:00:00.000Z&to=2019-08-08T22:55:18.000Z&orderbydesc=false",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"sales"
+									],
+									"query": [
+										{
+											"key": "shopId",
+											"value": "1"
+										},
+										{
+											"key": "from",
+											"value": "2018-05-29T21:00:00.000Z"
+										},
+										{
+											"key": "to",
+											"value": "2019-08-08T22:55:18.000Z"
+										},
+										{
+											"key": "orderbydesc",
+											"value": "false"
+										}
+									]
+								},
+								"description": "Возвращает информацию по продажам магазина.\nПараметры endpoint'a:\n- shopId - идентификатор магазина (склада)\n- from - дата, которая размечает нижнюю границу фильтрации продаж\n- to - дата, которая размечает верхнюю границу фильтрации\n- orderbydesc - bool - сортировка по убыванию"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Sales v2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzcyOTc1MywiZXhwIjoxNTYzOTQ1NzUzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.2HDvdOEJRVE4zrUybor9JV7CAMjp-1UEjfP5FkLEa6k",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/sales?shopId=1&from=2018-05-29T21:00:00.000Z&to=2019-08-08T22:55:18.000Z&orderbydesc=false",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"sales"
+									],
+									"query": [
+										{
+											"key": "shopId",
+											"value": "1"
+										},
+										{
+											"key": "from",
+											"value": "2018-05-29T21:00:00.000Z"
+										},
+										{
+											"key": "to",
+											"value": "2019-08-08T22:55:18.000Z"
+										},
+										{
+											"key": "orderbydesc",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create",
+					"item": [
+						{
+							"name": "AddSales",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic3VuemkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJ1c2VyIiwibmJmIjoxNTY0OTkzMjEzLCJleHAiOjE1NjUyMDkyMTMsImlzcyI6Ik15QXV0aFNlcnZlciIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTE4ODQvIn0.imdBr7FYcSl4lKMQozcoG68q1jKl6YLLY27KHG10nXg",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\tshopId: 3,\n\treportDate: '2019-08-5T08:55:18.000Z',\n\ttotalSum: 9000,\n\tproducts:[\n\t\t{\t\n\t\t\tprodId: 1182,\n\t\t\tcount: 20,\n\t\t\tsumm: 3700\n\t\t},\n\t\t{\t\n\t\t\tprodId: 1183,\n\t\t\tcount: 5,\n\t\t\tsumm: 3600\n\t\t},\n\t\t{\t\n\t\t\tprodId: 1184,\n\t\t\tcount: 2,\n\t\t\tsumm: 2800\n\t\t},\n\t\t{\t\n\t\t\tprodId: 1194,\n\t\t\tcount: 5,\n\t\t\tsumm: 2400\n\t\t},\n\t]\n}"
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/sales",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"sales"
+									]
+								},
+								"description": "Создаёт в БД чек продажи. Возвращает уже добавленную продажу.\ntotalSum - сумма чека\nproducts -> summ: цена продажи товара\n\nПо поводу расчёта скидки, и как это всё реализовать на фронтенде уточнить у заказчика."
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Stocks",
+			"item": [
+				{
+					"name": "Read",
+					"item": [
+						{
+							"name": "Get Stocks v1",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/stocks?shopId=1&page=1&limit=50",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"stocks"
+									],
+									"query": [
+										{
+											"key": "shopId",
+											"value": "1"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "50"
+										}
+									]
+								},
+								"description": "Возвращает информацию по товарам, остатки которых есть на складе.\nПараметры endpoint'a:\n- page  \\\n- limit  \\\n- name    > один в один из /products\n- color  /\n- size  /\n- shopId - идентификатор магазина (склада)"
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Expenses",
+			"item": [
+				{
+					"name": "Read",
+					"item": [
+						{
+							"name": "Get Expenses v1",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/expenses?shopId=1&from=2018-03-01T00:00:00.000Z&to=2019-09-03T00:00:00.000Z",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"expenses"
+									],
+									"query": [
+										{
+											"key": "shopId",
+											"value": "1"
+										},
+										{
+											"key": "from",
+											"value": "2018-03-01T00:00:00.000Z"
+										},
+										{
+											"key": "to",
+											"value": "2019-09-03T00:00:00.000Z"
+										}
+									]
+								},
+								"description": "Возвращает информацию по расходам магазина.\nПараметры endpoint'a:\n- shopId  \\\n- from     > один в один /sales\n- to      /"
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create",
+					"item": [
+						{
+							"name": "Add Expenses",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2NTM1MjY5MSwiZXhwIjoxNTY1NTY4NjkxLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.Gm1UotEZbfmSuhiff0KBC-7afrrzmuJPMAujWpfRFzc",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\tshopId: 1,\n\treportDate: '2019-08-5T09:00:20.000Z',\n\ttotalSum: 8000,  \n\texpenses: [\n\t\t{\n\t\t\tid: 9,\n\t\t\tvalue: 5000,\n\t\t},\n\t\t{\n\t\t\tid: 10,\n\t\t\tvalue: 3000,\n\t\t}\n\t]\n}"
+								},
+								"url": {
+									"raw": "http://smartretailapp.herokuapp.com/api/expenses",
+									"protocol": "http",
+									"host": [
+										"smartretailapp",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"api",
+										"expenses"
+									]
+								},
+								"description": "Добавляет расход в базу.\ntotalSum = sum(expenses -> value)\n\nexpenses -> id - идентификатор типа расхода"
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get Full Folder Tree",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/categories",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Возвращает полноценное дерево папок (категорий) товаров.\nМожно не использовать, если разберётесь со следующими endpoint'ами в этой папке."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product Groups v1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tsearchCriteria: null,\n\tpath: \"/Кайфы от Петерфельдо\",\n\tneedProducts: true\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/categories",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Post - запрос реализован именно как post, потому что используются параметры (возможно) большой (заранее неизвестной) длины. Речь идёт о параметре path.\n\nПараметр searchCritetia отвечает за поиск среди папок и товаров в них. Как это реализовывать на фронте - вопрос скорее к заказчикам. \n\nПараметр needProducts - bool - отвечает за то, нужно ли в респонс включать сами товары. Подразумевается использование при добавлении товара (post: /products)\n\nПараметр path отвечает за то, в какую глубину папок проваливаться. Схожее поведение можно наблюдать в folder system dropbox'а.\nИзначально можно отравить пустой path. Тогда он вернёт верхний уровень папок. Необходимо взять поле fullpath из респонса и закинуть его в параметр path запроса. Тогда сервер вернёт папки, которые располагаются внутри нее.\n\nПример:\n- логинимся под qwerty\n- отправляет запрос вида:\n   {\n\tsearchCriteria: null,\n\tpath: null,\n\tneedProducts: true\n   }\n- из пришедшего json'а выбираем папку \"Рыбалка\", берём поле fullpath и закидываем его в новый реквест\n- отправляем запрос вида:\n   {\n\tsearchCriteria: null,\n\tpath: \"/Кайфы от Петерфельдо/Рыбалка\",\n\tneedProducts: true\n   }\n- получаем папки, которые располагаются внутри.\n... И так до бесконечности. Помимо папок на каком-либо уровне могут располагаться товары. На нижнем уровне либо нет ничего, либо будут товары."
+					},
+					"response": []
+				},
+				{
+					"name": "Search By Criteria v1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tsearchCriteria: null,\n\tpath: null,\n\tneedProducts: false\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/categories",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Находит рекурсивно все совпадения (searchCriteria) внутри папки, указанной в параметре path. Если параметр пуст, ищет все совпадения, начиная с корня (корень находит API само).\n\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Search By Criteria v2",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzU0MDc4OSwiZXhwIjoxNTYzNTQ0Mzg5LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.eV44jviz3MkgZD3Muwufojrcm646Cx_vTyT105LRlhE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tsearchCriteria: \"С\",\n\tpath: \"/products/1. Кайфы от Петерфельдо/Обувь\"\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/categories",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Находит рекурсивно все совпадения (searchCriteria) внутри папки, указанной в параметре path. Если параметр пуст, ищет все совпадения, начиная с корня (корень находит API само)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Only Categories",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzcyOTc1MywiZXhwIjoxNTYzOTQ1NzUzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.2HDvdOEJRVE4zrUybor9JV7CAMjp-1UEjfP5FkLEa6k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tneedProducts: false\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/categories",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Folders",
+			"item": [
+				{
+					"name": "Get Level",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2ODEyOTU5MywiZXhwIjoxNTY4MzQ1NTkzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.EQw5QRhTcpyS8-P2g_zp7YmLSq4_5pJWHPlDz1uGJFo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/folders",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"folders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Level (with params)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2ODEyOTU5MywiZXhwIjoxNTY4MzQ1NTkzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.EQw5QRhTcpyS8-P2g_zp7YmLSq4_5pJWHPlDz1uGJFo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/folders?folder=/Кайфы от Петерфельдо/Рыбалка",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"folders"
+							],
+							"query": [
+								{
+									"key": "folder",
+									"value": "/Кайфы от Петерфельдо/Рыбалка"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Folder by Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2ODEyOTU5MywiZXhwIjoxNTY4MzQ1NTkzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.EQw5QRhTcpyS8-P2g_zp7YmLSq4_5pJWHPlDz1uGJFo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/folders/60",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"folders",
+								"60"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2ODEyOTU5MywiZXhwIjoxNTY4MzQ1NTkzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.EQw5QRhTcpyS8-P2g_zp7YmLSq4_5pJWHPlDz1uGJFo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tpathToAdd:\"/Кайфы от Петерфельдо/Новая папка\",\n\tfoldername:\"Новая папка внутри\"\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/folders",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"folders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rename Folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2ODEyOTU5MywiZXhwIjoxNTY4MzQ1NTkzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.EQw5QRhTcpyS8-P2g_zp7YmLSq4_5pJWHPlDz1uGJFo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tpathtofolder: \"/Кайфы от Петерфельдо/Новая папка/Новая папка внутри\",\n\tnewfoldername: \"Изменённая папка\"\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/folders",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"folders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2ODEyOTU5MywiZXhwIjoxNTY4MzQ1NTkzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.EQw5QRhTcpyS8-P2g_zp7YmLSq4_5pJWHPlDz1uGJFo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tpathToFolder: \"/Кайфы от Петерфельдо/Что-то\",\n\tnewPath: \"/Кайфы от Петерфельдо/Новая папка\",\n\tcopy: true\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/folders",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"folders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2ODEyOTU5MywiZXhwIjoxNTY4MzQ1NTkzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.EQw5QRhTcpyS8-P2g_zp7YmLSq4_5pJWHPlDz1uGJFo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/folders/97",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"folders",
+								"97"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "GetOrders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/orders?shopId=1&from=2018-05-29T21:00:00.000Z&to=2019-08-08T22:55:18.000Z&orderbydesc=false",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "shopId",
+									"value": "1"
+								},
+								{
+									"key": "from",
+									"value": "2018-05-29T21:00:00.000Z"
+								},
+								{
+									"key": "to",
+									"value": "2019-08-08T22:55:18.000Z"
+								},
+								{
+									"key": "orderbydesc",
+									"value": "false"
+								}
+							]
+						},
+						"description": "Возвращает информацию по приходам магазина (склада).\nПараметры endpoint'a:\n- shopId       \\\n- from          \\   один в один\n- to            /   как в /sales\n- orderbydesc  /\n"
+					},
+					"response": []
+				},
+				{
+					"name": "CreateOrders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic3VuemkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJ1c2VyIiwibmJmIjoxNTY0OTkzMjEzLCJleHAiOjE1NjUyMDkyMTMsImlzcyI6Ik15QXV0aFNlcnZlciIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTE4ODQvIn0.imdBr7FYcSl4lKMQozcoG68q1jKl6YLLY27KHG10nXg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tshopId: 3,\n\treportDate: '2019-07-31T08:55:18.000Z',\n\tproducts:[\n\t\t{\t\n\t\t\tid: 1182,\n\t\t\tcount: 60,\n\t\t\tprice: 3000\n\t\t},\n\t\t{\n\t\t\tid: 1183,\n\t\t\tcount: 60,\n\t\t\tprice: 3400\n\t\t},\n\t\t{\n\t\t\tid: 1184,\n\t\t\tcount: 60,\n\t\t\tprice: 2100\n\t\t},\n\t\t{\n\t\t\tid: 1194,\n\t\t\tcount: 60,\n\t\t\tprice: 1500\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/orders",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
+						},
+						"description": "Создаёт в БД приход магазина.\nВозвращает уже добавленный приход."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Cancellations",
+			"item": [
+				{
+					"name": "GetCancellations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzkwNTUwMiwiZXhwIjoxNTY0MTIxNTAyLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.ZdMIAFBBM1NWm7LWqQi3-6pSOZJcxG-7T3iPJTTCwM8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/cancellations?shopId=1&from=2018-06-15T00:00:00.000Z&to=2019-07-23T00:00:00.000Z",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"cancellations"
+							],
+							"query": [
+								{
+									"key": "shopId",
+									"value": "1"
+								},
+								{
+									"key": "from",
+									"value": "2018-06-15T00:00:00.000Z"
+								},
+								{
+									"key": "to",
+									"value": "2019-07-23T00:00:00.000Z"
+								}
+							]
+						},
+						"description": "Возвращает информацию по списаниям магазина (склада).\nПараметры endpoint'a:\n- shopId       \\\n- from          \\   один в один\n- to            /   как в /sales\n- orderbydesc  /\n"
+					},
+					"response": []
+				},
+				{
+					"name": "CreateCancellations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzkwNTUwMiwiZXhwIjoxNTY0MTIxNTAyLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.ZdMIAFBBM1NWm7LWqQi3-6pSOZJcxG-7T3iPJTTCwM8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tshopId: 1,\n\treportDate: '2019-07-22T08:55:18.000Z',\n\tproducts:[\n\t\t{\t\n\t\t\tid: 1194,\n\t\t\tcount: 4,\n\t\t},\n\t\t{\n\t\t\tid: 1197,\n\t\t\tcount:3\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/cancellations",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"cancellations"
+							]
+						},
+						"description": "Создаёт в БД списание магазина.\nВозвращает уже добавленное списание."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Move Stocks",
+			"item": [
+				{
+					"name": "Get Products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2Nzc2MDAyNSwiZXhwIjoxNTY3OTc2MDI1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.80sSVFOvt__fZYFVidP1Ze9vF_R6Ap_EafRckrEm-As",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/moving?shopFrom=1&name=Н",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"moving"
+							],
+							"query": [
+								{
+									"key": "shopFrom",
+									"value": "1"
+								},
+								{
+									"key": "name",
+									"value": "Н"
+								}
+							]
+						},
+						"description": "Возвращает товары в рамках магазина, остатки которых имеются на данном складе.\nПараметры endpoint'a:\n- shopFrom - идентификатор магазина, с которого хотите переместить товары\n- name - поиск по названию товара\n\nМетод необходим для следующего в этой папке endpoint'a."
+					},
+					"response": []
+				},
+				{
+					"name": "Move Products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2NDQ4Nzg5NSwiZXhwIjoxNTY0NzAzODk1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.g4nzZ0Dz89MRHS9GQ22WKjTl3ablBZ-cIkEEru5_3Ds",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\tshopFrom: 1,\n\tshopTo: 2,\n\tproducts:[\n\t\t{\t\n\t\t\tid: 1194,\n\t\t\tvalue: 5\n\t\t},\n\t\t{\n\t\t\tid: 1202,\n\t\t\tvalue: 3\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/moving",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"moving"
+							]
+						},
+						"description": "Перемещает n-ое количество товаров из одного магазина в другой. Речь идёт о реальном количестве товара, которое пользователь передаёт внутри сети магазинов.\n\nПараметры endpoint'a:\n- shopFrom - идентификатор магазина, из которого хотите переместить товары\n- shopTo - целевой магазин"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Units, Shops, ExpensesTypes",
+			"item": [
+				{
+					"name": "Get Warehouses (Shops)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzU0MDc4OSwiZXhwIjoxNTYzNTQ0Mzg5LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.eV44jviz3MkgZD3Muwufojrcm646Cx_vTyT105LRlhE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/shops",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"shops"
+							]
+						},
+						"description": "Возращает информацию о доступных магазинах для данного пользователя. Используется почти везде."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Units",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2MzU0MjE4NiwiZXhwIjoxNTYzNTQ1Nzg2LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.VmkoGlFgKdn-SeXWQb2CanS35eVXiIicsWPQ0mBv37U",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "file",
+							"file": {}
+						},
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/units",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"units"
+							]
+						},
+						"description": "Возвращает список доступных единиц измерений. Используется для добавления товара (и возможно будет ещё где-то)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get ExpensesTypes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicXdlcnR5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoidXNlciIsIm5iZiI6MTU2NDQwNzQ3MCwiZXhwIjoxNTY0NjIzNDcwLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxODg0LyJ9.zMcj_ICQN73N9IJRqxFNmfaZY8mw1I_wFO7blCINDgk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://smartretailapp.herokuapp.com/api/expensestype",
+							"protocol": "http",
+							"host": [
+								"smartretailapp",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"api",
+								"expensestype"
+							]
+						},
+						"description": "Возвращает список доступных типов расходов.\nНужно для добавления расходов."
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ef7dcf94-aa76-4a81-84c7-f38b3eb53742",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2516293a-3678-444c-9577-b87845e31fed",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"variable": [
+		{
+			"id": "5f502915-6118-40b3-95c0-89fe4a323e28",
+			"key": "5f502915-6118-40b3-95c0-89fe4a323e28",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		}
+	],
+	"protocolProfileBehavior": {}
+}
