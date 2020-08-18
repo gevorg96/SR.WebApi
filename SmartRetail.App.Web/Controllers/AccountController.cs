@@ -22,12 +22,6 @@ namespace SmartRetail.App.Web.Controllers
         {
             _repo = repo;
         }
-
-        //private List<User> people = new List<User>
-        //{
-        //    new User {Username="admin@gmail.com", Password="12345", Role = "admin" },
-        //    new User { Username="qwerty", Password="55555", Role = "user" }
-        //};
  
         [HttpPost("/api/login")]
         public async Task<ActionResult> Token([FromBody]LoginViewModel model)
@@ -41,7 +35,6 @@ namespace SmartRetail.App.Web.Controllers
             }
 
             var now = DateTime.UtcNow;
-            // создаем JWT-токен
             var jwt = new JwtSecurityToken(
                     issuer: AuthOptions.ISSUER,
                     audience: AuthOptions.AUDIENCE,
@@ -82,7 +75,6 @@ namespace SmartRetail.App.Web.Controllers
                 return claimsIdentity;
             }
 
-            // если пользователя не найдено
             return null;
         }
     }

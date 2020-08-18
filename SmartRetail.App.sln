@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.DAL.DropBox
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.DAL.BLL", "SmartRetail.App.DAL.BLL\SmartRetail.App.DAL.BLL.csproj", "{732C0624-A554-4831-A6CB-CB832F6D2642}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SR.DAL", "SR.DAL\SR.DAL.csproj", "{75ABDCC9-8A39-4759-BAA7-B000CE8CEB44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{732C0624-A554-4831-A6CB-CB832F6D2642}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{732C0624-A554-4831-A6CB-CB832F6D2642}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{732C0624-A554-4831-A6CB-CB832F6D2642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75ABDCC9-8A39-4759-BAA7-B000CE8CEB44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75ABDCC9-8A39-4759-BAA7-B000CE8CEB44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75ABDCC9-8A39-4759-BAA7-B000CE8CEB44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75ABDCC9-8A39-4759-BAA7-B000CE8CEB44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

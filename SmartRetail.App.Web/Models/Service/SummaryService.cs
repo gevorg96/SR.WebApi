@@ -4,10 +4,10 @@ using SmartRetail.App.Web.Models.ViewModel.Summary;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Internal;
 using SmartRetail.App.DAL.BLL.DataServices;
 using SmartRetail.App.DAL.Entities;
 using SmartRetail.App.DAL.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace SmartRetail.App.Web.Models.Service
 {
@@ -85,12 +85,12 @@ namespace SmartRetail.App.Web.Models.Service
         public async Task<JObject> GetExpensesAsync(int whouse, UserProfile user)
         {
             var expenses = await expensesDataService.GetMonthExpensesAsync(whouse, user);
-            if (!EnumerableExtensions.Any(expenses))
+            if (!expenses.Any())
             {
                 var expTypes = await expTypeRepo.GetAllAsync();
                 var dict = new Dictionary<string, decimal>();
                 foreach (var et in expTypes)
-                {   
+                {
                     dict.Add(et.type, 0);
                 }
 
@@ -106,7 +106,6 @@ namespace SmartRetail.App.Web.Models.Service
             return await GetInfo(whouse, user);
         }
 
-
         public async Task<JObject> GetStocksAsync(int whouse, UserProfile user)
         {
             var json = new JObject();
@@ -116,8 +115,6 @@ namespace SmartRetail.App.Web.Models.Service
             json.Add(new JProperty("goods", GetInfo(stocks.goods)));
             return json;
         }
-
-
 
         private static JArray GetInfo(Dictionary<string, decimal> dict)
         {
