@@ -18,6 +18,7 @@ namespace SR.DAL.Entities
         [Required]
         public long BusinessId { get; set; }
 
+        [Required]
         public Business Business { get; set; }
     }
 }
