@@ -22,6 +22,7 @@ namespace SR.DAL.Entities
 
         [ForeignKey("ShopId")]
         public Shop Shop { get; set; }
+        
         public IList<Sale> Sales { get; set; }
     }
 }

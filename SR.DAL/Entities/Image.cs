@@ -8,9 +8,6 @@ namespace SR.DAL.Entities
     public class Image
     {
         [Required]
-        public Guid ROWGUID { get; set; }
-
-        [Required]
         public long ProdId { get; set; }
 
         public string ImgType { get; set; }

@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SR.DAL.Entities
 {
-    [Table("Order")]
-    public class Order : Entity
+    [Table("Invoice")]
+    public class Invoice : Entity
     {
         [Required]
         public DateTime ReportDate { get; set; }
@@ -15,8 +15,8 @@ namespace SR.DAL.Entities
         public long ShopId { get; set; }
 
         [Required]
-        public bool IsOrder { get; set; }
+        public bool IsInvoice { get; set; }
 
-        public IList<OrderDetail> OrderDetails { get; set; }
+        public IList<InvoiceDetail> InvoiceDetails { get; set; }
     }
 }

@@ -8,13 +8,13 @@ namespace SR.DAL.Entities
     public class Supplier : Entity
     {
         [Required]
-        public string SupplierName { get; set; }
+        public string Name { get; set; }
         
         [Required]
         public string OrgName { get; set; }
 
         [Required]
-        public string SupplierAddress { get; set; }
+        public string Address { get; set; }
         public long? Tel { get; set; }
 
         public IList<Product> Product { get; set; }

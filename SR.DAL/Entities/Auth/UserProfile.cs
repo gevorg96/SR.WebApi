@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SR.DAL.Entities
+namespace SR.DAL.Entities.Auth
 {
     [Table("UserProfile")]
     public sealed class UserProfile : Entity

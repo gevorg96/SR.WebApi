@@ -11,7 +11,7 @@ namespace SR.DAL.Entities
         public long? ParentId { get; set; }
 
         [Required]
-        public string FolderName { get; set; }
+        public string Name { get; set; }
 
         public override bool Equals(object obj) => obj is Folder && this != null && (obj as Folder).Id == Id;
     }

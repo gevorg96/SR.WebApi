@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace SR.DAL.Entities
 {
@@ -9,27 +10,16 @@ namespace SR.DAL.Entities
     public class Product : Entity
     {
         [Required]
-        public long BusinessId { get; set; }
-
-        [Required]
         public long[] ShopIds { get; set; }
 
         [Required]
-        public long SupplierId { get; set; }
+        public long[] SupplierIds { get; set; }
 
         [Required]
-        public string ProductName { get; set; }
-        public string Attr1 { get; set; }
-        public string Attr2 { get; set; }
-        public string Attr3 { get; set; }
-        public string Attr4 { get; set; }
-        public string Attr5 { get; set; }
-        public string Attr6 { get; set; }
-        public string Attr7 { get; set; }
-        public string Attr8 { get; set; }
-        public string Attr9 { get; set; }
-        public string Attr10 { get; set; }
-        public long? UnitId { get; set; }
+        public string Name { get; set; }
+
+        public JsonDocument Attributes { get; set; }
+        public long[] UnitIds { get; set; }
         public long? FolderId { get; set; }
 
         [NotMapped]

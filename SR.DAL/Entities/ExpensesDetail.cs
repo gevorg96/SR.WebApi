@@ -15,6 +15,6 @@ namespace SR.DAL.Entities
         [Required]
         public decimal ExpenseDetailSum { get; set; }
 
-        public virtual ExpensesType ExpensesType { get; set; }
+        public ExpenseType ExpensesType { get; set; }
     }
 }

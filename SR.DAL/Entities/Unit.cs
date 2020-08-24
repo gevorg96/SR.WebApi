@@ -7,6 +7,6 @@ namespace SR.DAL.Entities
     public class Unit : Entity
     {
         [Required]
-        public string Value { get; set; }
+        public string Name { get; set; }
     }
 }

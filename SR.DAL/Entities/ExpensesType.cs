@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SR.DAL.Entities
 {
     [Table("ExpenseType")]
-    public class ExpensesType : Entity
+    public class ExpenseType : Entity
     {
         [Required]
-        public string Type { get; set; }
+        public string Name { get; set; }
     }
 }

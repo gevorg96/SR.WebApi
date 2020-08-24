@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SR.DAL.Entities
 {
-    [Table("OrderDetail")]
-    public class OrderDetail : Entity
+    [Table("InvoiceDetail")]
+    public class InvoiceDetail : Entity
     {
         [Required]
-        public long OrderId { get; set; }
+        public long InvoiceId { get; set; }
 
         [Required]
         public long ProdId { get; set; }
@@ -19,6 +19,6 @@ namespace SR.DAL.Entities
         public decimal Count { get; set; }
 
         public Product Product { get; set; }
-        public Order Order { get; set; }
+        public Invoice Invoice { get; set; }
     }
 }

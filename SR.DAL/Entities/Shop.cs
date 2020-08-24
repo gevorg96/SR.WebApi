@@ -7,10 +7,10 @@ namespace SR.DAL.Entities
     public class Shop : Entity
     {
         [Required]
-        public string ShopAddress { get; set; }
+        public string Address { get; set; }
 
         [Required]
-        public string ShopName { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public long BusinessId { get; set; }

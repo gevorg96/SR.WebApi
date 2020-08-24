@@ -8,10 +8,8 @@ namespace SR.DAL.Entities
     public class Cost : Entity
     {
         [Required]
-        public long ProdId { get; set; }
-        public decimal? CostValue { get; set; }
+        public decimal? Value { get; set; }
 
-        public Product Product { get; set; }
-        public IList<Order> Orders { get; set; }
+        public IList<Invoice> Orders { get; set; }
     }
 }
