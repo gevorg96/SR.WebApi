@@ -33,7 +33,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
             switch (direction)
             {
                 case Direction.Sale:
-                    if (entity is Bill sale)
+                    if (entity is BillParent sale)
                         await SalesStrategyUow(sale, uow);
                     break;
                 case Direction.Order:
@@ -65,7 +65,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
             }
         }
 
-        private async Task SalesStrategyUow(Bill bill, IUnitOfWork uow)
+        private async Task SalesStrategyUow(BillParent bill, IUnitOfWork uow)
         {
             _orderStockRepo = new OrderStockRepository(uow);
 
@@ -177,7 +177,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
             switch (direction)
             {
                 case Direction.Sale:
-                    var sale = entity as Bill;
+                    var sale = entity as BillParent;
                     if (sale != null)
                         await SaleStrategy(sale);
                     break;
@@ -212,7 +212,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
             }
         }
 
-        private async Task SaleStrategy(Bill sale)
+        private async Task SaleStrategy(BillParent sale)
         {
             foreach (var item in sale.Sales)
             {

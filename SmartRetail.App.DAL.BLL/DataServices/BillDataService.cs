@@ -14,7 +14,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
         private IStrategy _strategy;
         private IBillsRepository _billsRepository;
 
-        public async Task<int> Insert(Bill bill)
+        public async Task<int> Insert(BillParent bill)
         {
             using (var session = new Session())
             {

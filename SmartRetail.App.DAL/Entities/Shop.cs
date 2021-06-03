@@ -23,7 +23,7 @@ namespace SmartRetail.App.DAL.Entities
 
         [Write(false)]
         [Computed]
-        public virtual ICollection<Bill> Bills { get; set; }
+        public virtual ICollection<BillParent> Bills { get; set; }
 
         [Write(false)]
         [Computed]

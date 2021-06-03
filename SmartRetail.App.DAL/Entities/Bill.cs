@@ -4,7 +4,7 @@ using Dapper.Contrib.Extensions;
 
 namespace SmartRetail.App.DAL.Entities
 {
-    public class Bill: IEntity
+    public class BillParent: IEntity
     {
         public int id { get; set; }
         public int shop_id { get; set; }

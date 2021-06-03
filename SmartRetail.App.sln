@@ -13,6 +13,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.DAL.DropBox
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRetail.App.DAL.BLL", "SmartRetail.App.DAL.BLL\SmartRetail.App.DAL.BLL.csproj", "{732C0624-A554-4831-A6CB-CB832F6D2642}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SR.Domain", "SR.Domain\SR.Domain.csproj", "{783D3C10-1CD9-4ADE-9FBC-FF7700D8649C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SR.Application", "SR.Application\SR.Application.csproj", "{9E175FA6-5843-4274-B0ED-A8683BB9B245}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SR.Infrastructure", "SR.Infrastructure\SR.Infrastructure.csproj", "{8C2A33C5-AD30-4042-AEB3-41CCC5A76556}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SR.Http", "SR.Http\SR.Http.csproj", "{1E612D35-3E0A-4A9A-962C-7B06F96D9BD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SR.Service", "SR.Service\SR.Service.csproj", "{406849E9-9F6A-4FC1-BF2F-0BBAFF5E9D7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F9C34764-E626-4D4E-9AA5-EA03D1FFD398}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SR.AcceptanceTests", "SR.AcceptanceTests\SR.AcceptanceTests.csproj", "{B720764B-03E5-4AEB-8602-20052B298B26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,11 +53,38 @@ Global
 		{732C0624-A554-4831-A6CB-CB832F6D2642}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{732C0624-A554-4831-A6CB-CB832F6D2642}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{732C0624-A554-4831-A6CB-CB832F6D2642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{783D3C10-1CD9-4ADE-9FBC-FF7700D8649C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{783D3C10-1CD9-4ADE-9FBC-FF7700D8649C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{783D3C10-1CD9-4ADE-9FBC-FF7700D8649C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{783D3C10-1CD9-4ADE-9FBC-FF7700D8649C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E175FA6-5843-4274-B0ED-A8683BB9B245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E175FA6-5843-4274-B0ED-A8683BB9B245}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E175FA6-5843-4274-B0ED-A8683BB9B245}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E175FA6-5843-4274-B0ED-A8683BB9B245}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C2A33C5-AD30-4042-AEB3-41CCC5A76556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C2A33C5-AD30-4042-AEB3-41CCC5A76556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C2A33C5-AD30-4042-AEB3-41CCC5A76556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C2A33C5-AD30-4042-AEB3-41CCC5A76556}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E612D35-3E0A-4A9A-962C-7B06F96D9BD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E612D35-3E0A-4A9A-962C-7B06F96D9BD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E612D35-3E0A-4A9A-962C-7B06F96D9BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E612D35-3E0A-4A9A-962C-7B06F96D9BD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{406849E9-9F6A-4FC1-BF2F-0BBAFF5E9D7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{406849E9-9F6A-4FC1-BF2F-0BBAFF5E9D7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{406849E9-9F6A-4FC1-BF2F-0BBAFF5E9D7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{406849E9-9F6A-4FC1-BF2F-0BBAFF5E9D7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B720764B-03E5-4AEB-8602-20052B298B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B720764B-03E5-4AEB-8602-20052B298B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B720764B-03E5-4AEB-8602-20052B298B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B720764B-03E5-4AEB-8602-20052B298B26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {18AA3DF5-8869-4076-AB77-7EDCB39D5BE0}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B720764B-03E5-4AEB-8602-20052B298B26} = {F9C34764-E626-4D4E-9AA5-EA03D1FFD398}
 	EndGlobalSection
 EndGlobal

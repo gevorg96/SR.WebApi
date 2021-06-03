@@ -41,7 +41,7 @@ namespace SmartRetail.App.Web.Models.Service
         }
         public async Task<int> AddSaleTransaction(SalesCreateViewModel model)
         {
-            var bill = new Bill
+            var bill = new BillParent
             {
                 shop_id = model.shopId,
                 sum = model.totalSum,
@@ -89,7 +89,7 @@ namespace SmartRetail.App.Web.Models.Service
 
         public async Task<int> AddSale(SalesCreateViewModel model)
         {
-            var bill = new Bill
+            var bill = new BillParent
             {
                 shop_id = model.shopId,
                 sum = model.totalSum,

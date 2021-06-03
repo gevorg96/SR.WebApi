@@ -27,7 +27,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
 
         public async Task<double> GetProductPositionOffDays(int shopId, int productId, DateTime from, DateTime to)
         {
-            var dict = new Dictionary<DateTime, KeyValuePair<List<Order>, List<Bill>>>();
+            var dict = new Dictionary<DateTime, KeyValuePair<List<Order>, List<BillParent>>>();
             var stocksDict = new Dictionary<DateTime, decimal>();
 
             
@@ -46,7 +46,7 @@ namespace SmartRetail.App.DAL.BLL.Utils
                 var dt = DateTime.Now.AddDays(-i).Date;
                 var s = sales.Where(p => DayEquals(p.report_date.Date, dt)).ToList();
                 var o = orders.Where(p => DayEquals(p.report_date.Date, dt)).ToList();
-                dict[dt] = new KeyValuePair<List<Order>, List<Bill>>(o, s);
+                dict[dt] = new KeyValuePair<List<Order>, List<BillParent>>(o, s);
             }
 
             var stockValue = stock.count.Value;
@@ -77,12 +77,12 @@ namespace SmartRetail.App.DAL.BLL.Utils
             return first.Day == second.Day && first.Month == second.Month && first.Year == second.Year;
         }
 
-        private Dictionary<DateTime, KeyValuePair<List<Order>, List<Bill>>> InitEmptyDictionary(DateTime from)
+        private Dictionary<DateTime, KeyValuePair<List<Order>, List<BillParent>>> InitEmptyDictionary(DateTime from)
         {
-            var dict = new Dictionary<DateTime, KeyValuePair<List<Order>, List<Bill>>>();
+            var dict = new Dictionary<DateTime, KeyValuePair<List<Order>, List<BillParent>>>();
             for (var i = 0; i <= (DateTime.Now.Date - from.Date).Days; i++)
             {
-                dict.Add(from.AddDays(i), new KeyValuePair<List<Order>, List<Bill>>());
+                dict.Add(from.AddDays(i), new KeyValuePair<List<Order>, List<BillParent>>());
             }
 
             return dict;

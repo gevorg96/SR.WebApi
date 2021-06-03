@@ -27,7 +27,7 @@ namespace SmartRetail.App.DAL.Repository
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<int> InsertUow(Bill entity)
+        public async Task<int> InsertUow(BillParent entity)
         {
             if (entity.Sales == null || !entity.Sales.Any())
                 return -1;
@@ -44,7 +44,7 @@ namespace SmartRetail.App.DAL.Repository
             return billId;
         }
 
-        public async Task<IEnumerable<Bill>> GetBillsWithSalesByProdId(int shopId, int prodId, DateTime from,
+        public async Task<IEnumerable<BillParent>> GetBillsWithSalesByProdId(int shopId, int prodId, DateTime from,
             DateTime to)
         {
             var join = "select * from \"Bills\" as b join \"Sales\" as s on b.id = s.bill_id where b.shop_id = " + 
@@ -56,12 +56,12 @@ namespace SmartRetail.App.DAL.Repository
             using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
-                var billDict = new Dictionary<int, Bill>();
+                var billDict = new Dictionary<int, BillParent>();
 
-                var bills = (await db.QueryAsync<Bill, Sale, Bill>(join,
+                var bills = (await db.QueryAsync<BillParent, Sale, BillParent>(join,
                     (bill, sales) =>
                     {
-                        Bill billEntry;
+                        BillParent billEntry;
                         if (!billDict.TryGetValue(bill.id, out billEntry))
                         {
                             billEntry = bill;
@@ -88,16 +88,16 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
         
-        public async Task<Bill> GetByIdsWithSalesUow(int billId, int shopId)
+        public async Task<BillParent> GetByIdsWithSalesUow(int billId, int shopId)
         {
             var sql = "select * from \"Bills\" as b join \"Sales\" as s on b.id = s.bill_id where b.id = "+ billId +" and b.shop_id = " + shopId;
 
-            var biilsDictionary = new Dictionary<int, Bill>();
+            var biilsDictionary = new Dictionary<int, BillParent>();
 
-            var billsStocks = await _unitOfWork.Connection.QueryAsync<Bill, Sale, Bill>(sql,
+            var billsStocks = await _unitOfWork.Connection.QueryAsync<BillParent, Sale, BillParent>(sql,
                 (bill, sale) =>
                 {
-                    Bill billEntry;
+                    BillParent billEntry;
                     if (!biilsDictionary.TryGetValue(bill.id, out billEntry))
                     {
                         billEntry = bill;
@@ -114,7 +114,7 @@ namespace SmartRetail.App.DAL.Repository
         
         }
 
-        public async Task<int> AddBillAsync(Bill bill)
+        public async Task<int> AddBillAsync(BillParent bill)
         {
             if (bill.Sales == null || !bill.Sales.Any())
                 return -1;
@@ -145,18 +145,18 @@ namespace SmartRetail.App.DAL.Repository
             }
         }
 
-        public async Task<Bill> GetBillByNumber(int billNumber, DateTime reportDate)
+        public async Task<BillParent> GetBillByNumber(int billNumber, DateTime reportDate)
         {
             var sql = "select * from \"Bills\" where bill_number = " + billNumber + " and report_date = '" +
                 reportDate.ToString("MM.dd.yyyy HH:mm:ss") + "'";
             using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
-                return await db.QueryFirstOrDefaultAsync<Bill>(sql);
+                return await db.QueryFirstOrDefaultAsync<BillParent>(sql);
             }
         }
 
-        public async Task<IEnumerable<Bill>> GetBillsWithSales(int shopId, DateTime from, DateTime to)
+        public async Task<IEnumerable<BillParent>> GetBillsWithSales(int shopId, DateTime from, DateTime to)
         {
             var join = "select * from \"Bills\" as b join \"Sales\" as s on b.id = s.bill_id where b.shop_id = " + 
                 shopId + " and b.report_date between '" + from.ToString("MM.dd.yyyy HH:mm:ss") + "' and '" 
@@ -167,12 +167,12 @@ namespace SmartRetail.App.DAL.Repository
             using (var db = new NpgsqlConnection(conn))
             {
                 db.Open();
-                var billDict = new Dictionary<int, Bill>();
+                var billDict = new Dictionary<int, BillParent>();
 
-                var bills = (await db.QueryAsync<Bill, Sale, Bill>(join, 
+                var bills = (await db.QueryAsync<BillParent, Sale, BillParent>(join, 
                     (bill, sales) =>
                     {
-                        Bill billEntry;
+                        BillParent billEntry;
                         if (!billDict.TryGetValue(bill.id, out billEntry))
                         {
                             billEntry = bill;
@@ -198,13 +198,13 @@ namespace SmartRetail.App.DAL.Repository
 
         }
         
-        public async Task<Bill> GetByIdAsync(int id)
+        public async Task<BillParent> GetByIdAsync(int id)
         {
             var sql = "select * from \"Bills\" where id = " + id;
             using(var db = new NpgsqlConnection(conn))
             {
                 db.Open();
-                return await db.QueryFirstOrDefaultAsync<Bill>(sql);
+                return await db.QueryFirstOrDefaultAsync<BillParent>(sql);
             }
         }
 

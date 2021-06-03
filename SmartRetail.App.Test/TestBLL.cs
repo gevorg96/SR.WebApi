@@ -122,7 +122,7 @@ namespace SmartRetail.App.Test
                 if (dt >= new DateTime(2019, 9,20))
                     break;
 
-                var bill = new Bill
+                var bill = new BillParent
                 {
                     shop_id = 2,
                     report_date = dt,

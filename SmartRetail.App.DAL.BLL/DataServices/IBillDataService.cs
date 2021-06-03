@@ -8,6 +8,6 @@ namespace SmartRetail.App.DAL.BLL.DataServices
 {
     public interface IBillDataService
     {
-        Task<int> Insert(Bill bill);
+        Task<int> Insert(BillParent bill);
     }
 }

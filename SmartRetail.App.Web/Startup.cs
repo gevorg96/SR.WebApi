@@ -47,8 +47,9 @@ namespace SmartRetail.App.Web
                     .AllowAnyHeader();
             }));
             
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
+                .AddJwtBearer(options =>
                     {
                         options.RequireHttpsMetadata = false;
                         options.TokenValidationParameters = new TokenValidationParameters

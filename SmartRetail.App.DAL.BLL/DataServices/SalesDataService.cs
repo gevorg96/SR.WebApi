@@ -15,7 +15,7 @@ namespace SmartRetail.App.DAL.BLL.DataServices
         private readonly IBusinessRepository _businessRepo;
         public DateTime From { get; set; }
 
-        private IEnumerable<Bill> bills;
+        private IEnumerable<BillParent> bills;
 
         public SalesDataService(IProductRepository pRepo, IImageRepository iRepo,
             IBillsRepository bRepo, IBusinessRepository businessRepo)

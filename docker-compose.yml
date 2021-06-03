@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    container_name: sr
+    ports:
+      - "1111:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 1
+      POSTGRES_DB: sr
+      POSTGRES_USER: user
