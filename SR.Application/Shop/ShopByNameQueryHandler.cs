@@ -8,14 +8,13 @@ using SR.Application.Persistence;
 namespace SR.Application.Shop
 {
     [UsedImplicitly]
-    internal sealed class GetShopByNameQueryHandler: IRequestHandler<GetShopByNameQuery, Domain.Shop>
+    internal sealed class ShopByNameQueryHandler: IRequestHandler<ShopByNameQuery, Domain.Shop>
     {
         private readonly ISrContext _db;
 
-        public GetShopByNameQueryHandler(ISrContext db) =>
-            _db = db;
+        public ShopByNameQueryHandler(ISrContext db) => _db = db;
 
-        public async Task<Domain.Shop> Handle(GetShopByNameQuery request, CancellationToken cancellationToken) =>
+        public async Task<Domain.Shop> Handle(ShopByNameQuery request, CancellationToken cancellationToken) =>
             await _db.Shops.FirstOrDefaultAsync(x => x.Name.ToUpper() == request.Name.ToUpper(), cancellationToken).ConfigureAwait(false);
     }
 }

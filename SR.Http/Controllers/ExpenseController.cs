@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SR.Application.Expense;
-using SR.Application.UnitOfMeasure;
 using SR.Domain;
 using SR.Http.Base;
 
@@ -13,7 +12,7 @@ namespace SR.Http.Controllers
 {
     [ApiController]
     [Route("api/expense")]
-    public class ExpenseController: GetSaveController<GetExpenseByIdQuery, CreateExpenseCommand>
+    public class ExpenseController: GetSaveController<ExpenseByIdQuery, CreateExpenseCommand>
     {
         public ExpenseController(IMediator mediator) : base(mediator) { }
 
@@ -22,7 +21,7 @@ namespace SR.Http.Controllers
         [HttpGet("{Id}/{WithExpenseItems}", Name = "GetExpenseById")]
         [ProducesResponseType(typeof(Expense), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public override async Task<IActionResult> GetById(GetExpenseByIdQuery query, CancellationToken token) =>
+        public override async Task<IActionResult> GetById(ExpenseByIdQuery query, CancellationToken token) =>
             await base.GetById(query, token).ConfigureAwait(false);
         
         [HttpPost(Name = "CreateExpense")]
@@ -32,7 +31,7 @@ namespace SR.Http.Controllers
         
         [HttpGet(Name = "GetExpensesQuery")]
         [ProducesResponseType(typeof(IReadOnlyCollection<Expense>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get([FromQuery] GetExpenseQuery query, CancellationToken token) =>
+        public async Task<IActionResult> Get([FromQuery] ExpenseQuery query, CancellationToken token) =>
             Ok(await Mediator.Send(query, token).ConfigureAwait(false));
     }
 }

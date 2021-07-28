@@ -10,14 +10,13 @@ using SR.Application.Persistence;
 namespace SR.Application.Product
 {
     [UsedImplicitly]
-    internal sealed class GetProductsQueryHandler: IRequestHandler<GetProductsQuery, IReadOnlyCollection<ProductView>>
+    internal sealed class ProductsQueryHandler: IRequestHandler<ProductsQuery, IReadOnlyCollection<ProductView>>
     {
         private readonly ISrContext _db;
 
-        public GetProductsQueryHandler(ISrContext db) =>
-        _db = db;
+        public ProductsQueryHandler(ISrContext db) => _db = db;
 
-            public async Task<IReadOnlyCollection<ProductView>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<ProductView>> Handle(ProductsQuery request, CancellationToken cancellationToken)
         {
             var (name, color, size, limit, offset) = request;
 

@@ -12,14 +12,14 @@ using SR.Domain;
 namespace SR.Application.ExpenseItem
 {
     [UsedImplicitly]
-    internal sealed class GetExpenseItemsOfExpenseQueryHandler: IRequestHandler<GetExpenseItemsOfExpenseQuery, IReadOnlyCollection<Domain.ExpenseItem>>
+    internal sealed class ExpenseItemsOfExpenseQueryHandler: IRequestHandler<ExpenseItemsOfExpenseQuery, IReadOnlyCollection<Domain.ExpenseItem>>
     {
         private readonly ISrContext _db;
         
-        public GetExpenseItemsOfExpenseQueryHandler(ISrContext db) =>
+        public ExpenseItemsOfExpenseQueryHandler(ISrContext db) =>
             _db = db;
 
-        public async Task<IReadOnlyCollection<Domain.ExpenseItem>> Handle(GetExpenseItemsOfExpenseQuery request, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<Domain.ExpenseItem>> Handle(ExpenseItemsOfExpenseQuery request, CancellationToken cancellationToken)
         {
             var expense = await _db.Expenses
                 .FirstOrDefaultAsync(x => x.Id == request.ExpenseId, cancellationToken)

@@ -13,7 +13,7 @@ namespace SR.Http.Controllers
 {
     [ApiController]
     [Route("api/product")]
-    public class ProductController: GetSaveController<GetProductByIdQuery, CreateProductCommand>
+    public class ProductController: GetSaveController<ProductByIdQuery, CreateProductCommand>
     {
         public ProductController(IMediator mediator) : base(mediator) { }
         protected override string CreatedUrl => "api/product";
@@ -21,12 +21,12 @@ namespace SR.Http.Controllers
         [HttpGet("{Id}", Name = "GetProductById")]
         [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public override async Task<IActionResult> GetById(GetProductByIdQuery query, CancellationToken token) =>
+        public override async Task<IActionResult> GetById(ProductByIdQuery query, CancellationToken token) =>
             await base.GetById(query, token).ConfigureAwait(false);
         
         [HttpGet(Name = "GetProductsQuery")]
         [ProducesResponseType(typeof(IReadOnlyCollection<ProductView>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get([FromQuery] GetProductsQuery query, CancellationToken token) =>
+        public async Task<IActionResult> Get([FromQuery] ProductsQuery query, CancellationToken token) =>
             Ok(await Mediator.Send(query, token).ConfigureAwait(false));
 
         [HttpPost(Name = "CreateProduct")]

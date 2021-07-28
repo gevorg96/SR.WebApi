@@ -13,9 +13,9 @@ namespace SR.Http.Controllers
     [ApiController]
     [Route("api/expense-type")]
     public class ExpenseTypeController: GetAllAndNameController<
-        GetExpenseTypesQuery, 
-        GetExpenseTypeByIdQuery, 
-        GetExpenseTypeByNameQuery, 
+        ExpenseTypesQuery, 
+        ExpenseTypeByIdQuery, 
+        ExpenseTypeByNameQuery, 
         CreateExpenseTypeCommand>
     {
         protected override string CreatedUrl => "api/expense-type";
@@ -30,13 +30,13 @@ namespace SR.Http.Controllers
         [HttpGet("{Id}", Name = "GetExpenseTypeById")]
         [ProducesResponseType(typeof(ExpenseType), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public override async Task<IActionResult> GetById(GetExpenseTypeByIdQuery query, CancellationToken token) =>
+        public override async Task<IActionResult> GetById(ExpenseTypeByIdQuery query, CancellationToken token) =>
             await base.GetById(query, token).ConfigureAwait(false);
 
         [HttpGet("name/{Name}", Name = "GetExpenseTypeByName")]
         [ProducesResponseType(typeof(ExpenseType), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public override async Task<IActionResult> GetByName(GetExpenseTypeByNameQuery query, CancellationToken token) =>
+        public override async Task<IActionResult> GetByName(ExpenseTypeByNameQuery query, CancellationToken token) =>
             await base.GetByName(query, token).ConfigureAwait(false);
 
         [HttpPost(Name = "CreateExpenseType")]

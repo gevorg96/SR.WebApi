@@ -4,10 +4,9 @@ using SR.Application.Persistence;
 
 namespace SR.Application.Product
 {
-    public record GetProductsQuery(string? Name, string? Color, string? Size, int Limit = 10, int Offset = 0) 
-        : IRequest<IReadOnlyCollection<ProductView>>;
+    public record ProductsQuery(string? Name, string? Color, string? Size, int Limit = 10, int Offset = 0) : IRequest<IReadOnlyCollection<ProductView>>;
 
-    public record GetProductByIdQuery(long Id) : IRequest<Domain.Product>;
+    public record ProductByIdQuery(long Id) : IRequest<Domain.Product>;
 
     public record ProductProps(string? Color, string? Size, long UoMId, long? FolderId);
     

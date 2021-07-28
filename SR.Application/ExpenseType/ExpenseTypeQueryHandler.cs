@@ -9,14 +9,14 @@ using SR.Application.Persistence;
 namespace SR.Application.ExpenseType
 {
     [UsedImplicitly]
-    internal sealed class GetExpenseTypeQueryHandler : IRequestHandler<GetExpenseTypesQuery, IReadOnlyCollection<Domain.ExpenseType>>
+    internal sealed class ExpenseTypeQueryHandler : IRequestHandler<ExpenseTypesQuery, IReadOnlyCollection<Domain.ExpenseType>>
     {
         private readonly ISrContext _db;
 
-        public GetExpenseTypeQueryHandler(ISrContext db) =>
+        public ExpenseTypeQueryHandler(ISrContext db) =>
             _db = db;
         
-        public async Task<IReadOnlyCollection<Domain.ExpenseType>> Handle(GetExpenseTypesQuery request, CancellationToken cancellationToken) => 
+        public async Task<IReadOnlyCollection<Domain.ExpenseType>> Handle(ExpenseTypesQuery request, CancellationToken cancellationToken) => 
             await _db.ExpenseTypes.ToListAsync(cancellationToken).ConfigureAwait(false);
     }
     

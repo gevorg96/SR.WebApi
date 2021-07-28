@@ -10,14 +10,13 @@ namespace SR.Application.UnitOfMeasure
 {
 
     [UsedImplicitly]
-    internal sealed class GetUnitOfMeasuresQueryHandler : IRequestHandler<GetUnitOfMeasuresQuery, IReadOnlyCollection<Domain.UnitOfMeasure>>
+    internal sealed class UnitOfMeasuresQueryHandler : IRequestHandler<UnitOfMeasuresQuery, IReadOnlyCollection<Domain.UnitOfMeasure>>
     {
         private readonly ISrContext _db;
 
-        public GetUnitOfMeasuresQueryHandler(ISrContext db) =>
-            _db = db;
+        public UnitOfMeasuresQueryHandler(ISrContext db) => _db = db;
         
-        public async Task<IReadOnlyCollection<Domain.UnitOfMeasure>> Handle(GetUnitOfMeasuresQuery request, CancellationToken cancellationToken) => 
+        public async Task<IReadOnlyCollection<Domain.UnitOfMeasure>> Handle(UnitOfMeasuresQuery request, CancellationToken cancellationToken) => 
             await _db.UnitOfMeasures.ToListAsync(cancellationToken).ConfigureAwait(false);
     }
     

@@ -6,18 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SR.Http.Base
 {
-    public abstract class GetSaveController<TGetById, TPost> : Controller
+    public abstract class GetSaveController<TGetById, TPost> : Controller, ICqMediator
     {
         protected abstract string CreatedUrl { get; }
         
-        protected readonly IMediator Mediator;
+        public IMediator Mediator { get; }
 
         protected GetSaveController(IMediator mediator) =>
             Mediator = mediator;
 
         public virtual async Task<IActionResult> GetById([FromRoute] TGetById query, CancellationToken token) =>
             await OkOrNotFound(() => Mediator.Send(query, token)).ConfigureAwait(false);
-        
+
         public virtual async Task<IActionResult> Post([FromBody] TPost command, CancellationToken token)
         {
             var item = await Mediator.Send(command, token).ConfigureAwait(false);

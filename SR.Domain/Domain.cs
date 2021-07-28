@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace SR.Domain
 {
@@ -24,7 +26,7 @@ namespace SR.Domain
     public class Business: IdentityName
     {
         public string Telephone { get; set; } = default!;
-
+        
         public IEnumerable<Shop> Shops { get; set; } = new List<Shop>();
     }
 
@@ -69,8 +71,14 @@ namespace SR.Domain
 
     public class Folder : IdentityName
     {
-        public Folder Parent { get; set; } = default!;
+        public long? ParentId { get; set; }
+        public long BusinessId { get; set; }
+        
+        public Folder? Parent { get; set; } = default!;
         public Business Business { get; set; } = default!;
+
+        [NotMapped]
+        public List<Folder>? Children = new();
     }
 
     public class Product : IdentityName

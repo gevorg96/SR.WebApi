@@ -10,16 +10,13 @@ using SR.Domain;
 namespace SR.Application.ExpenseItem
 {
     [UsedImplicitly]
-    internal sealed class UpdateExpenseItemHandler : IRequestHandler<UpdateExpenseItem, Unit>
+    internal sealed class UpdateExpenseItemCommandHandler : IRequestHandler<UpdateExpenseItemCommand, Unit>
     {
         private readonly ISrContext _db;
 
-        public UpdateExpenseItemHandler(ISrContext db)
-        {
-            _db = db;
-        }
+        public UpdateExpenseItemCommandHandler(ISrContext db) => _db = db;
 
-        public async Task<Unit> Handle(UpdateExpenseItem request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateExpenseItemCommand request, CancellationToken cancellationToken)
         {
             var expenseItem = await _db.ExpenseItems
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)

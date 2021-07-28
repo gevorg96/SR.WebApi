@@ -4,8 +4,7 @@ namespace SR.Service.Migrations
 {
     public partial class AddProductView : Migration
     {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
+        protected override void Up(MigrationBuilder migrationBuilder) =>
             migrationBuilder.Sql("CREATE VIEW public.\"ProductView\" as " +
                                  "select p.\"Id\"," +
                                  "p.\"BusinessId\"," +
@@ -18,11 +17,7 @@ namespace SR.Service.Migrations
                                  "pp.\"Size\"" +
                                  "from \"Products\" p " +
                                  "join \"ProductProperties\" pp on p.\"Id\" = pp.\"ProductId\";");
-        }
-
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.Sql("DROP VIEW public.\"ProductView\";");
-        }
+        
+        protected override void Down(MigrationBuilder migrationBuilder) => migrationBuilder.Sql("DROP VIEW public.\"ProductView\";");
     }
 }

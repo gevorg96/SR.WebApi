@@ -10,14 +10,13 @@ using SR.Application.Persistence;
 namespace SR.Application.Shop
 {
     [UsedImplicitly]
-    internal sealed class GetShopsQueryHandler: IRequestHandler<GetShopsQuery, IReadOnlyCollection<Domain.Shop>>
+    internal sealed class ShopsQueryHandler: IRequestHandler<ShopsQuery, IReadOnlyCollection<Domain.Shop>>
     {
         private readonly ISrContext _db;
 
-        public GetShopsQueryHandler(ISrContext db) =>
-            _db = db;
+        public ShopsQueryHandler(ISrContext db) => _db = db;
 
-        public async Task<IReadOnlyCollection<Domain.Shop>> Handle(GetShopsQuery request, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<Domain.Shop>> Handle(ShopsQuery request, CancellationToken cancellationToken)
         {
             var shops = _db.Shops.AsQueryable();
             if (request.BusinessId > 0)

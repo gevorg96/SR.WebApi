@@ -13,9 +13,9 @@ namespace SR.Http.Controllers
     [ApiController]
     [Route("api/uom")]
     public class UnitOfMeasureController: GetAllAndNameController<
-        GetUnitOfMeasuresQuery, 
-        GetUnitOfMeasureByIdQuery, 
-        GetUnitOfMeasureByNameQuery, 
+        UnitOfMeasuresQuery, 
+        UnitOfMeasureByIdQuery, 
+        UnitOfMeasureByNameQuery, 
         CreateUnitOfMeasureCommand>
     {
         public UnitOfMeasureController(IMediator mediator) : base(mediator) {}
@@ -29,13 +29,13 @@ namespace SR.Http.Controllers
         [HttpGet("{Id}", Name = "GetUnitOfMeasureById")]
         [ProducesResponseType(typeof(UnitOfMeasure), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public override async Task<IActionResult> GetById(GetUnitOfMeasureByIdQuery query, CancellationToken token) =>
+        public override async Task<IActionResult> GetById(UnitOfMeasureByIdQuery query, CancellationToken token) =>
             await base.GetById(query, token).ConfigureAwait(false);
 
         [HttpGet("name/{Name}", Name = "GetUnitOfMeasureByName")]
         [ProducesResponseType(typeof(UnitOfMeasure), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public override async Task<IActionResult> GetByName(GetUnitOfMeasureByNameQuery query, CancellationToken token) =>
+        public override async Task<IActionResult> GetByName(UnitOfMeasureByNameQuery query, CancellationToken token) =>
             await base.GetByName(query, token).ConfigureAwait(false);
 
         [HttpPost(Name = "CreateUnitOfMeasure")]

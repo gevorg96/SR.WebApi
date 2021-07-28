@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +29,11 @@ namespace SR.Service
                 .UseHttp()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "SR.Service", Version = "v1"}))
                 .AddControllers()
-                .AddJsonOptions(c => c.JsonSerializerOptions.IgnoreNullValues = true);
+                .AddJsonOptions(c =>
+                {
+                    c.JsonSerializerOptions.IgnoreNullValues = true;
+                    c.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

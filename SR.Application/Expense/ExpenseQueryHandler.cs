@@ -11,16 +11,13 @@ using SR.Application.Persistence;
 namespace SR.Application.Expense
 {
     [UsedImplicitly]
-    internal sealed class GetExpenseQueryHandler: IRequestHandler<GetExpenseQuery, IReadOnlyCollection<Domain.Expense>>
+    internal sealed class ExpenseQueryHandler: IRequestHandler<ExpenseQuery, IReadOnlyCollection<Domain.Expense>>
     {
         private readonly ISrContext _db;
 
-        public GetExpenseQueryHandler(ISrContext db)
-        {
-            _db = db;
-        }
+        public ExpenseQueryHandler(ISrContext db) => _db = db;
 
-        public async Task<IReadOnlyCollection<Domain.Expense>> Handle(GetExpenseQuery request, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<Domain.Expense>> Handle(ExpenseQuery request, CancellationToken cancellationToken)
         {
             var (businessId, shopId, withExpenseItems, on, from, to) = request;
             if (businessId < 1)
