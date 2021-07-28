@@ -71,6 +71,8 @@ namespace SR.Domain
 
     public class Folder : IdentityName
     {
+        public string? Path { get; set; }
+        
         public long? ParentId { get; set; }
         public long BusinessId { get; set; }
         

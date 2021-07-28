@@ -103,8 +103,9 @@ namespace SR.Service.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ParentId = table.Column<long>(type: "bigint", nullable: true),
-                    BusinessId = table.Column<long>(type: "bigint", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    BusinessId = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Path = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -9,7 +9,7 @@ namespace SR.Application.Mapping
 {
     public static class Mapper
     {
-        public static FolderModel Map(this Domain.Folder folder) => new(folder.Id, folder.BusinessId, folder.ParentId, folder.Name);
+        public static FolderModel Map(this Domain.Folder folder) => new(folder.Id, folder.BusinessId, folder.ParentId, folder.Name, folder.Path);
         
         public static FolderModel ParallelMap(this FolderModel model, IReadOnlyCollection<Domain.Folder> folders, CancellationToken token)
         {

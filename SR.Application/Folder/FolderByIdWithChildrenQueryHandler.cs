@@ -34,7 +34,7 @@ namespace SR.Application.Folder
         {
             var folder = await _db.Folders.FirstOrDefaultAsync(x => x.Id == id, token).ConfigureAwait(false);
 
-            return folder == null ? null : new FolderModel(folder.Id, folder.BusinessId, folder.ParentId, folder.Name);
+            return folder == null ? null : new FolderModel(folder.Id, folder.BusinessId, folder.ParentId, folder.Name, folder.Path);
         }
 
         private async Task<FolderModel?> GetAllLevels(long id, CancellationToken token)

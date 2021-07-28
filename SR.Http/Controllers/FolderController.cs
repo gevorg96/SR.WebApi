@@ -34,5 +34,10 @@ namespace SR.Http.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(FolderModel), StatusCodes.Status201Created)]
+        public async Task<IActionResult> Save([FromBody] CreateFolderCommand command, CancellationToken token) =>
+            Created("/api/folder", await Mediator.Send(command, token).ConfigureAwait(false));
     }
 }
